@@ -1,0 +1,36 @@
+version: '3.7'
+
+services:
+  main:
+    container_name: chatting-app-backend
+    build: .
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+    command: npm run start:dev
+    env_file:
+      - .env
+    networks:
+      - webnet
+    depends_on:
+      - postgres
+    environment:
+      DB_HOST: postgres
+      DATABASE_URL: postgres://admin:postgres@postgres:5432/chatting
+    links:
+      - postgres:postgres
+  postgres:
+    container_name: postgres-chatting-app
+    image: postgres:11.9-alpine
+    networks:
+      - webnet
+    environment:
+      POSTGRES_DB: chatting
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5432:5432
+networks:
+  webnet:
+    driver: bridge

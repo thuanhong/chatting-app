@@ -1,0 +1,61 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "es2017",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "incremental": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "paths": {
+      "@src/*": [
+        "src/*"
+      ],
+      "@src/app/*": [
+        "src/app/*"
+      ],
+      "@src/api/*": [
+        "src/app/api/*"
+      ],
+      "@src/libs/*": [
+        "src/libs/*"
+      ],
+      "@src/common/*": [
+        "src/libs/common/*"
+      ],
+      "@src/core/*": [
+        "src/libs/common/core*"
+      ],
+      "@src/dto/*": [
+        "src/libs/common/dto/*"
+      ],
+      "@src/request/*": [
+        "src/libs/common/request/*"
+      ],
+      "@src/response/*": [
+        "src/libs/common/response/*"
+      ],
+      "@src/data/*": [
+        "src/libs/data/*"
+      ],
+      "@src/schema/*": [
+        "src/libs/data/schema/*"
+      ],
+      "@src/services/*": [
+        "src/libs/data/services/*"
+      ],
+      "@src/interface/*": [
+        "src/libs/interface/*"
+      ],
+      "@src/models/*": [
+        "src/libs/models/*"
+      ],
+    }
+  }
+}

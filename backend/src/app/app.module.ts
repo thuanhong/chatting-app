@@ -1,16 +1,12 @@
-import {
-  MiddlewareConsumer,
-  Module,
-  NestModule,
-  RequestMethod,
-} from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { DataModule } from '@src/services/data.module';
 import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 // Import Controllers
 import { CheckHealthController } from '@src/api/check-health/check-health.controller';
+import { UserController } from '@src/api/user/user.controller';
 
 // Import Services
-import { FirebaseAuthService } from '@src/services/firebase.service';
 import { CheckHealthService } from '@src/api/check-health/check-health.service';
 
 import { AuthMiddleware } from './middleware/auth.middleware';
@@ -22,15 +18,14 @@ import { AuthMiddleware } from './middleware/auth.middleware';
       envFilePath: '.env',
       isGlobal: true,
     }),
+    TypeOrmModule.forRoot(),
   ],
   controllers: [CheckHealthController],
-  providers: [FirebaseAuthService, CheckHealthService],
-  exports: [FirebaseAuthService],
+  providers: [CheckHealthService],
+  exports: [],
 })
 export class AppModule implements NestModule {
   public configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(AuthMiddleware)
-      .forRoutes({ path: '/api/v1', method: RequestMethod.ALL });
+    consumer.apply(AuthMiddleware).exclude('/api/check-health').forRoutes();
   }
 }

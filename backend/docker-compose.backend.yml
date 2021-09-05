@@ -11,26 +11,16 @@ services:
     command: npm run start:dev
     env_file:
       - .env
-    networks:
-      - webnet
     depends_on:
-      - postgres
+      - database
     environment:
-      DB_HOST: postgres
-      DATABASE_URL: postgres://admin:postgres@postgres:5432/chatting
+      DB_HOST: database
+      DATABASE_URL: mysql://admin:postgres@database:3306/chatting
     links:
-      - postgres:postgres
-  postgres:
-    container_name: postgres-chatting-app
-    image: postgres:11.9-alpine
-    networks:
-      - webnet
-    environment:
-      POSTGRES_DB: chatting
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: postgres
+      - database:database
+  database:
+    build:
+      context: .
+      dockerfile: Dockerfile.db
     ports:
-      - 5432:5432
-networks:
-  webnet:
-    driver: bridge
+      - "3307:3306"

@@ -9,12 +9,12 @@ export class CheckHealthController {
   constructor(private checkHealthService: CheckHealthService) {}
 
   @Get('health')
-  public getHealth(): CheckHealthResponse {
+  getHealth(): CheckHealthResponse {
     return this.checkHealthService.getHealth();
   }
 
   @Get()
-  public getApp(): CheckHealthResponse {
+  getApp(): CheckHealthResponse {
     return this.checkHealthService.getApp();
   }
 }

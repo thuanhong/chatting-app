@@ -56,6 +56,12 @@
       "@src/models/*": [
         "src/libs/models/*"
       ],
+      "@src/entities/*": [
+        "src/libs/entities/*"
+      ],
+      "@src/utils/*": [
+        "src/libs/utils/*"
+      ],
     }
   }
 }

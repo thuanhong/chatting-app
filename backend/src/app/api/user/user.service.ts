@@ -18,6 +18,14 @@ export class UserService {
     });
   }
 
+  async getUserByEmail(email: string): Promise<Users> {
+    return await this.dataService.firstOrDefault(Users, {
+      where: {
+        email,
+      },
+    });
+  }
+
   async saveUser(...entities: UserDto[]): Promise<UserDto[]> {
     console.log(entities)
     const data = await this.dataService.save(Users, ...entities);

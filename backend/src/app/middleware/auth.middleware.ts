@@ -12,7 +12,7 @@ export class AuthMiddleware implements NestMiddleware {
   constructor(private readonly firebaseService: FirebaseAuthService) {}
   private readonly logger = new Logger(AuthMiddleware.name);
 
-  public async use(req: RequestModel, res: Response, next: NextFunction) {
+  public async use(req: RequestModel, _: Response, next: NextFunction) {
     try {
       const { authorization } = req.headers;
       if (!authorization) {
@@ -24,7 +24,6 @@ export class AuthMiddleware implements NestMiddleware {
       this.logger.log('Doing something...');
       const user = await this.firebaseService.authenticate(authorization);
       req.user = user;
-      res.locals.user  = user;
 
       next();
     } catch (err) {

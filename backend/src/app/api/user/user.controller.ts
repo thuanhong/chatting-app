@@ -5,22 +5,27 @@ import {
   ParseUUIDPipe,
   Post,
   Body,
+  Logger,
+  Request,
+  HttpCode,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+// import { ApiTags } from '@nestjs/swagger';
 import { UserReponse } from '@src/libs/common/response/user.response';
 import { UserIdReponse } from '@src/response/user-id.response';
 import { CreateUserResponse } from '@src/response/create-user.response';
 import { CreateUserRequest } from '@src/request/create-user.request';
 import { UserService } from './user.service';
+import { RequestModel } from '@src/app/middleware/auth.middleware';
 
-@ApiTags('Check Health')
 @Controller('/api/v1/users')
 export class UserController {
   constructor(private userService: UserService) {}
-
+  private readonly logger = new Logger(UserController.name);
+  @HttpCode(200)
   @Get()
-  async getUsers(): Promise<UserReponse> {
+  async getUsers(@Param() req:RequestModel): Promise<UserReponse> {
     const users = await this.userService.getUsers();
+    console.log(req)
     return new UserReponse({
       users,
     });
@@ -37,14 +42,15 @@ export class UserController {
   }
 
   @Post()
-  async saveUser(
+  @HttpCode(200)
+  async saveUser(@Request() req:any,
     @Body() request: CreateUserRequest,
   ): Promise<CreateUserResponse> {
+    console.log('im here')
+    request.payload[0].email= req.user.email;
     const data = await this.userService.saveUser(...request.payload);
     return new CreateUserResponse({
-      token:
-        'GGDuGEV8WshwlfIvntyFxOlSlrvsrxqvCFvnleSW0Al1s6RK4YSd6tSdNBo7Wcn9cLackLKOyMScDd4isIhH4fI1uaJpDyOE', // NEED TO WORK
-      user: data[0],
+      message:"success"
     });
   }
 }

@@ -6,7 +6,7 @@ export class UserDto extends BaseDto<UserDto> {
   @IsOptional()
   id: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsEmail()
   email: string;
 
@@ -18,11 +18,11 @@ export class UserDto extends BaseDto<UserDto> {
   @IsString()
   lastName: string;
 
-  @IsNotEmpty()
   @IsString()
-  middleName: string;
+  @IsOptional()
+  middleName: string="kal";
 
-  @IsNotEmpty()
-  @IsString()
-  isOnline: boolean;
+  // @IsNotEmpty()
+  // @IsString()
+  isOnline: boolean=true;
 }

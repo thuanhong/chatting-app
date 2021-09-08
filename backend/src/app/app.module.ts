@@ -1,10 +1,12 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { DataModule } from '@src/services/data.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 // Import Controllers
 import { CheckHealthController } from '@src/api/check-health/check-health.controller';
-import { UserController } from '@src/api/user/user.controller';
+
+//import Module
+import { UserModule } from '@src/api/user/user.module';
 
 // Import Services
 import { CheckHealthService } from '@src/api/check-health/check-health.service';
@@ -19,13 +21,14 @@ import { AuthMiddleware } from './middleware/auth.middleware';
       isGlobal: true,
     }),
     TypeOrmModule.forRoot(),
+    UserModule,
   ],
   controllers: [CheckHealthController],
-  providers: [CheckHealthService],
+  providers: [CheckHealthService,],
   exports: [],
 })
 export class AppModule implements NestModule {
   public configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AuthMiddleware).exclude('/api/check-health').forRoutes();
+    consumer.apply(AuthMiddleware).exclude('/api/check-health').forRoutes({path: '/api/v1', method: RequestMethod.ALL});
   }
 }

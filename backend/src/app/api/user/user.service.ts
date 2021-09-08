@@ -19,6 +19,7 @@ export class UserService {
   }
 
   async saveUser(...entities: UserDto[]): Promise<UserDto[]> {
+    console.log(entities)
     const data = await this.dataService.save(Users, ...entities);
     return data;
   }

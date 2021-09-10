@@ -25,7 +25,7 @@ const uiConfig = {
     signInSuccess: (currentUser, credential, redirectUrl) => {
       const currentUsers = firebase?.app()?.auth()?.currentUser ?? {};
 
-      CookieHandler.setCookie('access_token', currentUser.Aa);
+      CookieHandler.setCookie('access_token', currentUsers.Aa);
       Router.push('/');
     },
   },
@@ -92,4 +92,4 @@ const LoginScreen = () => {
   );
 };
 
-export default withAuth(LoginScreen);
+export default LoginScreen;

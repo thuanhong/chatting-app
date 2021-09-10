@@ -2,7 +2,7 @@ import axios from 'axios';
 import { CookieHandler } from '@utils/Cookies';
 
 export const createAxios = () => {
-  let baseURLStr = 'https://localhost:3001';
+  let baseURLStr = 'http://localhost:8000';
   let headerObj = {
     'Content-Type': 'application/json',
   };

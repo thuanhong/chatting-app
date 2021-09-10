@@ -18,8 +18,9 @@ export class FirebaseAuthService {
         .auth()
         .verifyIdToken(tokenString);
 
-      const { email, uid, role } = decodedToken;
-      return { email, uid, role };
+      const { email, uid, name, picture } = decodedToken;
+      console.log(decodedToken);
+      return { email, uid, name, picture };
     } catch (err) {
       throw new UnauthorizedException(err.message);
     }

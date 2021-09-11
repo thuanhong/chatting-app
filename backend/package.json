@@ -5,6 +5,11 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run format && npm run lint"
+    }
+  },
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
@@ -31,6 +36,7 @@
     "class-transformer": "^0.4.0",
     "class-validator": "^0.13.1",
     "firebase-admin": "^9.11.0",
+    "husky": "^7.0.2",
     "mysql2": "^2.3.0",
     "randomatic": "^3.1.1",
     "reflect-metadata": "^0.1.13",

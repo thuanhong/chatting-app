@@ -115,7 +115,7 @@ export class DataService {
   }
 
   async find<T>(
-    target: ObjectType<any>,
+    target: ObjectType<T>,
     condition?: FindManyOptions<any>,
   ): Promise<T[]> {
     const repo = await this.getRepository(target);

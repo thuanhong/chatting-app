@@ -21,7 +21,4 @@ export class CreateUserRequest extends BaseRequest<CreateUserRequest> {
   @IsArray()
   @ArrayNotEmpty()
   payload: UserDto[];
-
-
-
 }

@@ -8,20 +8,10 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
-
-const styles = (theme) => ({
-  appBar: {
-    backgroundColor: 'black',
-    color: theme.palette.common.white,
-    padding: theme.spacing(2),
-    width: 'calc(100% - 400px)',
-    borderBottom: '1px solid',
-    borderColor: theme.palette.common.white,
-  },
-});
+import { styles } from './styles';
 
 function Header(props) {
-  const { classes, onDrawerToggle } = props;
+  const { classes } = props;
 
   return (
     <React.Fragment>

@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "checkJs": false,
+    "resolveJsonModule": true,
+    "moduleResolution": "node",
+    "target": "es2020",
+    "module": "es2015",
+    "baseUrl": ".",
+    "paths": {
+      "@src/*": ["src/*"],
+      "@src/constants/*": ["src/constants/*"],
+      "@src/contexts/*": ["src/contexts/*"],
+      "@src/core/*": ["src/core/*"],
+      "@src/hoc//*": ["src/hoc/*"],
+      "@src/hooks/*": ["src/hooks/*"],
+      "@src/mocks/*": ["src/mocks/*"],
+      "@src/services/*": ["src/services/*"],
+      "@src/utils/*": ["src/utils/*"],
+      "@src/modules/*": ["src/modules/*"],
+      "@src/common/*": ["src/modules/common/*"],
+      "@src/components/*": ["src/modules/components/*"],
+      "@src/pages/*": ["src/modules/pages/*"]
+    }
+  },
+  "exclude": ["dist", "node_modules", "build", ".vscode", ".next", "coverage", ".npm", ".yarn"],
+  "typeAcquisition": {
+    "enable": true,
+    "include": ["react", "react-dom"]
+  }
+}

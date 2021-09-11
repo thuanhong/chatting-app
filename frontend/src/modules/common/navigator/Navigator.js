@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
 import Drawer from '@material-ui/core/Drawer';
@@ -18,56 +18,22 @@ import NotificationsIcon from '@material-ui/icons/Notifications';
 import PermContactCalendarIcon from '@material-ui/icons/PermContactCalendar';
 import CallIcon from '@material-ui/icons/Call';
 import Grid from '@material-ui/core/Grid';
-import BadgeAvatar from '@common/badge-avatar/BadgeAvatar';
-
-import UserData from '@mocks/user-data';
-
-const styles = (theme) => ({
-  categoryHeader: {
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2),
-  },
-  item: {
-    paddingTop: 1,
-    paddingBottom: 1,
-    color: 'rgba(255, 255, 255, 0.7)',
-    '&:hover,&:focus': {
-      backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    },
-  },
-  itemCategory: {
-    backgroundColor: '#232f3e',
-    boxShadow: '0 -1px 0 #404854 inset',
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2),
-  },
-  itemIcon: {
-    minWidth: 'auto',
-    marginRight: theme.spacing(2),
-  },
-  divider: {
-    marginTop: theme.spacing(2),
-  },
-  cardStyle: {
-    backgroundColor: 'transparent',
-  },
-  colorTextWhite: {
-    color: theme.palette.common.white,
-  },
-  input: {
-    '&::placeholder': {
-      color: theme.palette.common.white,
-    },
-    color: theme.palette.common.white,
-  },
-  textFieldStyle: {
-    backgroundColor: 'black',
-    borderRadius: '7px',
-  },
-});
+import ListContact from '@src/common/list-contact/ListContact';
+import { UserService } from '@src/services/UserService';
+import { styles } from './styles';
 
 function Navigator(props) {
   const { classes, ...other } = props;
+
+  useEffect(() => {
+    UserService.get_user_contact('61346cfafc13ae32c800000a')
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((err) => {
+        throw err;
+      });
+  }, []);
 
   return (
     <Drawer variant='permanent' {...other}>
@@ -126,34 +92,7 @@ function Navigator(props) {
           </CardActions>
         </Card>
         <Divider variant='middle' />
-        {UserData.map((data, index) => (
-          <React.Fragment key={index}>
-            <Card elevation={0} className={classes.cardStyle}>
-              <CardHeader
-                avatar={<BadgeAvatar linkAvatar={data.image} />}
-                title={data.name}
-                className={classes.colorTextWhite}
-                subheader={data.message}
-                subheaderTypographyProps={{
-                  style: {
-                    color: 'gray',
-                    display: 'inline-block',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden !important',
-                    textOverflow: 'ellipsis',
-                    width: '250px',
-                    overflowX: 'auto',
-                  },
-                }}
-                titleTypographyProps={{
-                  style: {
-                    fontSize: '1.1rem',
-                  },
-                }}
-              />
-            </Card>
-          </React.Fragment>
-        ))}
+        <ListContact />
       </List>
     </Drawer>
   );

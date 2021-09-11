@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { LoadingPage } from '@common/loading-page/LoadingPage';
+import { LoadingPage } from '@src/common/loading-page/LoadingPage';
 import Router from 'next/router';
-import { AuthService } from '@services/AuthService';
+import { AuthService } from '@src/services/AuthService';
 
 export const withAuth = (PageComponent) => {
   const WithAuth = () => {
     const [loading, setLoading] = useState(true);
-    const [group, setGroup] = useState(0);
 
     useEffect(() => {
       async function fetchData() {
@@ -16,7 +15,6 @@ export const withAuth = (PageComponent) => {
               if (Router.pathname === '/login') {
                 Router.push('/');
               } else {
-                setGroup(res.msg.group_user);
                 setTimeout(() => setLoading(false), 200);
               }
             } else {
@@ -27,7 +25,7 @@ export const withAuth = (PageComponent) => {
               }
             }
           })
-          .catch((err) => {
+          .catch(() => {
             setLoading(false);
           });
       }
@@ -35,7 +33,7 @@ export const withAuth = (PageComponent) => {
       fetchData();
     }, []);
 
-    return <div>{loading ? <LoadingPage /> : <PageComponent groupNumber={group} />}</div>;
+    return <div>{loading ? <LoadingPage /> : <PageComponent />}</div>;
   };
   return WithAuth;
 };

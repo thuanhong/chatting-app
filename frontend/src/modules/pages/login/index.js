@@ -8,11 +8,11 @@ import Typography from '@material-ui/core/Typography';
 import { useStyles } from './styles';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
-import { CookieHandler } from '@utils/Cookies';
+import { CookieHandler } from '@src/utils/Cookies';
 import Router from 'next/router';
-import { withAuth } from '@hoc/withAuth';
+import { withAuth } from '@src/hoc/withAuth';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
-import firebase from '@services/Firebase';
+import firebase from '@src/services/Firebase';
 
 const uiConfig = {
   signInFlow: 'popup',

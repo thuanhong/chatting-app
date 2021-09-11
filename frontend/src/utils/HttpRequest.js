@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { CookieHandler } from '@utils/Cookies';
+import { CookieHandler } from '@src/utils/Cookies';
 
 export const createAxios = () => {
   let baseURLStr = 'http://localhost:8000';

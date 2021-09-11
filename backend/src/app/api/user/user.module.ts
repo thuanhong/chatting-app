@@ -4,7 +4,7 @@ import { UserService } from './user.service';
 import { DataModule } from '@src/services/data.module';
 
 @Module({
-    imports:[DataModule],
+  imports: [DataModule],
   controllers: [UserController],
   providers: [UserService],
 })

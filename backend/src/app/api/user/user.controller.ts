@@ -2,7 +2,6 @@ import {
   Controller,
   Get,
   Param,
-  ParseUUIDPipe,
   Post,
   Body,
   Logger,
@@ -10,9 +9,7 @@ import {
   HttpCode,
   BadRequestException,
 } from '@nestjs/common';
-// import { ApiTags } from '@nestjs/swagger';
-import { UserReponse } from '@src/libs/common/response/user.response';
-import { UserIdReponse } from '@src/response/user-id.response';
+import { MultipleUserResponse } from '@src/libs/common/response/multiple-user.response';
 import { CreateUserResponse } from '@src/response/create-user.response';
 import { CreateUserRequest } from '@src/request/create-user.request';
 import { UserService } from './user.service';
@@ -26,10 +23,10 @@ export class UserController {
   private readonly logger = new Logger(UserController.name);
   @HttpCode(200)
   @Get()
-  async getUsers(@Param() req: RequestModel): Promise<UserReponse> {
+  async getUsers(@Param() req: RequestModel): Promise<MultipleUserResponse> {
     const users = await this.userService.getUsers();
     console.log(req);
-    return new UserReponse({
+    return new MultipleUserResponse({
       users,
     });
   }
@@ -94,6 +91,17 @@ export class UserController {
 
     return new UserEmailReponse({
       user: data,
+    });
+  }
+
+  @Get(':userId')
+  @HttpCode(200)
+  async getAllContact(
+    @Param('userId') userId: string,
+  ): Promise<MultipleUserResponse> {
+    const users = await this.userService.getAllContact(userId);
+    return new MultipleUserResponse({
+      users,
     });
   }
 }

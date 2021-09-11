@@ -2,9 +2,9 @@ import React from 'react';
 import { createTheme, ThemeProvider, withStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Hidden from '@material-ui/core/Hidden';
-import Navigator from '@common/navigator/Navigator';
-import Content from '@common/content/Content';
-import Header from '@common/header/Header';
+import Navigator from '@src/common/navigator/Navigator';
+import Content from '@src/common/content/Content';
+import Header from '@src/common/header/Header';
 
 let theme = createTheme({
   palette: {

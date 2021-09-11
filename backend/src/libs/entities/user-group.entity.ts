@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Users } from './users.entity';
-import { GroupChat } from './group.entity';
+import { GroupChat } from './group-chat.entity';
 
 @Index('user_id', ['userId'], {})
 @Index('group_id', ['groupId'], {})
@@ -44,7 +44,7 @@ export class UserGroup {
   @JoinColumn([{ name: 'user_id', referencedColumnName: 'id' }])
   user: Users;
 
-  @ManyToOne(() => GroupChat, (group) => group.userGroups, {
+  @ManyToOne(() => GroupChat, (groupChat) => groupChat.userGroups, {
     onDelete: 'RESTRICT',
     onUpdate: 'RESTRICT',
   })

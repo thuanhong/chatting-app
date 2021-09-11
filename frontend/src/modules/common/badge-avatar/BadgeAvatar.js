@@ -52,14 +52,14 @@ export default function BadgeAvatars(props) {
   return (
     <div className={classes.root}>
       <StyledBadge
-        overlap="circular"
+        overlap='circular'
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'right',
         }}
-        variant="dot"
+        variant='dot'
       >
-        <Avatar alt="Remy Sharp" className={classes.large} src={linkAvatar} />
+        <Avatar alt='Remy Sharp' className={classes.large} src={linkAvatar} />
       </StyledBadge>
     </div>
   );

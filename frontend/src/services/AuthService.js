@@ -1,5 +1,5 @@
-import { httpRequest } from '@utils/HttpRequest';
-import { EndPoints } from '@services/EndPoints';
+import { httpRequest } from '@src/utils/HttpRequest';
+import { EndPoints } from '@src/constants/EndPoints';
 
 const login = (username, password) => {
   let body_data = {

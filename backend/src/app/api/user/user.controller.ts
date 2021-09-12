@@ -47,8 +47,6 @@ export class UserController {
     @Request() req: any,
     @Body() request: CreateUserRequest,
   ): Promise<CreateUserResponse> {
-    console.log('im here');
-
     request.payload[0].email = req.user.email;
     const data = await this.userService.saveUser(...request.payload);
     return new CreateUserResponse({

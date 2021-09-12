@@ -27,6 +27,7 @@ const uiConfig = {
 
       CookieHandler.setCookie('access_token', currentUsers.Aa);
       Router.push('/');
+      return false;
     },
   },
 };

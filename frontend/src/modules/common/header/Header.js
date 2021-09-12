@@ -9,9 +9,11 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 import { styles } from './styles';
-
+import { useContext } from 'react';
+import { UserContext } from '@src/hoc/withAuth';
 function Header(props) {
   const { classes } = props;
+  const user = useContext(UserContext);
 
   return (
     <React.Fragment>
@@ -20,7 +22,7 @@ function Header(props) {
           <Grid container alignItems='center' spacing={1}>
             <Grid item xs>
               <Typography color='inherit' variant='h5' component='h1'>
-                Tai Ho
+                {user.firstName}
               </Typography>
             </Grid>
             <Grid item>

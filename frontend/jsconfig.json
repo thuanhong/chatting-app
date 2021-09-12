@@ -11,7 +11,7 @@
       "@src/constants/*": ["src/constants/*"],
       "@src/contexts/*": ["src/contexts/*"],
       "@src/core/*": ["src/core/*"],
-      "@src/hoc//*": ["src/hoc/*"],
+      "@src/hoc/*": ["src/hoc/*"],
       "@src/hooks/*": ["src/hooks/*"],
       "@src/mocks/*": ["src/mocks/*"],
       "@src/services/*": ["src/services/*"],

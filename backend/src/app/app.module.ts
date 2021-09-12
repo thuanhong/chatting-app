@@ -36,10 +36,10 @@ import { AuthMiddleware } from './middleware/auth.middleware';
 })
 export class AppModule implements NestModule {
   public configure(consumer: MiddlewareConsumer) {
-    // consumer
-    //   .apply(AuthMiddleware)
-    //   .exclude('/api/check-health')
-    //   .forRoutes({ path: '/api/v1', method: RequestMethod.ALL });
-    consumer.apply(AuthMiddleware).exclude('/api/check-health').forRoutes();
+    consumer
+      .apply(AuthMiddleware)
+      .exclude('/api/check-health')
+      .forRoutes({ path: '/api/v1', method: RequestMethod.ALL });
+    // consumer.apply(AuthMiddleware).exclude('/api/check-health').forRoutes();
   }
 }

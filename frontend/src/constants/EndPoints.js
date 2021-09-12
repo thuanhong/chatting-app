@@ -5,7 +5,7 @@ export const EndPoints = {
     token: '/auth/token/',
   },
   HEALTH: {
-    health_check_authenticated: '/api/check-health/health',
+    health_check_authenticated: 'api/v1/users/info',
   },
   USER: {
     general_user_endpoint: 'api/v1/users',

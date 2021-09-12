@@ -22,7 +22,7 @@ function ListContact(props) {
 
   return (
     <div className='list-contact'>
-      {listContactData.map((data, index) => (
+      {listContactData?.map((data, index) => (
         <React.Fragment key={index}>
           <Card elevation={0} className={classes.cardStyle}>
             <CardHeader

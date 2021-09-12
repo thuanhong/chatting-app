@@ -3,17 +3,17 @@ import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import BadgeAvatar from '@src/common/badge-avatar/BadgeAvatar';
-import { UserService } from '@src/services/UserService';
+import { GroupService } from '@src/services/GroupService';
 import { styles } from './styles';
 
-function ListContact(props) {
+function ListGroupChat(props) {
   const { classes } = props;
-  const [listContactData, setListContactData] = useState([]);
+  const [listGroupChatData, setListGroupChatData] = useState([]);
 
   useEffect(() => {
-    UserService.get_user_contact('61346cfafc13ae32c800000a')
+    GroupService.get_user_group_chat('61346cfafc13ae32c800000a')
       .then((response) => {
-        setListContactData(response.msg.users);
+        setListGroupChatData(response.msg.groups);
       })
       .catch((err) => {
         throw err;
@@ -21,15 +21,15 @@ function ListContact(props) {
   }, []);
 
   return (
-    <div className='list-contact'>
-      {listContactData.map((data, index) => (
+    <div className='list-group-chat'>
+      {listGroupChatData.map((data, index) => (
         <React.Fragment key={index}>
           <Card elevation={0} className={classes.cardStyle}>
             <CardHeader
-              avatar={<BadgeAvatar isActive={parseInt(data.isOnline)} linkAvatar={data.image} />}
-              title={`${data.firstName} ${data.lastName}`}
+              avatar={<BadgeAvatar isActive={false} linkAvatar={data.image} />}
+              title={data.groupName}
               className={classes.colorTextWhite}
-              subheader={data.message}
+              subheader={data.lastMessage}
               subheaderTypographyProps={{
                 style: {
                   color: 'gray',
@@ -54,4 +54,4 @@ function ListContact(props) {
   );
 }
 
-export default withStyles(styles)(ListContact);
+export default withStyles(styles)(ListGroupChat);

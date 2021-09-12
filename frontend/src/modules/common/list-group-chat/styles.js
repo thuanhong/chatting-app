@@ -25,11 +25,7 @@ export const styles = (theme) => ({
     marginTop: theme.spacing(2),
   },
   cardStyle: {
-    backgroundColor: '#2a2a2a',
-    position: 'fixed',
-    width: 'inherit',
-    top: 0,
-    zIndex: 99999,
+    backgroundColor: 'transparent',
   },
   colorTextWhite: {
     color: theme.palette.common.white,
@@ -43,8 +39,5 @@ export const styles = (theme) => ({
   textFieldStyle: {
     backgroundColor: 'black',
     borderRadius: '7px',
-  },
-  listMarginTop: {
-    marginTop: theme.spacing(25),
   },
 });

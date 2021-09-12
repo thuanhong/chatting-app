@@ -11,4 +11,7 @@ export const EndPoints = {
     general_user_endpoint: 'api/v1/users',
     check_user_exist: 'api/v1/users/info',
   },
+  GROUP: {
+    general_group_chat_endpoint: '/api/v1/group-chat',
+  },
 };

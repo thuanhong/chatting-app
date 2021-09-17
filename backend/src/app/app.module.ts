@@ -12,6 +12,7 @@ import { CheckHealthController } from '@src/api/check-health/check-health.contro
 
 //import Module
 import { UserModule } from '@src/api/user/user.module';
+import { SignUpModule } from '@src/api/sign-up/sign-up.module';
 
 // Import Services
 import { CheckHealthService } from '@src/api/check-health/check-health.service';
@@ -27,6 +28,7 @@ import { AuthMiddleware } from './middleware/auth.middleware';
     }),
     TypeOrmModule.forRoot(),
     UserModule,
+    SignUpModule,
   ],
   controllers: [CheckHealthController],
   providers: [CheckHealthService],
@@ -36,7 +38,7 @@ export class AppModule implements NestModule {
   public configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AuthMiddleware)
-      .exclude('/api/check-health')
+      .exclude('/api/check-health', '/auth/sign-up')
       .forRoutes({ path: '/api/v1', method: RequestMethod.ALL });
     // consumer.apply(AuthMiddleware).exclude('/api/check-health').forRoutes();
   }

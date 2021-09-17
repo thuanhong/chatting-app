@@ -13,7 +13,7 @@ function ListContact(props) {
   useEffect(() => {
     UserService.get_user_contact('61346cfafc13ae32c800000a')
       .then((response) => {
-        setListContactData(response.msg.users);
+        setListContactData(response?.msg.users);
       })
       .catch((err) => {
         throw err;

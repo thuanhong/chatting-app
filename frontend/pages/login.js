@@ -1,3 +1,3 @@
-import LoginScreen from '@src/modules/pages/login';
+import LoginPage from '@src/modules/pages/login';
 
-export default LoginScreen;
+export default LoginPage;

@@ -7,15 +7,13 @@ export const UserContext = createContext({});
 export const withAuth = (PageComponent) => {
   const WithAuth = () => {
     const [loading, setLoading] = useState(true);
-    const [user, setUser] = useState({});
     // create context
 
     useEffect(() => {
       async function fetchData() {
         AuthService.check_auth()
           .then((res) => {
-            if (res.statusCode === 200) {
-              setUser(res.msg.user);
+            if (res?.statusCode === 200) {
               if (Router.pathname === '/login') {
                 Router.push('/');
               } else {
@@ -37,17 +35,7 @@ export const withAuth = (PageComponent) => {
       fetchData();
     }, []);
 
-    return (
-      <div>
-        {loading ? (
-          <LoadingPage />
-        ) : (
-          <UserContext.Provider value={user}>
-            <PageComponent />
-          </UserContext.Provider>
-        )}
-      </div>
-    );
+    return <div>{loading ? <LoadingPage /> : <PageComponent />}</div>;
   };
   return WithAuth;
 };

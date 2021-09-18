@@ -1,17 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { DataService } from '@src/services/data.service';
-import { Users } from '@src/entities/users.entity';
-import { UserDto } from '@src/dto/user.dto';
-import { In } from 'typeorm';
+import { UserToken } from '@src/interface/user-token-info.interface';
+
 import admin from '@src/main';
 
 @Injectable()
 export class SignUpService {
   constructor(private dataService: DataService) {}
 
-  async saveUser(...entities: any): Promise<any> {
+  async saveUser(entities: UserToken): Promise<any> {
     try {
-      const data = await admin.auth().createUser(entities[0]);
+      const data = await admin.auth().createUser(entities);
       return data;
     } catch (e) {
       return { status: false, message: e };

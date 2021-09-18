@@ -110,17 +110,6 @@ const SignUpScreen = () => {
               type='password'
               onChange={handleChange('password')}
             />
-            {/* <TextField
-              variant='outlined'
-              margin='normal'
-              required
-              fullWidth
-              label='Re-typing Password'
-              type='password'
-              onChange={(event) => {
-                confirmPassword(event.target.value);
-              }}
-            /> */}
             <Button
               type='submit'
               disableElevation

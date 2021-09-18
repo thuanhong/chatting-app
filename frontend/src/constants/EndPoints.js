@@ -2,7 +2,7 @@ export const EndPoints = {
   AUTHENTICATION: {
     login: '/auth/login/',
     logout: '/auth/logout',
-    token: '/auth/token/',
+    sign_up: '/auth/sign-up/',
   },
   HEALTH: {
     health_check_authenticated: 'api/v1/users/info',

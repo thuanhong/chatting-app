@@ -1,0 +1,30 @@
+version: '3.7'
+
+services:
+  # database:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.db
+  #   ports:
+  #     - "3307:3306"
+  # chatting-app-backend:
+  #   build:
+  #     context: ./backend
+  #     dockerfile: ../Dockerfile.backend.prod
+  #   ports:
+  #     - 8000:8000
+  #   depends_on:
+  #     - database
+  #   environment:
+  #     DB_HOST: database
+  #     DATABASE_URL: mysql://admin:postgres@database:3306/chatting
+  #   links:
+  #     - database:database
+  chatting-app-frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../Dockerfile.frontend.prod
+    ports:
+      - 3000:3000
+    # depends_on:
+    #   - chatting-app-backend

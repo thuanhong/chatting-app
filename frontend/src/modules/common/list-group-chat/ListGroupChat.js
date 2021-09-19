@@ -11,7 +11,7 @@ function ListGroupChat(props) {
   const [listGroupChatData, setListGroupChatData] = useState([]);
 
   useEffect(() => {
-    GroupService.get_user_group_chat('61346cfafc13ae32c800000a')
+    GroupService.get_user_group_chat()
       .then((response) => {
         setListGroupChatData(response.msg.groups);
       })

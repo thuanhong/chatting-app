@@ -7,4 +7,4 @@ ENV MYSQL_DATABASE=chatting \
     MYSQL_USER=user \
     MYSQL_PASSWORD=password
 
-# ADD init.sql /docker-entrypoint-initdb.d
+ADD init.sql /docker-entrypoint-initdb.d

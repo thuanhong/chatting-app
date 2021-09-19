@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import * as CONSTANT from '@src/app/constants.api';
 import admin from '@src/main';
+import { DecodeToken } from '@src/libs/interface/decode-token.interface';
 
 @Injectable()
 export class FirebaseAuthService {
@@ -11,7 +12,7 @@ export class FirebaseAuthService {
     }
     return match[1];
   }
-  public async authenticate(authToken: string): Promise<any> {
+  public async authenticate(authToken: string): Promise<DecodeToken> {
     const tokenString = this.getToken(authToken);
     try {
       const decodedToken: admin.auth.DecodedIdToken = await admin

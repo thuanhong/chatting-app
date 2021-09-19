@@ -1,4 +1,4 @@
-import { Controller, Logger, Get, Param } from '@nestjs/common';
+import { Controller, Logger, Get, Req } from '@nestjs/common';
 import { MultipleGroupChatResponse } from '@src/response/multi-group-chat.response';
 import { GroupService } from './group.service';
 
@@ -7,11 +7,11 @@ export class GroupController {
   constructor(private groupService: GroupService) {}
   private readonly logger = new Logger(GroupController.name);
 
-  @Get(':userId')
-  async getUserGroupChat(
-    @Param('userId') userId: string,
-  ): Promise<MultipleGroupChatResponse> {
-    const groupChatData = await this.groupService.getUserGroupChat(userId);
+  @Get()
+  async getUserGroupChat(@Req() req: any): Promise<MultipleGroupChatResponse> {
+    const groupChatData = await this.groupService.getUserGroupChat(
+      req.user.uid,
+    );
     return new MultipleGroupChatResponse({
       groups: groupChatData,
     });

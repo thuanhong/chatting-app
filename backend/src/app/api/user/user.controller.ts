@@ -1,13 +1,12 @@
 import {
   Controller,
   Get,
-  Param,
   Post,
   Body,
   Logger,
   Request,
-  HttpCode,
   BadRequestException,
+  Req,
 } from '@nestjs/common';
 import { MultipleUserResponse } from '@src/libs/common/response/multiple-user.response';
 import { CreateUserResponse } from '@src/response/create-user.response';
@@ -21,41 +20,28 @@ import { UserDto } from '@src/libs/common/dto/user.dto';
 export class UserController {
   constructor(private userService: UserService) {}
   private readonly logger = new Logger(UserController.name);
-  @HttpCode(200)
+
   @Get()
-  async getUsers(@Param() req: RequestModel): Promise<MultipleUserResponse> {
+  async getUsers(): Promise<MultipleUserResponse> {
     const users = await this.userService.getUsers();
-    console.log(req);
     return new MultipleUserResponse({
       users,
     });
   }
 
-  // @Get(':id')
-  // async getUserById(
-  //   @Param('id', ParseUUIDPipe) id: string,
-  // ): Promise<UserIdReponse> {
-  //   const user = await this.userService.getUserById(id);
-  //   return new UserIdReponse({
-  //     user,
-  //   });
-  // }
-
   @Post()
-  @HttpCode(200)
   async saveUser(
     @Request() req: any,
     @Body() request: CreateUserRequest,
   ): Promise<CreateUserResponse> {
     request.payload[0].email = req.user.email;
-    const data = await this.userService.saveUser(...request.payload);
+    await this.userService.saveUser(...request.payload);
     return new CreateUserResponse({
       message: 'success',
     });
   }
 
   @Get('info')
-  @HttpCode(200)
   async getUserByEmail(@Request() req: RequestModel): Promise<any> {
     const email = req.user.email;
     const data = await this.userService.getUserByEmail(email);
@@ -93,11 +79,8 @@ export class UserController {
   }
 
   @Get(':userId')
-  @HttpCode(200)
-  async getAllContact(
-    @Param('userId') userId: string,
-  ): Promise<MultipleUserResponse> {
-    const users = await this.userService.getAllContact(userId);
+  async getAllContact(@Req() req: any): Promise<MultipleUserResponse> {
+    const users = await this.userService.getAllContact(req.user.id);
     return new MultipleUserResponse({
       users,
     });

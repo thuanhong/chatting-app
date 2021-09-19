@@ -20,9 +20,7 @@ export class UserDto extends BaseDto<UserDto> {
 
   @IsString()
   @IsOptional()
-  middleName: string = 'kal';
+  middleName = 'kal';
 
-  // @IsNotEmpty()
-  // @IsString()
-  isOnline: boolean = true;
+  isOnline = true;
 }

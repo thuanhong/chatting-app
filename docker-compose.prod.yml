@@ -2,15 +2,11 @@ version: '3.7'
 
 services:
   database:
-    build:
-      context: .
-      dockerfile: Dockerfile.db
+    image: thuan324/chatting-app:chatting-app-database
     ports:
       - "3307:3306"
   chatting-app-backend:
-    build:
-      context: ./backend
-      dockerfile: ../Dockerfile.backend.prod
+    image: thuan324/chatting-app:chatting-app-backend
     ports:
       - 8000:8000
     depends_on:
@@ -21,9 +17,7 @@ services:
     links:
       - database:database
   chatting-app-frontend:
-    build:
-      context: ./frontend
-      dockerfile: ../Dockerfile.frontend.prod
+    image: thuan324/chatting-app:chatting-app-frontend
     ports:
       - 3000:3000
     depends_on:

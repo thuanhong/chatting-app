@@ -10,14 +10,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 // Import Controllers
 import { CheckHealthController } from '@src/api/check-health/check-health.controller';
 import { GroupController } from '@src/api/group/group.controller';
-
-//import Module
-import { UserModule } from '@src/api/user/user.module';
-import { SignUpModule } from '@src/api/sign-up/sign-up.module';
+import { SignUpController } from '@src/api/sign-up/sign-up.controller';
+import { UserController } from '@src/api/user/user.controller';
 
 // Import Services
 import { CheckHealthService } from '@src/api/check-health/check-health.service';
 import { GroupService } from '@src/api/group/group.service';
+import { SignUpService } from '@src/api/sign-up/sign-up.service';
+import { UserService } from '@src/api/user/user.service';
 
 import { AuthMiddleware } from './middleware/auth.middleware';
 
@@ -29,11 +29,14 @@ import { AuthMiddleware } from './middleware/auth.middleware';
       isGlobal: true,
     }),
     TypeOrmModule.forRoot(),
-    UserModule,
-    SignUpModule,
   ],
-  controllers: [CheckHealthController, GroupController],
-  providers: [CheckHealthService, GroupService],
+  controllers: [
+    CheckHealthController,
+    GroupController,
+    SignUpController,
+    UserController,
+  ],
+  providers: [CheckHealthService, GroupService, SignUpService, UserService],
   exports: [],
 })
 export class AppModule implements NestModule {

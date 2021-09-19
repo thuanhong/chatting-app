@@ -1,4 +1,5 @@
-import React from 'react';
+/* eslint-disable prettier/prettier */
+import React, { useMemo, useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
 import Drawer from '@material-ui/core/Drawer';
@@ -18,142 +19,91 @@ import NotificationsIcon from '@material-ui/icons/Notifications';
 import PermContactCalendarIcon from '@material-ui/icons/PermContactCalendar';
 import CallIcon from '@material-ui/icons/Call';
 import Grid from '@material-ui/core/Grid';
-import BadgeAvatar from '@common/badge-avatar/BadgeAvatar';
+import ListContact from '@src/common/list-contact/ListContact';
+import ListGroupChat from '@src/common/list-group-chat/ListGroupChat';
+import { styles } from './styles';
 
-import UserData from '@mocks/user-data';
-
-const styles = (theme) => ({
-  categoryHeader: {
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2),
-  },
-  item: {
-    paddingTop: 1,
-    paddingBottom: 1,
-    color: 'rgba(255, 255, 255, 0.7)',
-    '&:hover,&:focus': {
-      backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    },
-  },
-  itemCategory: {
-    backgroundColor: '#232f3e',
-    boxShadow: '0 -1px 0 #404854 inset',
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2),
-  },
-  itemIcon: {
-    minWidth: 'auto',
-    marginRight: theme.spacing(2),
-  },
-  divider: {
-    marginTop: theme.spacing(2),
-  },
-  cardStyle: {
-    backgroundColor: 'transparent',
-  },
-  colorTextWhite: {
-    color: theme.palette.common.white,
-  },
-  input: {
-    '&::placeholder': {
-      color: theme.palette.common.white,
-    },
-    color: theme.palette.common.white,
-  },
-  textFieldStyle: {
-    backgroundColor: 'black',
-    borderRadius: '7px',
-  },
-});
+const CurrentComponent = {
+  CHAT_COMPONENT: 'CHAT_COMPONENT',
+  CONTACT_COMPONENT: 'CONTACT_COMPONENT',
+  NOTIFICATION_COMPONENT: 'NOTIFICATION_COMPONENT',
+};
 
 function Navigator(props) {
   const { classes, ...other } = props;
+  const [currentComponent, setCurrentComponent] = useState(CurrentComponent.CHAT_COMPONENT);
+
+  const listContentFunctionMap = useMemo(() => {
+    switch (currentComponent) {
+    case CurrentComponent.CHAT_COMPONENT:
+      return <ListGroupChat />;
+    case CurrentComponent.CONTACT_COMPONENT:
+      return <ListContact />;
+    default:
+      return <div />;
+    }
+  }, [currentComponent]);
+
+  const handleClickEvent = (currentComponent) => setCurrentComponent(currentComponent);
 
   return (
     <Drawer variant='permanent' {...other}>
-      <List>
-        <Card elevation={0} className={classes.cardStyle}>
-          <CardHeader
-            avatar={<Avatar aria-label='recipe'>TH</Avatar>}
-            action={
-              <IconButton aria-label='More'>
-                <MoreVertIcon className={classes.colorTextWhite} />
-              </IconButton>
-            }
-            title='Thuan Hong'
-            className={classes.colorTextWhite}
+      <Card elevation={0} className={classes.cardStyle}>
+        <CardHeader
+          avatar={<Avatar aria-label='recipe'>TH</Avatar>}
+          action={
+            <IconButton aria-label='More'>
+              <MoreVertIcon className={classes.colorTextWhite} />
+            </IconButton>
+          }
+          title='Thuan Hong'
+          className={classes.colorTextWhite}
+        />
+        <CardContent>
+          <TextField
+            placeholder='People, group and message'
+            variant='outlined'
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position='start'>
+                  <SearchIcon className={classes.colorTextWhite} />
+                </InputAdornment>
+              ),
+              classes: { input: classes.input },
+            }}
+            size='small'
+            fullWidth
+            className={classes.textFieldStyle}
           />
-          <CardContent>
-            <TextField
-              placeholder='People, group and message'
-              variant='outlined'
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position='start'>
-                    <SearchIcon className={classes.colorTextWhite} />
-                  </InputAdornment>
-                ),
-                classes: { input: classes.input },
-              }}
-              size='small'
-              fullWidth
-              className={classes.textFieldStyle}
-            />
-          </CardContent>
-          <CardActions disableSpacing>
-            <Grid container spacing={4}>
-              <Grid item xs={3}>
-                <IconButton aria-label='chat'>
-                  <ChatIcon className={classes.colorTextWhite} />
-                </IconButton>
-              </Grid>
-              <Grid item xs={3}>
-                <IconButton aria-label='call'>
-                  <CallIcon className={classes.colorTextWhite} />
-                </IconButton>
-              </Grid>
-              <Grid item xs={3}>
-                <IconButton aria-label='contact'>
-                  <PermContactCalendarIcon className={classes.colorTextWhite} />
-                </IconButton>
-              </Grid>
-              <Grid item xs={3}>
-                <IconButton aria-label='notification'>
-                  <NotificationsIcon className={classes.colorTextWhite} />
-                </IconButton>
-              </Grid>
+        </CardContent>
+        <CardActions disableSpacing>
+          <Grid container spacing={4}>
+            <Grid item xs={3}>
+              <IconButton onClick={() => handleClickEvent(CurrentComponent.CHAT_COMPONENT)} aria-label='chat'>
+                <ChatIcon className={classes.colorTextWhite} />
+              </IconButton>
             </Grid>
-          </CardActions>
-        </Card>
+            <Grid item xs={3}>
+              <IconButton onClick={() => handleClickEvent('')} aria-label='call'>
+                <CallIcon className={classes.colorTextWhite} />
+              </IconButton>
+            </Grid>
+            <Grid item xs={3}>
+              <IconButton onClick={() => handleClickEvent(CurrentComponent.CONTACT_COMPONENT)} aria-label='contact'>
+                <PermContactCalendarIcon className={classes.colorTextWhite} />
+              </IconButton>
+            </Grid>
+            <Grid item xs={3}>
+              <IconButton onClick={() => handleClickEvent('')} aria-label='notification'>
+                <NotificationsIcon className={classes.colorTextWhite} />
+              </IconButton>
+            </Grid>
+          </Grid>
+        </CardActions>
         <Divider variant='middle' />
-        {UserData.map((data, index) => (
-          <React.Fragment key={index}>
-            <Card elevation={0} className={classes.cardStyle}>
-              <CardHeader
-                avatar={<BadgeAvatar linkAvatar={data.image} />}
-                title={data.name}
-                className={classes.colorTextWhite}
-                subheader={data.message}
-                subheaderTypographyProps={{
-                  style: {
-                    color: 'gray',
-                    display: 'inline-block',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden !important',
-                    textOverflow: 'ellipsis',
-                    width: '250px',
-                    overflowX: 'auto',
-                  },
-                }}
-                titleTypographyProps={{
-                  style: {
-                    fontSize: '1.1rem',
-                  },
-                }}
-              />
-            </Card>
-          </React.Fragment>
-        ))}
+      </Card>
+      <List className={classes.listMarginTop}>
+        {listContentFunctionMap}
       </List>
     </Drawer>
   );

@@ -21,7 +21,6 @@ export class AuthMiddleware implements NestMiddleware {
           HttpStatus.BAD_REQUEST,
         );
       }
-      this.logger.log('Doing something...');
       const user = await this.firebaseService.authenticate(authorization);
       req.user = user;
 

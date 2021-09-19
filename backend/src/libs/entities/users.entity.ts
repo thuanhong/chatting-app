@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany } from 'typeorm';
-import { Frienship } from './frienship.entity';
+import { Contact } from './contact.entity';
 import { Message } from './message.entity';
 import { Notification } from './notification.entity';
 import { UserGroup } from './user-group.entity';
@@ -21,8 +21,8 @@ export class Users {
   @Column('varchar', { name: 'middle_name', length: 255 })
   middleName: string;
 
-  @Column('tinyint', { name: 'is_online', nullable: true, width: 1 })
-  isOnline: boolean | null;
+  @Column('varchar', { name: 'is_online', length: 255 })
+  isOnline: string;
 
   @Column('timestamp', {
     name: 'created_at',
@@ -36,8 +36,8 @@ export class Users {
   })
   modifiedAt: Date;
 
-  @OneToMany(() => Frienship, (frienship) => frienship.user)
-  frienships: Frienship[];
+  @OneToMany(() => Contact, (contact) => contact.user)
+  contacts: Contact[];
 
   @OneToMany(() => Message, (message) => message.sender)
   messages: Message[];

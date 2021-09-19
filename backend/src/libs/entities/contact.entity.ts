@@ -9,16 +9,16 @@ import {
 import { Users } from './users.entity';
 
 @Index('user_id', ['userId'], {})
-@Entity('frienship', { schema: 'chatting' })
-export class Frienship {
+@Entity('contact', { schema: 'chatting' })
+export class Contact {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;
 
   @Column('varchar', { name: 'user_id', length: 255 })
   userId: string;
 
-  @Column('varchar', { name: 'frienship', length: 255 })
-  frienship: string;
+  @Column('varchar', { name: 'contact', length: 255 })
+  contact: string;
 
   @Column('varchar', { name: 'type', nullable: true, length: 255 })
   type: string | null;
@@ -35,7 +35,7 @@ export class Frienship {
   })
   modifiedAt: Date;
 
-  @ManyToOne(() => Users, (users) => users.frienships, {
+  @ManyToOne(() => Users, (users) => users.contacts, {
     onDelete: 'RESTRICT',
     onUpdate: 'RESTRICT',
   })

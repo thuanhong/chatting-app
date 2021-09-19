@@ -11,13 +11,13 @@ import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { useStyles } from './styles';
-import { AuthService } from '@services/AuthService';
+import { AuthService } from '@src/services/AuthService';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
-import { CookieHandler } from '@utils/Cookies';
+import { CookieHandler } from '@src/utils/Cookies';
 import Router from 'next/router';
-import { withAuth } from '@hoc/withAuth';
+import { withAuth } from '@src/hoc/withAuth';
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant='filled' {...props} />;

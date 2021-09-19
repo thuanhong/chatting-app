@@ -1,7 +1,8 @@
 import React from 'react';
 import Badge from '@material-ui/core/Badge';
 import Avatar from '@material-ui/core/Avatar';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
+import { useStyles } from './styles';
 
 const StyledBadge = withStyles((theme) => ({
   badge: {
@@ -32,19 +33,6 @@ const StyledBadge = withStyles((theme) => ({
   },
 }))(Badge);
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-    '& > *': {
-      margin: theme.spacing(1),
-    },
-  },
-  large: {
-    width: theme.spacing(5),
-    height: theme.spacing(5),
-  },
-}));
-
 export default function BadgeAvatars(props) {
   const { linkAvatar, isActive } = props;
   const classes = useStyles();
@@ -52,14 +40,15 @@ export default function BadgeAvatars(props) {
   return (
     <div className={classes.root}>
       <StyledBadge
-        overlap="circular"
+        overlap='circular'
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'right',
         }}
-        variant="dot"
+        variant='dot'
+        invisible={isActive}
       >
-        <Avatar alt="Remy Sharp" className={classes.large} src={linkAvatar} />
+        <Avatar alt='Remy Sharp' className={classes.large} src={linkAvatar} />
       </StyledBadge>
     </div>
   );

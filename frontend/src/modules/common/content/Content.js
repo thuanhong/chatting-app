@@ -8,8 +8,8 @@ import Box from '@material-ui/core/Box';
 import SendIcon from '@material-ui/icons/Send';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
-import Message from '@common/message/Message';
-import ChatData from '@mocks/chat-data';
+import Message from '@src/common/message/Message';
+import ChatData from '@src/mocks/chat-data';
 
 const styles = (theme) => ({
   body: {

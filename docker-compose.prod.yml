@@ -1,0 +1,24 @@
+version: '3.7'
+
+services:
+  database:
+    image: thuan324/chatting-app:chatting-app-database
+    ports:
+      - "3307:3306"
+  chatting-app-backend:
+    image: thuan324/chatting-app:chatting-app-backend
+    ports:
+      - 8000:8000
+    depends_on:
+      - database
+    environment:
+      DB_HOST: database
+      DATABASE_URL: mysql://admin:postgres@database:3306/chatting
+    links:
+      - database:database
+  chatting-app-frontend:
+    image: thuan324/chatting-app:chatting-app-frontend
+    ports:
+      - 3000:3000
+    depends_on:
+      - chatting-app-backend

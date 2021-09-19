@@ -76,12 +76,16 @@ const LoginScreen = (props) => {
       .auth()
       .signInWithEmailAndPassword(email, password)
       .then((res) => {
-        if (res.user) {
+        if (res?.user) {
           CookieHandler.setCookie('access_token', res.user.Aa);
           Router.push('/');
         } else {
+          alert('taitai');
           setOpen(true);
         }
+      })
+      .catch(() => {
+        setOpen(true);
       })
       .finally(() => {
         setDisabled(false);
@@ -117,6 +121,7 @@ const LoginScreen = (props) => {
               required
               fullWidth
               label='Email'
+              error={!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)}
               onChange={(event) => {
                 setEmail(event.target.value);
               }}

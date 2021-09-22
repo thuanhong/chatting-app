@@ -11,7 +11,7 @@ function ListContact(props) {
   const [listContactData, setListContactData] = useState([]);
 
   useEffect(() => {
-    UserService.get_user_contact('61346cfafc13ae32c800000a')
+    UserService.get_user_contact()
       .then((response) => {
         setListContactData(response?.msg.users);
       })

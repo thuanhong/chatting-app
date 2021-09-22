@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { v4 as uuidV4 } from 'uuid';
 import * as randomize from 'randomatic';
-import { arrayNotEmpty, isEmpty, isNotEmptyObject } from 'class-validator';
+import { arrayNotEmpty, isEmpty } from 'class-validator';
 import { InsertResult } from 'typeorm/query-builder/result/InsertResult';
 import {
   getConnection,
@@ -130,9 +130,9 @@ export class DataService {
     return repo.createQueryBuilder(alias);
   }
 
-  async insert(
-    target: ObjectType<any>,
-    ...entities: QueryDeepPartialEntity<any>[]
+  async insert<T>(
+    target: ObjectType<T>,
+    ...entities: QueryDeepPartialEntity<T>[]
   ): Promise<InsertResult> {
     const repo = await this.getRepository(target);
     return await repo.insert(entities);

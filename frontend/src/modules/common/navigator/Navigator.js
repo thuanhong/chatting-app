@@ -21,6 +21,7 @@ import CallIcon from '@material-ui/icons/Call';
 import Grid from '@material-ui/core/Grid';
 import ListContact from '@src/common/list-contact/ListContact';
 import ListGroupChat from '@src/common/list-group-chat/ListGroupChat';
+import SearchInput from '@src/common/search-input/SearchInput';
 import { styles } from './styles';
 
 const CurrentComponent = {
@@ -60,21 +61,7 @@ function Navigator(props) {
           className={classes.colorTextWhite}
         />
         <CardContent>
-          <TextField
-            placeholder='People, group and message'
-            variant='outlined'
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position='start'>
-                  <SearchIcon className={classes.colorTextWhite} />
-                </InputAdornment>
-              ),
-              classes: { input: classes.input },
-            }}
-            size='small'
-            fullWidth
-            className={classes.textFieldStyle}
-          />
+          <SearchInput />
         </CardContent>
         <CardActions disableSpacing>
           <Grid container spacing={4}>

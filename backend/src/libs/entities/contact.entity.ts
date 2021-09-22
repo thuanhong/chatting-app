@@ -18,7 +18,7 @@ export class Contact {
   userId: string;
 
   @Column('varchar', { name: 'contact', length: 255 })
-  contact: string;
+  contactId: string;
 
   @Column('varchar', { name: 'type', nullable: true, length: 255 })
   type: string | null;

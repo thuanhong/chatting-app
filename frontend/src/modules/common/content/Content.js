@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 // import queryString from "query-string";
 // import io from "socket.io-client";
@@ -9,34 +9,15 @@ import SendIcon from '@material-ui/icons/Send';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
 import Message from '@src/common/message/Message';
+import ContactUser from '@src/common/contact-user/ContactUser';
 import ChatData from '@src/mocks/chat-data';
-
-const styles = (theme) => ({
-  body: {
-    height: '80vh',
-    overflow: 'scroll',
-    width: '100%',
-    marginTop: '10vh',
-    padding: '10px',
-  },
-  appBar: {
-    top: 'auto',
-    bottom: 0,
-    backgroundColor: 'transparent',
-    width: 'calc(100% - 400px)',
-    padding: theme.spacing(2),
-  },
-  inputUserData: {
-    backgroundColor: 'gray',
-    borderRadius: '30px',
-    padding: '10px',
-  },
-});
+import { styles } from './styles';
 
 function Content(props) {
   const { classes } = props;
   const [userName, setUserName] = useState('thuan');
   const [roomName, setRoomName] = useState('');
+  const scrollRef = useRef(null);
 
   const [message, setMessage] = useState();
   const [messageList, setMessageList] = useState([]);
@@ -61,6 +42,12 @@ function Content(props) {
     // });
   }, [messageList]);
 
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({ behaviour: 'smooth' });
+    }
+  }, [ChatData]);
+
   const sendMessage = (event) => {
     event.preventDefault();
 
@@ -72,9 +59,11 @@ function Content(props) {
   return (
     <Box height={'100vh'} display='flex' alignItems='flex-start' justifyContent='flex-start'>
       <div className={classes.body}>
-        {ChatData.map((msg, index) => (
+        <ContactUser />
+        {[].map((msg, index) => (
           <Message key={index} message={msg.text} isSender={userName === msg.user} />
         ))}
+        <li ref={scrollRef} />
       </div>
       <AppBar component='div' position='fixed' className={classes.appBar}>
         <div>

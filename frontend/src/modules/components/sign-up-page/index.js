@@ -37,6 +37,14 @@ const SignUpScreen = () => {
     displayName: '',
   });
 
+  const validate = () => {
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(signUpInfo.email)) {
+      return false;
+    }
+
+    return true;
+  };
+
   const handleChange = (prop) => (event) => {
     setSignUpInfo({ ...signUpInfo, [prop]: event.target.value });
   };
@@ -54,15 +62,22 @@ const SignUpScreen = () => {
 
   const onSubmit = (event) => {
     event.preventDefault();
-    AuthService.sign_up(signUpInfo).then((res) => {
-      if (res.statusCode === 200) {
-        setNotification('Sign up successfully!');
-        setOpen(true);
-      } else {
-        setNotification('This email has been register by another account!');
-        setOpen(true);
-      }
-    });
+    if (validate()) {
+      AuthService.sign_up(signUpInfo).then((res) => {
+        console.log(res);
+        if (res.statusCode === 201) {
+          setNotification({ message: 'Sign up successfully!', type: 'success' });
+          setOpen(true);
+        } else {
+          setNotification({ message: 'This email has been register by another account!', type: 'error' });
+          setOpen(true);
+        }
+      });
+    } else {
+      setNotification({ message: 'Email not validate', type: 'warning' });
+
+      setOpen(true);
+    }
   };
   return (
     <React.Fragment>
@@ -73,8 +88,8 @@ const SignUpScreen = () => {
           autoHideDuration={6000}
           onClose={handleClose}
         >
-          <Alert onClose={handleClose} severity='info'>
-            {notification}
+          <Alert onClose={handleClose} severity={notification.type}>
+            {notification.message}
           </Alert>
         </Snackbar>
 
@@ -98,6 +113,7 @@ const SignUpScreen = () => {
               fullWidth
               label='Email'
               onChange={handleChange('email')}
+              error={!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(signUpInfo.email)}
             />
 
             <TextField
@@ -119,11 +135,11 @@ const SignUpScreen = () => {
               color='primary'
               className={classes.submit}
             >
-              {disabled ? <CircularProgress /> : 'Sign Up'}
+              Sign Up
             </Button>
             <Link href='/login' variant='body2'>
               <Button fullWidth variant='contained' color='primary' className={classes.submit}>
-                {disabled ? <CircularProgress /> : 'Sign In'}
+                Sign In
               </Button>
             </Link>
             <Box mt={5}>

@@ -1,16 +1,21 @@
-import { Controller, Logger, Get, Req } from '@nestjs/common';
+import { Controller, Logger, Get, Req, Query } from '@nestjs/common';
 import { MultipleGroupChatResponse } from '@src/response/multi-group-chat.response';
 import { GroupService } from './group.service';
-
+import { PagingInfo } from '@src/interface/paging-info.interface';
 @Controller('/api/v1/group-chat')
 export class GroupController {
   constructor(private groupService: GroupService) {}
   private readonly logger = new Logger(GroupController.name);
 
   @Get()
-  async getUserGroupChat(@Req() req: any): Promise<MultipleGroupChatResponse> {
+  async getUserGroupChat(
+    @Req() req: any,
+    @Query() query: PagingInfo,
+  ): Promise<MultipleGroupChatResponse> {
+    console.log(222222222222, query);
     const groupChatData = await this.groupService.getUserGroupChat(
       req.user.uid,
+      query,
     );
     return new MultipleGroupChatResponse({
       groups: groupChatData,

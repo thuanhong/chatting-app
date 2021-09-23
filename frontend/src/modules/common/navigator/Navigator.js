@@ -23,6 +23,7 @@ import ListContact from '@src/common/list-contact/ListContact';
 import ListGroupChat from '@src/common/list-group-chat/ListGroupChat';
 import SearchInput from '@src/common/search-input/SearchInput';
 import { styles } from './styles';
+import { useGlobalStore } from '@src/hooks';
 
 const CurrentComponent = {
   CHAT_COMPONENT: 'CHAT_COMPONENT',
@@ -33,15 +34,18 @@ const CurrentComponent = {
 function Navigator(props) {
   const { classes, ...other } = props;
   const [currentComponent, setCurrentComponent] = useState(CurrentComponent.CHAT_COMPONENT);
+  const { userInfoStore } = useGlobalStore();
+
+  const { lastName, firstName } = userInfoStore.currentUserInfo;
 
   const listContentFunctionMap = useMemo(() => {
     switch (currentComponent) {
-    case CurrentComponent.CHAT_COMPONENT:
-      return <ListGroupChat />;
-    case CurrentComponent.CONTACT_COMPONENT:
-      return <ListContact />;
-    default:
-      return <div />;
+      case CurrentComponent.CHAT_COMPONENT:
+        return <ListGroupChat />;
+      case CurrentComponent.CONTACT_COMPONENT:
+        return <ListContact />;
+      default:
+        return <div />;
     }
   }, [currentComponent]);
 
@@ -57,7 +61,7 @@ function Navigator(props) {
               <MoreVertIcon className={classes.colorTextWhite} />
             </IconButton>
           }
-          title='Thuan Hong'
+          title={firstName + ' ' + lastName}
           className={classes.colorTextWhite}
         />
         <CardContent>
@@ -89,9 +93,7 @@ function Navigator(props) {
         </CardActions>
         <Divider variant='middle' />
       </Card>
-      <List className={classes.listMarginTop}>
-        {listContentFunctionMap}
-      </List>
+      <List className={classes.listMarginTop}>{listContentFunctionMap}</List>
     </Drawer>
   );
 }

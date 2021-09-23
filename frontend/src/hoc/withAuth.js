@@ -3,17 +3,19 @@ import { LoadingPage } from '@src/common/loading-page/LoadingPage';
 import Router from 'next/router';
 import { AuthService } from '@src/services/AuthService';
 import ErrorBoundary from '@src/hoc/ErrorBoundary';
+import { useGlobalStore } from '@src/hooks';
 
 export const UserContext = createContext({});
 export const withAuth = (PageComponent) => {
   const WithAuth = () => {
     const [loading, setLoading] = useState(true);
-
+    const { userInfoStore } = useGlobalStore();
     useEffect(() => {
       async function fetchData() {
-        AuthService.check_auth()
+        await AuthService.check_auth()
           .then((res) => {
             if (res?.statusCode === 200) {
+              userInfoStore.setCurrentUserInfo(res.msg.user);
               if (Router.pathname === '/login') {
                 Router.push('/');
               } else {

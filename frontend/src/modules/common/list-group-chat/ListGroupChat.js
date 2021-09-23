@@ -5,19 +5,30 @@ import CardHeader from '@material-ui/core/CardHeader';
 import BadgeAvatar from '@src/common/badge-avatar/BadgeAvatar';
 import { GroupService } from '@src/services/GroupService';
 import { styles } from './styles';
+import { Button } from '@material-ui/core';
+
+const initPagination = {
+  take: 5,
+  pageIndex: 0,
+};
 
 function ListGroupChat(props) {
   const { classes } = props;
   const [listGroupChatData, setListGroupChatData] = useState([]);
+  const [pagination, SetPagenation] = useState(initPagination);
 
-  useEffect(() => {
-    GroupService.get_user_group_chat()
+  const getGroupData = () => {
+    GroupService.get_user_group_chat(pagination)
       .then((response) => {
         setListGroupChatData(response.msg.groups);
+        SetPagenation({ ...pagination, pageIndex: pagination.pageIndex + 1 });
       })
       .catch((err) => {
         throw err;
       });
+  };
+  useEffect(() => {
+    getGroupData();
   }, []);
 
   return (
@@ -50,6 +61,10 @@ function ListGroupChat(props) {
           </Card>
         </React.Fragment>
       ))}
+      <Button style={{ width: '100%', backgroundColor: 'transparent' }} onClick={getGroupData}>
+        {' '}
+        See more
+      </Button>
     </div>
   );
 }

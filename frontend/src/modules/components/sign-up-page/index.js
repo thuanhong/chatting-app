@@ -64,7 +64,6 @@ const SignUpScreen = () => {
     event.preventDefault();
     if (validate()) {
       AuthService.sign_up(signUpInfo).then((res) => {
-        console.log(res);
         if (res.statusCode === 201) {
           setNotification({ message: 'Sign up successfully!', type: 'success' });
           setOpen(true);

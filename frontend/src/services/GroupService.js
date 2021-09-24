@@ -6,6 +6,11 @@ const get_user_group_chat = async (pagination) => {
   return await httpRequest.get(EndPoints.GROUP.general_group_chat_endpoint + queryString);
 };
 
+const update_group_info = async (id, payload) => {
+  return await httpRequest.put(EndPoints.GROUP.general_group_chat_endpoint + `/${id}`, payload);
+};
+
 export const GroupService = {
   get_user_group_chat,
+  update_group_info,
 };

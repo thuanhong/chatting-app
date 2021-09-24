@@ -4,6 +4,8 @@ import { UserGroup } from '@src/libs/entities/user-group.entity';
 import { DataService } from '@src/services/data.service';
 import { In } from 'typeorm';
 import { PagingInfo } from '@src/interface/paging-info.interface';
+import { GroupDto } from '@src/libs/common/dto/group.dto';
+import { timestamp } from 'rxjs';
 @Injectable()
 export class GroupService {
   constructor(private dataService: DataService) {}
@@ -29,5 +31,15 @@ export class GroupService {
         modifiedAt: 'DESC',
       },
     });
+  }
+
+  async updateUserGroupChat(id: string, entities: GroupDto): Promise<any> {
+    const modifiedAt = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    console.log(modifiedAt);
+    const all_group_id = await this.dataService.update(GroupChat, id, {
+      ...entities,
+      modifiedAt,
+    });
+    return all_group_id;
   }
 }

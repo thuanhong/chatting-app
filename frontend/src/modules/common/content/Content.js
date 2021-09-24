@@ -12,6 +12,8 @@ import Message from '@src/common/message/Message';
 import ContactUser from '@src/common/contact-user/ContactUser';
 import ChatData from '@src/mocks/chat-data';
 import { styles } from './styles';
+import { GroupService } from '@src/services/GroupService';
+import { useGlobalStore } from '@src/hooks/';
 
 function Content(props) {
   const { classes } = props;
@@ -21,6 +23,7 @@ function Content(props) {
 
   const [message, setMessage] = useState();
   const [messageList, setMessageList] = useState([]);
+  const { groupChatStore } = useGlobalStore();
 
   // const ENDPOINT = "http://localhost:5000/";
 
@@ -50,7 +53,11 @@ function Content(props) {
 
   const sendMessage = (event) => {
     event.preventDefault();
-
+    const payload = {
+      lastMessage: message,
+    };
+    const test = GroupService.update_group_info(groupChatStore.currentGroupChatInfo.id, { payload: { lastMessage: message } }).then((res) => console.log('TAI', res));
+    console.log(test);
     // if (message) {
     //   socket.emit("sendMessage", message, () => setMessage(""));
     // }

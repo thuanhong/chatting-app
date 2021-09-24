@@ -11,7 +11,7 @@ import { Users } from './users.entity';
 @Index('user_id', ['userId'], {})
 @Entity('notification', { schema: 'chatting' })
 export class Notification {
-  @PrimaryGeneratedColumn({ type: 'int', name: 'id_notify' })
+  @PrimaryGeneratedColumn('increment', { type: 'int', name: 'id_notify' })
   idNotify: number;
 
   @Column('varchar', { name: 'user_id', length: 255 })

@@ -5,15 +5,13 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import SearchIcon from '@material-ui/icons/Search';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { UserService } from '@src/services/UserService';
-import { useGlobalStore } from '@src/hooks'
+import { useGlobalStore } from '@src/hooks';
 import { styles } from './styles';
 
 function SearchInput(props) {
   const { classes } = props;
   const [userOptionList, setUserOptionList] = useState([]);
-  // const [userInput, setUserInput] = useState('');
   const [errorStatus, setErrorState] = useState(false);
-
   const { contactChatStore } = useGlobalStore();
 
   const fetchUserWithEmailSearch = async (emailString) => {
@@ -22,6 +20,13 @@ function SearchInput(props) {
     };
     const response = await UserService.search_user_with_email(payload);
     setUserOptionList(response.msg.users);
+  };
+
+  const checkContactExist = async (contactId) => {
+    const payload = {
+      contactId,
+    };
+    return await UserService.check_user_contact(payload);
   };
 
   const handleUserInput = (userInput) => {
@@ -35,7 +40,7 @@ function SearchInput(props) {
       setUserOptionList([]);
     } else {
       setErrorState(false);
-      setTimeout(fetchUserWithEmailSearch.bind(null, userInput), 200);
+      setTimeout(fetchUserWithEmailSearch.bind(null, userInput), 100);
     }
   };
 
@@ -46,8 +51,9 @@ function SearchInput(props) {
         disableClearable
         options={userOptionList}
         blurOnSelect
-        onChange={(_, newValue) => {
-          contactChatStore.setCurrentUserChattingInfo(newValue);
+        onChange={async (_, newValue) => {
+          const { msg } = checkContactExist(newValue.id);
+          contactChatStore.setCurrentUserChattingInfo({ ...newValue, isContacted: msg });
         }}
         onInputChange={(_, newInputValue) => {
           handleUserInput(newInputValue);

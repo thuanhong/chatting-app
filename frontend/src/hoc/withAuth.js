@@ -15,7 +15,7 @@ export const withAuth = (PageComponent) => {
         await AuthService.check_auth()
           .then((res) => {
             if (res?.statusCode === 200) {
-              userInfoStore.setCurrentUserInfo(res.msg.user);
+              localStorage.setItem('currentUser', JSON.stringify(res.msg.user));
               if (Router.pathname === '/login') {
                 Router.push('/');
               } else {

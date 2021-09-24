@@ -5,7 +5,7 @@ import { Contact } from '@src/entities/contact.entity';
 import { GroupChat } from '@src/entities/group-chat.entity';
 import { UserGroup } from '@src/entities/user-group.entity';
 import { UserDto } from '@src/dto/user.dto';
-import { In, Like } from 'typeorm';
+import { In, Like, Not } from 'typeorm';
 
 @Injectable()
 export class UserService {
@@ -51,10 +51,15 @@ export class UserService {
     });
   }
 
-  async searchUserWithEmail(userInput: string): Promise<Users[]> {
+  async searchUserWithEmail(
+    userId: string,
+    userInput: string,
+  ): Promise<Users[]> {
+    console.log(userId);
     const data = await this.dataService.find(Users, {
       where: {
         email: Like(`%${userInput}%`),
+        id: Not(userId),
       },
     });
     return data;
@@ -62,7 +67,7 @@ export class UserService {
 
   async checkContactExist(userId: string, contactId: string): Promise<boolean> {
     const checkContactExist = await this.dataService.find(Contact, {
-      select: ['user_id', 'contact'],
+      select: ['userId', 'contactId'],
       where: {
         userId,
         contactId,
@@ -75,11 +80,11 @@ export class UserService {
     const newContacts = [
       Object.assign(new Contact(), {
         userId,
-        contact: contactId,
+        contactId: contactId,
       }),
       Object.assign(new Contact(), {
         userId: contactId,
-        contact: userId,
+        contactId: userId,
       }),
     ];
     const newGroupChatId = this.dataService.generateId();

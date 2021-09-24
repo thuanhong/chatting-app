@@ -7,4 +7,7 @@ export const styles = (theme) => ({
     borderBottom: '1px solid',
     borderColor: theme.palette.common.white,
   },
+  hideHeader: {
+    display: 'none',
+  },
 });

@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React from 'react';
+import classnames from 'classnames';
 import AppBar from '@material-ui/core/AppBar';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
@@ -8,23 +9,24 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
-import { styles } from './styles';
-import { useGlobalStore } from '@src/hooks';
 import { useObserver } from 'mobx-react-lite';
+import { useGlobalStore } from '@src/hooks';
+import { styles } from './styles';
 
 function Header(props) {
   const { classes } = props;
-  const { groupChatStore } = useGlobalStore();
+  const { contactChatStore } = useGlobalStore();
+
   return useObserver(() => {
-    const { groupName } = groupChatStore.currentGroupChatInfo;
+    const { firstName, lastName } = contactChatStore.currentUserChattingInfo;
     return (
-      <React.Fragment>
+      <div className={classnames({ [classes.hideHeader]: !firstName })}>
         <AppBar component='div' className={classes.appBar} color='primary' position='fixed' elevation={0}>
           <Toolbar>
             <Grid container alignItems='center' spacing={1}>
               <Grid item xs>
                 <Typography color='inherit' variant='h5' component='h1'>
-                  {`${groupName}`}
+                  {`${firstName} ${lastName}`}
                 </Typography>
               </Grid>
               <Grid item>
@@ -44,7 +46,7 @@ function Header(props) {
             </Grid>
           </Toolbar>
         </AppBar>
-      </React.Fragment>
+      </div>
     );
   });
 }

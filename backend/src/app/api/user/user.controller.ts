@@ -75,7 +75,7 @@ export class UserController {
 
   @Get('contact')
   async getAllContact(@Req() req: any): Promise<MultipleUserResponse> {
-    const users = await this.userService.getAllContact(req.user.id);
+    const users = await this.userService.getAllContact(req.user.uid);
     return new MultipleUserResponse({
       users,
     });
@@ -83,22 +83,39 @@ export class UserController {
 
   @Post('search')
   async searchUserWithEmail(
+    @Req() req: any,
     @Body() payload: SearchUserWithEmailRequest,
   ): Promise<MultipleUserResponse> {
+    console.log(req.user);
     const { emailString } = payload;
-    const users = await this.userService.searchUserWithEmail(emailString);
+    const users = await this.userService.searchUserWithEmail(
+      req.user.uid,
+      emailString,
+    );
     return new MultipleUserResponse({
       users,
     });
   }
 
+  @Post('check-contact')
+  async checkContactExist(
+    @Req() req: any,
+    @Body() payload: AddNewContactRequest,
+  ): Promise<boolean> {
+    const contactExist = await this.userService.checkContactExist(
+      req.user.uid,
+      payload.contactId,
+    );
+    return contactExist;
+  }
+
   @Post('add-contact')
-  async addNewContactForUser(
+  async addNewContactUser(
     @Req() req: any,
     @Body() payload: AddNewContactRequest,
   ): Promise<AddNewContactResponse> {
     const groupId = await this.userService.addNewContactUser(
-      req.user.id,
+      req.user.uid,
       payload.contactId,
     );
     return new AddNewContactResponse({

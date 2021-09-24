@@ -17,9 +17,19 @@ const search_user_with_email = async (payload) => {
   return await httpRequest.post(EndPoints.USER.search_user_with_email, payload);
 };
 
+const add_user_contact = async (payload) => {
+  return await httpRequest.post(EndPoints.USER.add_user_contact, payload);
+};
+
+const check_user_contact = async (payload) => {
+  return await httpRequest.post(EndPoints.USER.check_user_contact, payload);
+};
+
 export const UserService = {
   general_user_endpoint,
   check_user_exist,
   get_user_contact,
   search_user_with_email,
+  add_user_contact,
+  check_user_contact,
 };

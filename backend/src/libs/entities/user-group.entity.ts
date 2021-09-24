@@ -13,7 +13,7 @@ import { GroupChat } from './group-chat.entity';
 @Index('group_id', ['groupId'], {})
 @Entity('userGroup', { schema: 'chatting' })
 export class UserGroup {
-  @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
+  @PrimaryGeneratedColumn('increment', { type: 'int', name: 'id' })
   id: number;
 
   @Column('varchar', { name: 'user_id', length: 255 })

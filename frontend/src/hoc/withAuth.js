@@ -14,6 +14,7 @@ export const withAuth = (PageComponent) => {
         AuthService.check_auth()
           .then((res) => {
             if (res?.statusCode === 200) {
+              localStorage.setItem('currentUser', JSON.stringify(res.msg.user));
               if (Router.pathname === '/login') {
                 Router.push('/');
               } else {

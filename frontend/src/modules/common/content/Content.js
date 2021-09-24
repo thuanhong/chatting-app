@@ -56,8 +56,10 @@ function Content(props) {
     const payload = {
       lastMessage: message,
     };
-    const test = GroupService.update_group_info(groupChatStore.currentGroupChatInfo.id, { payload: { lastMessage: message } }).then((res) => console.log('TAI', res));
-    console.log(test);
+    const test = GroupService.update_group_info(groupChatStore.currentGroupChatInfo?.id, { payload: { lastMessage: message } });
+    groupChatStore.setCurrentGroupChatInfo(payload);
+
+    setMessage('');
     // if (message) {
     //   socket.emit("sendMessage", message, () => setMessage(""));
     // }

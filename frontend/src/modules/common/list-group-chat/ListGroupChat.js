@@ -24,6 +24,19 @@ function ListGroupChat(props) {
   const getGroupData = () => {
     GroupService.get_user_group_chat(pagination)
       .then((response) => {
+        // setListGroupChatData((presState) => [...presState, ...(response.msg.groups ?? [])]);
+        setListGroupChatData(response.msg.groups ?? []);
+
+        setPagenation({ ...pagination, take: pagination.take + 5 });
+      })
+      .catch((err) => {
+        throw err;
+      });
+  };
+
+  const onSeeMore = () => {
+    GroupService.get_user_group_chat(pagination)
+      .then((response) => {
         setListGroupChatData((presState) => [...presState, ...(response.msg.groups ?? [])]);
         setPagenation({ ...pagination, pageIndex: pagination.pageIndex + 1 });
       })
@@ -34,12 +47,16 @@ function ListGroupChat(props) {
 
   useEffect(() => {
     getGroupData();
-    groupChatStore.setCurrentGroupChatInfo(listGroupChatData[0]);
+    setTimeout(groupChatStore.setCurrentGroupChatInfo(listGroupChatData[0]), 1);
     // #TODO
     // set Navigat bar Group Name defaulth
     //groupChatStore.setCurrentGroupChatInfo({ groupName: listGroupChatData[0]?.groupName ?? null });
   }, []);
+
   return useObserver(() => {
+    useEffect(() => {
+      getGroupData();
+    }, [groupChatStore?.currentGroupChatInfo]);
     return (
       <div className='list-group-chat'>
         {listGroupChatData.map((data, index) => (

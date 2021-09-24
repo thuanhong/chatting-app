@@ -22,7 +22,6 @@ export class AuthMiddleware implements NestMiddleware {
         );
       }
       const user = await this.firebaseService.authenticate(authorization);
-      console.log('LOG GROUP INFO', req);
       req.user = user;
 
       next();

@@ -35,7 +35,6 @@ export class GroupService {
 
   async updateUserGroupChat(id: string, entities: GroupDto): Promise<any> {
     const modifiedAt = new Date().toISOString().slice(0, 19).replace('T', ' ');
-    console.log(modifiedAt);
     const all_group_id = await this.dataService.update(GroupChat, id, {
       ...entities,
       modifiedAt,

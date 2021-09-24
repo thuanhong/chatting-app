@@ -12,7 +12,6 @@ export class GroupController {
     @Req() req: any,
     @Query() query: PagingInfo,
   ): Promise<MultipleGroupChatResponse> {
-    console.log(222222222222, query);
     const groupChatData = await this.groupService.getUserGroupChat(
       req.user.uid,
       query,

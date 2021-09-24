@@ -17,7 +17,6 @@ export class GroupService {
         userId: userId,
       },
     });
-    console.log('3333asd', pageInfo.pageIndex * pageInfo.take ?? 1);
 
     return await this.dataService.find(GroupChat, {
       select: ['id', 'groupName', 'lastMessage'],

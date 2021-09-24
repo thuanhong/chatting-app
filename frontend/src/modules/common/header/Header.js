@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
@@ -9,41 +9,44 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 import { styles } from './styles';
-import { useContext } from 'react';
-import { UserContext } from '@src/hoc/withAuth';
+import { useGlobalStore } from '@src/hooks';
+import { useObserver } from 'mobx-react-lite';
+
 function Header(props) {
   const { classes } = props;
-  const user = useContext(UserContext);
-
-  return (
-    <React.Fragment>
-      <AppBar component='div' className={classes.appBar} color='primary' position='fixed' elevation={0}>
-        <Toolbar>
-          <Grid container alignItems='center' spacing={1}>
-            <Grid item xs>
-              <Typography color='inherit' variant='h5' component='h1'>
-                {user.firstName}
-              </Typography>
+  const { groupChatStore } = useGlobalStore();
+  return useObserver(() => {
+    const { groupName } = groupChatStore.currentGroupChatInfo;
+    return (
+      <React.Fragment>
+        <AppBar component='div' className={classes.appBar} color='primary' position='fixed' elevation={0}>
+          <Toolbar>
+            <Grid container alignItems='center' spacing={1}>
+              <Grid item xs>
+                <Typography color='inherit' variant='h5' component='h1'>
+                  {`${groupName}`}
+                </Typography>
+              </Grid>
+              <Grid item>
+                <Tooltip title='Video call'>
+                  <IconButton color='inherit'>
+                    <VideocamIcon />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+              <Grid item>
+                <Tooltip title='Call'>
+                  <IconButton color='inherit'>
+                    <CallIcon />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
             </Grid>
-            <Grid item>
-              <Tooltip title='Video call'>
-                <IconButton color='inherit'>
-                  <VideocamIcon />
-                </IconButton>
-              </Tooltip>
-            </Grid>
-            <Grid item>
-              <Tooltip title='Call'>
-                <IconButton color='inherit'>
-                  <CallIcon />
-                </IconButton>
-              </Tooltip>
-            </Grid>
-          </Grid>
-        </Toolbar>
-      </AppBar>
-    </React.Fragment>
-  );
+          </Toolbar>
+        </AppBar>
+      </React.Fragment>
+    );
+  });
 }
 
 export default withStyles(styles)(Header);

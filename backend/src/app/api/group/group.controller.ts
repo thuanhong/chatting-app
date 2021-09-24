@@ -38,16 +38,13 @@ export class GroupController {
     @Body() userGroup: GroupRequest,
     @Req() req,
   ): Promise<MultipleGroupChatResponse> {
-    console.log(111111111111, req);
     const Group: GroupDto = {
       ...userGroup.payload,
     };
-    console.log('Tai', userGroup.payload);
     const groupChatData = await this.groupService.updateUserGroupChat(
       id,
       Group,
     );
-    console.log(1111, groupChatData);
     return new MultipleGroupChatResponse({});
   }
 }

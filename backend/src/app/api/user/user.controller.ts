@@ -48,7 +48,6 @@ export class UserController {
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '');
 
-    console.log('lastName', lastName);
     if (data === undefined || data === null) {
       const User: UserDto = {
         id: req.user.uid,

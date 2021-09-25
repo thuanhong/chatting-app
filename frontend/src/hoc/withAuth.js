@@ -12,8 +12,8 @@ export const withAuth = (PageComponent) => {
     const [loading, setLoading] = useState(true);
     useEffect(() => {
       async function fetchData() {
-        const currentUsers = firebase?.app()?.auth()?.currentUser ?? {};
-        CookieHandler.setCookie('access_token', currentUsers.Aa);
+        // const currentUsers = firebase?.app()?.auth()?.currentUser ?? {};
+        // CookieHandler.setCookie('access_token', currentUsers.Aa);
         await AuthService.check_auth()
           .then((res) => {
             if (res?.statusCode === 200) {

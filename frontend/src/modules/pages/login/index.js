@@ -53,54 +53,19 @@ const LoginPage = () => {
     setClickedSignup(val);
   };
 
-  const onSubmit = (event) => {
-    event.preventDefault();
-    setDisabled(true);
-    firebase
-      .auth()
-      .signInWithEmailAndPassword(email, password)
-      .then((res) => {
-        if (res.user) {
-          CookieHandler.setCookie('access_token', res.user.Aa);
-          Router.push('/');
-        } else {
-          setOpen(true);
-        }
-      })
-      .finally(() => {
-        setDisabled(false);
-      });
-  };
-
   return (
     <Grid container component='main' disablePortal='true' className={classes.root}>
       <CssBaseline />
       <Grid item xs={false} sm={false} md={7} className={classes.image}>
         <div className={classes.rotated}>
-          <SquareAnimation
-            color={'#ffc107'}
-            style={{ width: '120px', transform: 'translate(150px, -150px)', position: 'static' }}
-            angle={60}
-          />
-          <SquareAnimation
-            color={'#007bff'}
-            style={{ width: '120px', transform: 'translate(-150px, 75px)', position: 'static' }}
-            angle={100}
-          />
-          <SquareAnimation
-            color={'#dc3545'}
-            style={{ width: '120px', transform: 'translate(-100px, 300px)', position: 'static' }}
-            angle={140}
-          />
-          <SquareAnimation
-            color={'#28a745'}
-            style={{ width: '120px', transform: 'translate(-23px, 57px)', position: 'static' }}
-            angle={180}
-          />
+          <SquareAnimation color={'#ffc107'} style={{ width: '120px', transform: 'translate(150px, -150px)', position: 'static' }} angle={60} />
+          <SquareAnimation color={'#007bff'} style={{ width: '120px', transform: 'translate(-150px, 75px)', position: 'static' }} angle={100} />
+          <SquareAnimation color={'#dc3545'} style={{ width: '120px', transform: 'translate(-100px, 300px)', position: 'static' }} angle={140} />
+          <SquareAnimation color={'#28a745'} style={{ width: '120px', transform: 'translate(-23px, 57px)', position: 'static' }} angle={180} />
         </div>
       </Grid>
       {clickedSignUp ? (
-        <SignUpScreen />
+        <SignUpScreen clickedSignUp={clickedSignUp} setClickedSignUp={wrapperSetClickedSignup} />
       ) : (
         <LoginScreen clickedSignUp={clickedSignUp} setClickedSignUp={wrapperSetClickedSignup} />
       )}

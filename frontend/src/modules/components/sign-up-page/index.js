@@ -25,7 +25,7 @@ function Alert(props) {
   return <MuiAlert elevation={6} variant='filled' {...props} />;
 }
 
-const SignUpScreen = () => {
+const SignUpScreen = (props) => {
   const classes = useStyles();
 
   const [open, setOpen] = useState(false);
@@ -34,7 +34,8 @@ const SignUpScreen = () => {
   const [signUpInfo, setSignUpInfo] = useState({
     email: '',
     password: '',
-    displayName: '',
+    firstName: '',
+    lastName: '',
   });
 
   const validate = () => {
@@ -46,7 +47,7 @@ const SignUpScreen = () => {
   };
 
   const handleChange = (prop) => (event) => {
-    setSignUpInfo({ ...signUpInfo, [prop]: event.target.value });
+    setSignUpInfo({ ...signUpInfo, [prop]: event.target.value.trim() });
   };
 
   // const confirmPassword = (pwd)=>{
@@ -62,11 +63,19 @@ const SignUpScreen = () => {
 
   const onSubmit = (event) => {
     event.preventDefault();
+    setDisabled(true);
+
     if (validate()) {
-      AuthService.sign_up(signUpInfo).then((res) => {
+      const signUpData = {
+        email: signUpInfo.email,
+        password: signUpInfo.password,
+        displayName: `${signUpInfo.firstName} ${signUpInfo.lastName}`,
+      };
+      AuthService.sign_up(signUpData).then((res) => {
         if (res.statusCode === 201) {
           setNotification({ message: 'Sign up successfully!', type: 'success' });
           setOpen(true);
+          setTimeout(() => props.setClickedSignUp(!props.clickedSignUp), 2000);
         } else {
           setNotification({ message: 'This email has been register by another account!', type: 'error' });
           setOpen(true);
@@ -81,12 +90,7 @@ const SignUpScreen = () => {
   return (
     <React.Fragment>
       <Grid item xs={12} sm={6} md={5} component={Paper} square>
-        <Snackbar
-          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-          open={open}
-          autoHideDuration={6000}
-          onClose={handleClose}
-        >
+        <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'center' }} open={open} autoHideDuration={6000} onClose={handleClose}>
           <Alert onClose={handleClose} severity={notification.type}>
             {notification.message}
           </Alert>
@@ -94,14 +98,15 @@ const SignUpScreen = () => {
 
         <div className={classes.paper}>
           <form className={classes.form} onSubmit={onSubmit}>
+            <TextField value={signUpInfo.firstName} variant='outlined' margin='normal' size='medium' required label='First Name' onChange={handleChange('firstName')} />
             <TextField
-              value={signUpInfo.displayName}
+              value={signUpInfo.lastName}
               variant='outlined'
               margin='normal'
               required
-              fullWidth
-              label='Full Name'
-              onChange={handleChange('displayName')}
+              label='Last Name'
+              style={{ marginLeft: '20px' }}
+              onChange={handleChange('lastName')}
             />
 
             <TextField
@@ -112,12 +117,13 @@ const SignUpScreen = () => {
               fullWidth
               label='Email'
               onChange={handleChange('email')}
-              error={!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(signUpInfo.email)}
+              error={signUpInfo.email == '' || /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(signUpInfo.email) ? false : true}
             />
 
             <TextField
               value={signUpInfo.password}
               variant='outlined'
+              error={signUpInfo.password == '' || signUpInfo.password.length > 7 ? false : true}
               margin='normal'
               required
               fullWidth
@@ -125,20 +131,12 @@ const SignUpScreen = () => {
               type='password'
               onChange={handleChange('password')}
             />
-            <Button
-              type='submit'
-              disableElevation
-              disabled={disabled}
-              fullWidth
-              variant='contained'
-              color='primary'
-              className={classes.submit}
-            >
+            <Button type='submit' disableElevation disabled={disabled} fullWidth variant='contained' color='primary' className={classes.submit}>
               Sign Up
             </Button>
-            <Link href='/login' variant='body2'>
-              <Button fullWidth variant='contained' color='primary' className={classes.submit}>
-                Sign In
+            <Link variant='body2'>
+              <Button fullWidth variant='contained' color='secondary' className={classes.submit} onClick={() => props.setClickedSignUp(!props.clickedSignUp)}>
+                Login
               </Button>
             </Link>
             <Box mt={5}>

@@ -25,7 +25,7 @@ import { AuthMiddleware } from './middleware/auth.middleware';
   imports: [
     DataModule,
     ConfigModule.forRoot({
-      envFilePath: '.env',
+      // envFilePath: '.env',
       isGlobal: true,
     }),
     TypeOrmModule.forRoot(),

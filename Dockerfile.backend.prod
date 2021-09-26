@@ -14,10 +14,11 @@ ENV FIREBASE_CLIENT_KEY="-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQ
 ENV FIREBASE_PROJECT_ID=app-chat-b095a
 ENV FIREBASE_EMAIL=firebase-adminsdk-gfa89@app-chat-b095a.iam.gserviceaccount.com
 ENV FIREBASE_DATABASE_URL=12
-ENV DB_NAME=chatting
-ENV DB_USER=user
-ENV DB_PASSWORD=password
+ENV DB_NAME=bsu3ahfxjh6exz9hw7ww
+ENV DB_USER=upb46h2xafvdcxjj
+ENV DB_PASSWORD=qYchgJ3r1Lwu32dnM8sb
 ENV DB_PORT=3306
+ENV DB_HOST=bsu3ahfxjh6exz9hw7ww-mysql.services.clever-cloud.com
 
 RUN npm run build
 
@@ -25,6 +26,8 @@ FROM node:12.13-alpine as production
 
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
+
+EXPOSE 8000
 
 WORKDIR /usr/src/app
 

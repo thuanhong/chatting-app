@@ -4,9 +4,10 @@ import {
   NestModule,
   RequestMethod,
 } from '@nestjs/common';
-import { DataModule } from '@src/services/data.module';
+import { DataModule } from '@src/libs/services/data.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
 // Import Controllers
 import { CheckHealthController } from '@src/api/check-health/check-health.controller';
 import { GroupController } from '@src/api/group/group.controller';
@@ -20,6 +21,7 @@ import { SignUpService } from '@src/api/sign-up/sign-up.service';
 import { UserService } from '@src/api/user/user.service';
 
 import { AuthMiddleware } from './middleware/auth.middleware';
+import { ChatGateway } from '@src/api/chat/chat.gateway';
 
 @Module({
   imports: [
@@ -36,7 +38,13 @@ import { AuthMiddleware } from './middleware/auth.middleware';
     SignUpController,
     UserController,
   ],
-  providers: [CheckHealthService, GroupService, SignUpService, UserService],
+  providers: [
+    CheckHealthService,
+    GroupService,
+    SignUpService,
+    UserService,
+    ChatGateway,
+  ],
   exports: [],
 })
 export class AppModule implements NestModule {

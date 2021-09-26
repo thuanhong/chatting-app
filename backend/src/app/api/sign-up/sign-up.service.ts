@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DataService } from '@src/services/data.service';
+import { DataService } from '@src/libs/services/data.service';
 import { UserToken } from '@src/interface/user-token-info.interface';
 
 import admin from '@src/main';

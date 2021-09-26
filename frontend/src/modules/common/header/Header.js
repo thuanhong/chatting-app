@@ -20,13 +20,13 @@ function Header(props) {
   return useObserver(() => {
     const { firstName, lastName } = contactChatStore.currentUserChattingInfo;
     return (
-      <div className={classnames({ [classes.hideHeader]: !firstName })}>
+      <div className={classnames({ [classes.hideHeader]: !lastName })}>
         <AppBar component='div' className={classes.appBar} color='primary' position='fixed' elevation={0}>
           <Toolbar>
             <Grid container alignItems='center' spacing={1}>
               <Grid item xs>
                 <Typography color='inherit' variant='h5' component='h1'>
-                  {`${firstName} ${lastName}`}
+                  {`${firstName || ''} ${lastName || ''}`}
                 </Typography>
               </Grid>
               <Grid item>

@@ -87,7 +87,6 @@ export class UserController {
     @Req() req: any,
     @Body() payload: SearchUserWithEmailRequest,
   ): Promise<MultipleUserResponse> {
-    console.log(req.user);
     const { emailString } = payload;
     const users = await this.userService.searchUserWithEmail(
       req.user.uid,
@@ -117,7 +116,7 @@ export class UserController {
   ): Promise<AddNewContactResponse> {
     const groupId = await this.userService.addNewContactUser(
       req.user.uid,
-      payload.contactId,
+      payload,
     );
     return new AddNewContactResponse({
       groupId,

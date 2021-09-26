@@ -16,7 +16,6 @@ import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity
 import { SelectQueryBuilder } from 'typeorm/query-builder/SelectQueryBuilder';
 import { PagingInfo } from '@src/interface/paging-info.interface';
 import { ArrayUtil } from '@src/utils/array.util';
-import { QueryOptions } from 'mysql2';
 
 @Injectable()
 export class DataService {

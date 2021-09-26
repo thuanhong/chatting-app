@@ -48,7 +48,7 @@
         "src/libs/data/schema/*"
       ],
       "@src/services/*": [
-        "src/libs/data/services/*"
+        "src/libs/services/*"
       ],
       "@src/interface/*": [
         "src/libs/interface/*"

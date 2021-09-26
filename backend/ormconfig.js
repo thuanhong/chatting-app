@@ -8,5 +8,6 @@ module.exports = {
   database: process.env.DB_NAME,
   synchronize: false,
   entities: ['dist/**/entities/*.entity.{ts,js}'],
-  logging: ['error', 'warn', 'migration', 'schema', 'query'],
+  // logging: ['error', 'warn', 'migration', 'schema', 'query'],
+  logging: false,
 };

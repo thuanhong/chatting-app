@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { v4 as uuidV4 } from 'uuid';
 import * as randomize from 'randomatic';
-import { arrayNotEmpty, isEmpty, isNotEmptyObject } from 'class-validator';
+import { arrayNotEmpty, isEmpty } from 'class-validator';
 import { InsertResult } from 'typeorm/query-builder/result/InsertResult';
 import {
   getConnection,
@@ -10,11 +10,13 @@ import {
   FindManyOptions,
   FindOneOptions,
   FindConditions,
+  UpdateResult,
 } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import { SelectQueryBuilder } from 'typeorm/query-builder/SelectQueryBuilder';
 import { PagingInfo } from '@src/interface/paging-info.interface';
 import { ArrayUtil } from '@src/utils/array.util';
+import { QueryOptions } from 'mysql2';
 
 @Injectable()
 export class DataService {
@@ -90,8 +92,13 @@ export class DataService {
     return (await repo.findOne(condition)) || null;
   }
 
-  async update<T>(): Promise<T> {
-    return;
+  async update<T>(
+    target: ObjectType<T>,
+    id: string,
+    entities: QueryDeepPartialEntity<T>,
+  ): Promise<UpdateResult> {
+    const repo = await this.getRepository(target);
+    return await repo.update(id, entities);
   }
 
   async delete(
@@ -130,9 +137,9 @@ export class DataService {
     return repo.createQueryBuilder(alias);
   }
 
-  async insert(
-    target: ObjectType<any>,
-    ...entities: QueryDeepPartialEntity<any>[]
+  async insert<T>(
+    target: ObjectType<T>,
+    ...entities: QueryDeepPartialEntity<T>[]
   ): Promise<InsertResult> {
     const repo = await this.getRepository(target);
     return await repo.insert(entities);

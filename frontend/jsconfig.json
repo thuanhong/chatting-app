@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "experimentalDecorators": true,
     "checkJs": false,
     "resolveJsonModule": true,
     "moduleResolution": "node",

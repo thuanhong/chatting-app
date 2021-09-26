@@ -8,4 +8,5 @@ module.exports = {
   database: 'chatting',
   synchronize: false,
   entities: ['dist/**/entities/*.entity.{ts,js}'],
+  logging: ['error', 'warn', 'migration', 'schema', 'query'],
 };

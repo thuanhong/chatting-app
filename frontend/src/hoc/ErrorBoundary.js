@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 class ErrorBoundary extends Component {
   static displayName = 'ErrorBoundary';
@@ -22,7 +24,12 @@ class ErrorBoundary extends Component {
         return <Redirect to='/' />;
       }
     }
-    return this.props.children;
+    return (
+      <div className='error-boundary'>
+        {this.props.children}
+        <ToastContainer />
+      </div>
+    );
   }
 }
 

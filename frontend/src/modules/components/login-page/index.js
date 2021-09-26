@@ -25,10 +25,7 @@ const uiConfig = {
   signInSuccessUrl: '/',
   // GitHub as the only included Auth Provider.
   // You could add and configure more here!
-  signInOptions: [
-    firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-    firebase.auth.EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD,
-  ],
+  signInOptions: [firebase.auth.GoogleAuthProvider.PROVIDER_ID, firebase.auth.EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD],
   callbacks: {
     signInSuccess: (currentUser, credential, redirectUrl) => {
       const currentUsers = firebase?.app()?.auth()?.currentUser ?? {};
@@ -103,12 +100,7 @@ const LoginScreen = (props) => {
             Sign in
           </Typography>
           <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
-          <Snackbar
-            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-            open={open}
-            autoHideDuration={6000}
-            onClose={handleClose}
-          >
+          <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'center' }} open={open} autoHideDuration={6000} onClose={handleClose}>
             <Alert onClose={handleClose} severity='error'>
               Username or password incorrect
             </Alert>
@@ -121,7 +113,7 @@ const LoginScreen = (props) => {
               required
               fullWidth
               label='Email'
-              error={!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)}
+              error={email == '' || /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) ? false : true}
               onChange={(event) => {
                 setEmail(event.target.value);
               }}
@@ -134,20 +126,13 @@ const LoginScreen = (props) => {
               fullWidth
               label='Password'
               type='password'
+              error={password == '' || password.length > 7 ? false : true}
               onChange={(event) => {
                 setPassword(event.target.value);
               }}
             />
             <FormControlLabel control={<Checkbox value='remember' color='primary' />} label='Remember me' />
-            <Button
-              type='submit'
-              disableElevation
-              disabled={disabled}
-              fullWidth
-              variant='contained'
-              color='primary'
-              className={classes.submit}
-            >
+            <Button type='submit' disableElevation disabled={disabled} fullWidth variant='contained' color='primary' className={classes.submit}>
               {disabled ? <CircularProgress /> : 'Sign In'}
             </Button>
             <Grid container>

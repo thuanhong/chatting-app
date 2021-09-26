@@ -8,26 +8,21 @@ import {
   BadRequestException,
   Req,
 } from '@nestjs/common';
-import { MultipleUserResponse } from '@src/libs/common/response/multiple-user.response';
+import { MultipleUserResponse } from '@src/response/multiple-user.response';
 import { CreateUserResponse } from '@src/response/create-user.response';
 import { CreateUserRequest } from '@src/request/create-user.request';
 import { UserService } from './user.service';
 import { RequestModel } from '@src/app/middleware/auth.middleware';
-import { UserEmailReponse } from '@src/libs/common/response/user-email.response';
-import { UserDto } from '@src/libs/common/dto/user.dto';
+import { UserEmailReponse } from '@src/response/user-email.response';
+import { UserDto } from '@src/dto/user.dto';
+import { SearchUserWithEmailRequest } from '@src/request/search-user-with-email.request';
+import { AddNewContactRequest } from '@src/request/add-new-contact.request';
+import { AddNewContactResponse } from '@src/response/add-new-contact.response';
 
 @Controller('/api/v1/users')
 export class UserController {
   constructor(private userService: UserService) {}
   private readonly logger = new Logger(UserController.name);
-
-  @Get()
-  async getUsers(): Promise<MultipleUserResponse> {
-    const users = await this.userService.getUsers();
-    return new MultipleUserResponse({
-      users,
-    });
-  }
 
   @Post()
   async saveUser(
@@ -52,6 +47,7 @@ export class UserController {
     const lastName = fullName[fullName.length - 1]
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '');
+
     if (data === undefined || data === null) {
       const User: UserDto = {
         id: req.user.uid,
@@ -78,11 +74,53 @@ export class UserController {
     });
   }
 
-  @Get(':userId')
+  @Get('contact')
   async getAllContact(@Req() req: any): Promise<MultipleUserResponse> {
-    const users = await this.userService.getAllContact(req.user.id);
+    const users = await this.userService.getAllContact(req.user.uid);
     return new MultipleUserResponse({
       users,
+    });
+  }
+
+  @Post('search')
+  async searchUserWithEmail(
+    @Req() req: any,
+    @Body() payload: SearchUserWithEmailRequest,
+  ): Promise<MultipleUserResponse> {
+    console.log(req.user);
+    const { emailString } = payload;
+    const users = await this.userService.searchUserWithEmail(
+      req.user.uid,
+      emailString,
+    );
+    return new MultipleUserResponse({
+      users,
+    });
+  }
+
+  @Post('check-contact')
+  async checkContactExist(
+    @Req() req: any,
+    @Body() payload: AddNewContactRequest,
+  ): Promise<boolean> {
+    const contactExist = await this.userService.checkContactExist(
+      req.user.uid,
+      payload.contactId,
+    );
+    return contactExist;
+  }
+
+  @Post('add-contact')
+  async addNewContactUser(
+    @Req() req: any,
+    @Body() payload: AddNewContactRequest,
+  ): Promise<AddNewContactResponse> {
+    const groupId = await this.userService.addNewContactUser(
+      req.user.uid,
+      payload.contactId,
+    );
+    return new AddNewContactResponse({
+      groupId,
     });
   }
 }

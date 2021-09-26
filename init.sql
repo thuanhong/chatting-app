@@ -4,7 +4,7 @@ CREATE TABLE `users` (
   `first_name` varchar(255) NOT NULL,
   `last_name` varchar(255) NOT NULL,
   `middle_name` varchar(255) NOT NULL,
-  `is_online` varchar(255) NOT NULL,
+  `is_online` boolean,
   `created_at` timestamp DEFAULT now(),
   `modified_at` timestamp DEFAULT now() ON UPDATE CURRENT_TIMESTAMP
 );
@@ -39,7 +39,7 @@ CREATE TABLE `userGroup` (
 CREATE TABLE `contact` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `user_id` varchar(255) NOT NULL,
-  `contact` varchar(255) NOT NULL,
+  `contact_id` varchar(255) NOT NULL,
   `type` varchar(255),
   `created_at` timestamp DEFAULT now(),
   `modified_at` timestamp DEFAULT now() ON UPDATE CURRENT_TIMESTAMP
@@ -66,3 +66,5 @@ ALTER TABLE `message` ADD FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`);
 ALTER TABLE `message` ADD FOREIGN KEY (`group_id`) REFERENCES `groupChat` (`id`);
 
 ALTER TABLE `contact` ADD FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+
+ALTER TABLE `contact` ADD UNIQUE INDEX (`user_id`, `contact_id`);

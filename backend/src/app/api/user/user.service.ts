@@ -107,7 +107,7 @@ export class UserService {
         isActive: true,
       }),
       Object.assign(new UserGroup(), {
-        contactId,
+        userId: contactId,
         groupId: newGroupChatId,
         isActive: true,
       }),

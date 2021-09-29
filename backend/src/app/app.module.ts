@@ -22,6 +22,8 @@ import { UserService } from '@src/api/user/user.service';
 
 import { AuthMiddleware } from './middleware/auth.middleware';
 import { ChatGateway } from '@src/api/chat/chat.gateway';
+import { ChatService } from './api/chat/chat.service';
+import { ChatController } from './api/chat/chat.controller';
 
 @Module({
   imports: [
@@ -37,6 +39,7 @@ import { ChatGateway } from '@src/api/chat/chat.gateway';
     GroupController,
     SignUpController,
     UserController,
+    ChatController,
   ],
   providers: [
     CheckHealthService,
@@ -44,6 +47,7 @@ import { ChatGateway } from '@src/api/chat/chat.gateway';
     SignUpService,
     UserService,
     ChatGateway,
+    ChatService,
   ],
   exports: [],
 })
@@ -51,7 +55,7 @@ export class AppModule implements NestModule {
   public configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AuthMiddleware)
-      .exclude('/api/v1/group-chat/:id', '/auth/sign-up')
+      .exclude('/api/v1/group-chat/:id', '/auth/sign-up', '/api/v1/message/:id')
       .forRoutes({ path: '/api/v1', method: RequestMethod.ALL });
     // consumer.apply(AuthMiddleware).exclude('/api/check-health').forRoutes();
   }

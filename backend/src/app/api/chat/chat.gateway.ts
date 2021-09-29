@@ -7,10 +7,12 @@ import {
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { Logger } from '@nestjs/common';
+import { ChatService } from './chat.service';
 
 @WebSocketGateway({ namespace: '/chat', cors: true })
 export class ChatGateway implements OnGatewayInit {
   @WebSocketServer() wss: Server;
+  constructor(private chatService: ChatService) {}
 
   private logger: Logger = new Logger('ChatGateway');
 
@@ -23,6 +25,11 @@ export class ChatGateway implements OnGatewayInit {
     client: Socket,
     message: { sender: string; room: string; message: string },
   ) {
+    this.chatService.saveMessageByGroupId(
+      message.room,
+      message.message,
+      message.sender,
+    );
     this.wss.to(message.room).emit('chatToClient', message);
   }
 

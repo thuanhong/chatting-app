@@ -25,7 +25,7 @@ function ListGroupChat(props) {
     const response = await GroupService.get_user_group_chat(pagination);
 
     // setListGroupChatData((presState) => [...presState, ...(response.msg.groups ?? [])]);
-    setListGroupChatData(response.msg.groups ?? []);
+    setListGroupChatData(response?.msg.groups ?? []);
     setPagenation({ ...pagination, take: pagination.take + 5 });
   };
 
@@ -66,9 +66,9 @@ function ListGroupChat(props) {
               <Card elevation={0} className={classes.cardStyle}>
                 <CardHeader
                   avatar={<BadgeAvatar isActive={false} linkAvatar={data.image} />}
-                  title={id === data.groupName.split('-')[0] ? data.groupName.split('-')[1] : `${firstName} ${lastName}`}
+                  title={data.groupName}
                   className={classes.colorTextWhite}
-                  subheader={''}
+                  subheader={data.lastMessage}
                   // subheader={data.lastMessage}
                   subheaderTypographyProps={{
                     style: {

@@ -1,25 +1,13 @@
 import React, { useState } from 'react';
-import { Grid, Typography, TextField, Box, Paper, Link, Button } from '@material-ui/core';
+import { Grid, Avatar, TextField, Box, Paper, Link, Button } from '@material-ui/core';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import { useStyles } from '@src/components/sign-up-page/styles';
 import firebase from '@src/services/Firebase';
-import { withAuth } from '@src/hoc/withAuth';
-import { CookieHandler } from '@src/utils/Cookies';
-import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import { AuthService } from '@src/services/AuthService';
-import Router from 'next/router';
-
-function Copyright() {
-  return (
-    <Typography variant='body2' color='textSecondary' align='center'>
-      {'Copyright ©'}
-      Thuan-Tai
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
+import { Copyright } from '@src/modules/common/copy-right';
+import { CurrentComponentPageLogin } from '@src/modules/pages/login';
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant='filled' {...props} />;
@@ -75,7 +63,7 @@ const SignUpScreen = (props) => {
         if (res.statusCode === 201) {
           setNotification({ message: 'Sign up successfully!', type: 'success' });
           setOpen(true);
-          setTimeout(() => props.setClickedSignUp(!props.clickedSignUp), 1000);
+          setTimeout(() => props.setNavigateComponent(!props.clickedSignUp), 1000);
         } else {
           setNotification({ message: 'This email has been register by another account!', type: 'error' });
           setDisabled(false);
@@ -97,6 +85,9 @@ const SignUpScreen = (props) => {
         </Snackbar>
 
         <div className={classes.paper}>
+          <Avatar className={classes.avatar}>
+            <LockOutlinedIcon />
+          </Avatar>
           <form className={classes.form} onSubmit={onSubmit}>
             <TextField value={signUpInfo.firstName} variant='outlined' margin='normal' size='medium' required label='First Name' onChange={handleChange('firstName')} />
             <TextField
@@ -135,7 +126,13 @@ const SignUpScreen = (props) => {
               Sign Up
             </Button>
             <Link variant='body2'>
-              <Button fullWidth variant='contained' color='secondary' className={classes.submit} onClick={() => props.setClickedSignUp(!props.clickedSignUp)}>
+              <Button
+                fullWidth
+                variant='contained'
+                color='secondary'
+                className={classes.submit}
+                onClick={() => props.setNavigateComponent(CurrentComponentPageLogin.LOGIN_COMPONENT)}
+              >
                 Login
               </Button>
             </Link>

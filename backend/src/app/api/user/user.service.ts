@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { DataService } from '@src/services/data.service';
+import { DataService } from '@src/libs/services/data.service';
 import { Users } from '@src/entities/users.entity';
 import { Contact } from '@src/entities/contact.entity';
 import { GroupChat } from '@src/entities/group-chat.entity';
 import { UserGroup } from '@src/entities/user-group.entity';
 import { UserDto } from '@src/dto/user.dto';
 import { In, Like, Not } from 'typeorm';
+import { AddNewContactRequest } from '@src/request/add-new-contact.request';
 
 @Injectable()
 export class UserService {
@@ -55,7 +56,6 @@ export class UserService {
     userId: string,
     userInput: string,
   ): Promise<Users[]> {
-    console.log(userId);
     const data = await this.dataService.find(Users, {
       where: {
         email: Like(`%${userInput}%`),
@@ -76,7 +76,11 @@ export class UserService {
     return checkContactExist.length > 0;
   }
 
-  async addNewContactUser(userId: string, contactId: string): Promise<string> {
+  async addNewContactUser(
+    userId: string,
+    payload: AddNewContactRequest,
+  ): Promise<string> {
+    const { contactId, firstName, lastName } = payload;
     const newContacts = [
       Object.assign(new Contact(), {
         userId,
@@ -91,7 +95,7 @@ export class UserService {
 
     const groupChat = Object.assign(new GroupChat(), {
       id: newGroupChatId,
-      groupName: 'Chatting',
+      groupName: `${userId}-${firstName} ${lastName}`,
       lastMessage: '',
     });
 

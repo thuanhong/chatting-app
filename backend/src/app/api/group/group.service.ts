@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { GroupChat } from '@src/entities/group-chat.entity';
 import { UserGroup } from '@src/libs/entities/user-group.entity';
-import { DataService } from '@src/services/data.service';
+import { DataService } from '@src/libs/services/data.service';
 import { In } from 'typeorm';
 import { PagingInfo } from '@src/interface/paging-info.interface';
 import { GroupDto } from '@src/libs/common/dto/group.dto';
-import { timestamp } from 'rxjs';
+
 @Injectable()
 export class GroupService {
   constructor(private dataService: DataService) {}

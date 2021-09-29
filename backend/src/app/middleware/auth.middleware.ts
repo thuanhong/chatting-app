@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable, NestMiddleware, Logger } from '@nestjs/common';
 import { HttpException } from '@nestjs/common/exceptions/http.exception';
 import { NextFunction, Request, Response } from 'express';
-import { FirebaseAuthService } from '@src/libs/data/services/firebase.service';
+import { FirebaseAuthService } from '@src/libs/services/firebase.service';
 import * as CONSTANT from '@src/app/constants.api';
 
 export interface RequestModel extends Request {

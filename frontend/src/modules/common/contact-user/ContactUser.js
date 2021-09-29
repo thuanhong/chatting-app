@@ -13,15 +13,17 @@ function ContactUser(props) {
   const { classes } = props;
   const { contactChatStore } = useGlobalStore();
 
-  const addUserContact = async (contactId) => {
+  const addUserContact = async (firstName, lastName, contactId) => {
     const payload = {
+      firstName,
+      lastName,
       contactId,
     };
     try {
       await UserService.add_user_contact(payload);
       toast.success('Add new contact successful', {
         position: 'top-right',
-        autoClose: 5000,
+        autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -31,7 +33,7 @@ function ContactUser(props) {
     } catch (err) {
       toast.error(err, {
         position: 'top-right',
-        autoClose: 5000,
+        autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -58,7 +60,7 @@ function ContactUser(props) {
             </Box>
             {!isContacted && (
               <Box display='flex' justifyContent='center' m={1} p={1}>
-                <Button onClick={() => addUserContact(id)} variant='contained' color='primary'>
+                <Button onClick={() => addUserContact(firstName, lastName, id)} variant='contained' color='primary'>
                   Add Contact
                 </Button>
               </Box>

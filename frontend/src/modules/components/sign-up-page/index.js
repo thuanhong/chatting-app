@@ -75,15 +75,15 @@ const SignUpScreen = (props) => {
         if (res.statusCode === 201) {
           setNotification({ message: 'Sign up successfully!', type: 'success' });
           setOpen(true);
-          setTimeout(() => props.setClickedSignUp(!props.clickedSignUp), 2000);
+          setTimeout(() => props.setClickedSignUp(!props.clickedSignUp), 1000);
         } else {
           setNotification({ message: 'This email has been register by another account!', type: 'error' });
+          setDisabled(false);
           setOpen(true);
         }
       });
     } else {
       setNotification({ message: 'Email not validate', type: 'warning' });
-
       setOpen(true);
     }
   };

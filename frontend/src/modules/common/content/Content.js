@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-// import queryString from "query-string";
-// import io from "socket.io-client";
+import io from 'socket.io-client';
 import InputBase from '@material-ui/core/InputBase';
 import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
@@ -10,67 +9,75 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
 import Message from '@src/common/message/Message';
 import ContactUser from '@src/common/contact-user/ContactUser';
-import ChatData from '@src/mocks/chat-data';
-import { styles } from './styles';
 import { GroupService } from '@src/services/GroupService';
 import { useGlobalStore } from '@src/hooks/';
+import { useObserver } from 'mobx-react-lite';
+import { styles } from './styles';
+
+let socket;
 
 function Content(props) {
   const { classes } = props;
-  const [userName, setUserName] = useState('thuan');
-  const [roomName, setRoomName] = useState('');
   const scrollRef = useRef(null);
 
   const [message, setMessage] = useState();
   const [messageList, setMessageList] = useState([]);
-  const { groupChatStore } = useGlobalStore();
+  const [currentGroup, setCurrentGroup] = useState('');
 
-  // const ENDPOINT = "http://localhost:5000/";
+  const { groupChatStore } = useGlobalStore();
+  const { id: groupId } = groupChatStore.currentGroupChatInfo;
+  const { id } = JSON.parse(localStorage.getItem('currentUser'));
 
   useEffect(() => {
-    // const { name, room } = queryString.parse(location.search);
-    // socket = io(ENDPOINT);
-    // setUserName(name);
-    // setRoomName(room);
-    // socket.emit("join", { name, room }, () => {});
-    // return () => {
-    //   socket.emit("disconnect");
-    //   socket.off();
-    // };
+    socket = io('localhost:8000/chat');
+
+    socket.on('chatToClient', (msg) => {
+      setMessageList((prevstate) => {
+        return [...prevstate, msg];
+      });
+    });
+
+    return () => {
+      // socket.emit('disconnect');
+      socket.off();
+    };
   }, []);
 
   useEffect(() => {
-    // socket.on("message", (message) => {
-    //   setMessageList([...messageList, message]);
-    // });
-  }, [messageList]);
+    socket.emit('leaveRoom', currentGroup, () => {});
+    setCurrentGroup(groupId);
+    socket.emit('joinRoom', groupId, () => {});
+    setMessageList([]);
+  }, [groupId]);
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollIntoView({ behaviour: 'smooth' });
     }
-  }, [ChatData]);
+  }, [messageList]);
 
   const sendMessage = (event) => {
+    //keep this for testing until stateble
+    // alert(`${groupChatStore.currentGroupChatInfo.id} ${groupChatStore.currentGroupChatInfo.lastMessage}`);
     event.preventDefault();
     const payload = {
       lastMessage: message,
     };
-    const test = GroupService.update_group_info(groupChatStore.currentGroupChatInfo?.id, { payload: { lastMessage: message } });
-    groupChatStore.setCurrentGroupChatInfo(payload);
+    GroupService.update_group_info(groupChatStore.currentGroupChatInfo?.id, { payload: { lastMessage: message } });
+    // groupChatStore.setCurrentGroupChatInfo({groupChatStore.currentGroupChatInfo, payload});
 
-    setMessage('');
-    // if (message) {
-    //   socket.emit("sendMessage", message, () => setMessage(""));
-    // }
+    if (message) {
+      socket.emit('chatToServer', { sender: id, room: groupId, message });
+      setMessage('');
+    }
   };
 
-  return (
+  return useObserver(() => (
     <Box height={'100vh'} display='flex' alignItems='flex-start' justifyContent='flex-start'>
       <div className={classes.body}>
         <ContactUser />
-        {[].map((msg, index) => (
-          <Message key={index} message={msg.text} isSender={userName === msg.user} />
+        {messageList.map((msg, index) => (
+          <Message key={index} message={msg.message} isSender={id === msg.sender} />
         ))}
         <li ref={scrollRef} />
       </div>
@@ -99,7 +106,7 @@ function Content(props) {
         </div>
       </AppBar>
     </Box>
-  );
+  ));
 }
 
 export default withStyles(styles)(Content);

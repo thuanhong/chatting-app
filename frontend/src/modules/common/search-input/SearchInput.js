@@ -52,7 +52,7 @@ function SearchInput(props) {
         options={userOptionList}
         blurOnSelect
         onChange={async (_, newValue) => {
-          const { msg } = checkContactExist(newValue.id);
+          const { msg } = await checkContactExist(newValue.id);
           contactChatStore.setCurrentUserChattingInfo({ ...newValue, isContacted: msg });
         }}
         onInputChange={(_, newInputValue) => {

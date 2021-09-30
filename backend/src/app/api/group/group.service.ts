@@ -5,6 +5,7 @@ import { DataService } from '@src/libs/services/data.service';
 import { In } from 'typeorm';
 import { PagingInfo } from '@src/interface/paging-info.interface';
 import { GroupDto } from '@src/libs/common/dto/group.dto';
+import { Users } from '@src/libs/entities/users.entity';
 
 @Injectable()
 export class GroupService {
@@ -14,13 +15,28 @@ export class GroupService {
     pageInfo: PagingInfo,
   ): Promise<GroupChat[]> {
     const all_group_id = await this.dataService.find(UserGroup, {
-      select: ['groupId'],
+      select: ['groupId', 'userId'],
       where: {
         userId: userId,
       },
     });
 
-    return await this.dataService.find(GroupChat, {
+    const listNameUser = await this.dataService.find(Users, {
+      select: ['firstName', 'lastName', 'id'],
+      where: {
+        id: In(all_group_id.map((contact) => contact.userId)),
+      },
+    });
+
+    const listDisplayName = all_group_id.map((group) => {
+      let user = listNameUser.find((user) => user.id === group.userId);
+      return {
+        ...group,
+        displayName: `${user.firstName} ${user.lastName}`,
+      };
+    });
+
+    let formatGroupBaseUser = await this.dataService.find(GroupChat, {
       select: ['id', 'groupName', 'lastMessage'],
       where: {
         id: In(all_group_id.map((contact) => contact.groupId)),
@@ -30,6 +46,16 @@ export class GroupService {
       order: {
         modifiedAt: 'DESC',
       },
+    });
+
+    return await formatGroupBaseUser.map((listGroup) => {
+      let getName = listDisplayName.find(
+        (user) => user.groupId === listGroup.id,
+      );
+      return {
+        ...listGroup,
+        groupName: getName.displayName,
+      };
     });
   }
 

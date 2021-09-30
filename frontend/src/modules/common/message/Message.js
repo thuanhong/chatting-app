@@ -8,7 +8,7 @@ const Message = (props) => {
 
   return (
     <div className={isSender ? classes.msgAdmin : classes.msgLeft}>
-      <p className={classes.msgContent}>{message}</p>
+      <p className={isSender ? classes.msgContentAdmin : classes.msgContentLeft}>{message}</p>
     </div>
   );
 };

@@ -1,57 +1,42 @@
-import React, { useState, useCallback } from 'react';
-import Avatar from '@material-ui/core/Avatar';
+import React, { useState, useCallback, useMemo } from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import Typography from '@material-ui/core/Typography';
-import Snackbar from '@material-ui/core/Snackbar';
-import MuiAlert from '@material-ui/lab/Alert';
-import { Paper, TextField, FormControlLabel, Checkbox, Button, Link, CircularProgress } from '@material-ui/core';
-import Router from 'next/router';
 
 import { useStyles } from './styles';
 
-import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import { SquareAnimation } from '@src/common/SquareAnimation';
-import firebase from '@src/services/Firebase';
 import { withAuth } from '@src/hoc/withAuth';
-import { CookieHandler } from '@src/utils/Cookies';
 import SignUpScreen from '@src/modules/components/sign-up-page';
 import LoginScreen from '@src/modules/components/login-page';
+import ResetPasswordScreen from '@src/modules/components/reset-password-page';
 
-function Alert(props) {
-  return <MuiAlert elevation={6} variant='filled' {...props} />;
-}
-
-function Copyright() {
-  return (
-    <Typography variant='body2' color='textSecondary' align='center'>
-      {'Copyright ©'}
-      Thuan-Tai
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
+export const CurrentComponentPageLogin = {
+  LOGIN_COMPONENT: 'LOGIN_COMPONENT',
+  SIGN_UP_COMPONENT: 'SIGN_UP_COMPONENT',
+  RESET_PASSWORD_COMPONENT: 'RESET_PASSWORD_COMPONENT',
+};
 
 const LoginPage = () => {
   const classes = useStyles();
 
-  const [open, setOpen] = useState(false);
-  const [clickedSignUp, setClickedSignup] = useState(false);
+  const [currentComponent, setCurrentComponent] = useState(CurrentComponentPageLogin.LOGIN_COMPONENT);
 
-  const handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
+  const wrapperSetNavigateComponent = (val) => {
+    setCurrentComponent(val);
+  };
+
+  const listContentFunctionMap = useMemo(() => {
+    switch (currentComponent) {
+      case CurrentComponentPageLogin.LOGIN_COMPONENT:
+        return <LoginScreen setNavigateComponent={wrapperSetNavigateComponent} />;
+      case CurrentComponentPageLogin.SIGN_UP_COMPONENT:
+        return <SignUpScreen setNavigateComponent={wrapperSetNavigateComponent} />;
+      case CurrentComponentPageLogin.RESET_PASSWORD_COMPONENT:
+        return <ResetPasswordScreen setNavigateComponent={wrapperSetNavigateComponent} />;
+      default:
+        return <div></div>;
     }
-
-    setOpen(false);
-  };
-
-  const wrapperSetClickedSignup = (val) => {
-    setClickedSignup(val);
-  };
+  }, [currentComponent]);
 
   return (
     <Grid container component='main' disablePortal='true' className={classes.root}>
@@ -64,12 +49,7 @@ const LoginPage = () => {
           <SquareAnimation color={'#28a745'} style={{ width: '120px', transform: 'translate(-23px, 57px)', position: 'static' }} angle={180} />
         </div>
       </Grid>
-      {clickedSignUp ? (
-        <SignUpScreen clickedSignUp={clickedSignUp} setClickedSignUp={wrapperSetClickedSignup} />
-      ) : (
-        <LoginScreen clickedSignUp={clickedSignUp} setClickedSignUp={wrapperSetClickedSignup} />
-      )}
-      ;
+      {listContentFunctionMap}
     </Grid>
   );
 };

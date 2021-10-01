@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import Avatar from '@material-ui/core/Avatar';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
@@ -13,12 +12,10 @@ import Router from 'next/router';
 import { useStyles } from './styles';
 
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
-import { SquareAnimation } from '@src/common/SquareAnimation';
 import firebase from '@src/services/Firebase';
-import { withAuth } from '@src/hoc/withAuth';
 import { CookieHandler } from '@src/utils/Cookies';
-import SignUpScreen from '@src/modules/components/sign-up-page';
-
+import { Copyright } from '@src/modules/common/copy-right';
+import { CurrentComponentPageLogin } from '@src/modules/pages/login';
 const uiConfig = {
   signInFlow: 'popup',
   // Redirect to / after sign in is successful. Alternatively you can provide a callbacks.signInSuccess function.
@@ -39,17 +36,6 @@ const uiConfig = {
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant='filled' {...props} />;
-}
-
-function Copyright() {
-  return (
-    <Typography variant='body2' color='textSecondary' align='center'>
-      {'Copyright ©'}
-      Thuan-Tai
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
 }
 
 const LoginScreen = (props) => {
@@ -137,12 +123,12 @@ const LoginScreen = (props) => {
             </Button>
             <Grid container>
               <Grid item xs>
-                <Link href='#' variant='body2'>
+                <Link component='button' href='#' variant='body2' onClick={() => props.setNavigateComponent(CurrentComponentPageLogin.RESET_PASSWORD_COMPONENT)}>
                   Forgot password?
                 </Link>
               </Grid>
               <Grid item xs>
-                <Link component='button' variant='body2' onClick={() => props.setClickedSignUp(!props.clickedSignUp)}>
+                <Link component='button' variant='body2' onClick={() => props.setNavigateComponent(CurrentComponentPageLogin.SIGN_UP_COMPONENT)}>
                   Sign up
                 </Link>
               </Grid>

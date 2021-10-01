@@ -23,14 +23,14 @@ export class ChatGateway implements OnGatewayInit {
   @SubscribeMessage('chatToServer')
   handleMessage(
     client: Socket,
-    message: { sender: string; room: string; message: string },
+    message: { senderId: string; groupId: string; content: string },
   ) {
     this.chatService.saveMessageByGroupId(
-      message.room,
-      message.message,
-      message.sender,
+      message.groupId,
+      message.content,
+      message.senderId,
     );
-    this.wss.to(message.room).emit('chatToClient', message);
+    this.wss.to(message.groupId).emit('chatToClient', message);
   }
 
   @SubscribeMessage('joinRoom')

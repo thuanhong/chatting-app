@@ -10,6 +10,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Message from '@src/common/message/Message';
 import ContactUser from '@src/common/contact-user/ContactUser';
 import { GroupService } from '@src/services/GroupService';
+import { ChatService } from '@src/services/ChatService';
 import { useGlobalStore } from '@src/hooks/';
 import { useObserver } from 'mobx-react-lite';
 import { styles } from './styles';
@@ -48,6 +49,14 @@ function Content(props) {
     setCurrentGroup(groupId);
     socket.emit('joinRoom', groupId, () => {});
     setMessageList([]);
+    ChatService.fetch_message_by_group_id(groupId)
+      .then((response) => {
+        console.log(response.msg);
+        setMessageList(response.msg.data);
+      })
+      .catch((err) => {
+        throw err;
+      });
   }, [groupId]);
 
   useEffect(() => {
@@ -67,7 +76,7 @@ function Content(props) {
     // groupChatStore.setCurrentGroupChatInfo({groupChatStore.currentGroupChatInfo, payload});
 
     if (message) {
-      socket.emit('chatToServer', { sender: id, room: groupId, message });
+      socket.emit('chatToServer', { senderId: id, groupId: groupId, content: message });
       setMessage('');
     }
   };
@@ -76,8 +85,9 @@ function Content(props) {
     <Box height={'100vh'} display='flex' alignItems='flex-start' justifyContent='flex-start'>
       <div className={classes.body}>
         <ContactUser />
+
         {messageList.map((msg, index) => (
-          <Message key={index} message={msg.message} isSender={id === msg.sender} />
+          <Message key={index} message={msg.content} isSender={id === msg.senderId} />
         ))}
         <li ref={scrollRef} />
       </div>

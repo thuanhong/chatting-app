@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import useInfiniteScroll from '@src/hooks/useInfiniteScroll';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import io from 'socket.io-client';
 import InputBase from '@material-ui/core/InputBase';
@@ -12,10 +13,16 @@ import ContactUser from '@src/common/contact-user/ContactUser';
 import { GroupService } from '@src/services/GroupService';
 import { ChatService } from '@src/services/ChatService';
 import { useGlobalStore } from '@src/hooks/';
-import { useObserver } from 'mobx-react-lite';
+import { useObserver, observer } from 'mobx-react-lite';
 import { styles } from './styles';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 let socket;
+
+const initPagination = {
+  take: 15,
+  pageIndex: 0,
+};
 
 function Content(props) {
   const { classes } = props;
@@ -23,11 +30,12 @@ function Content(props) {
 
   const [message, setMessage] = useState();
   const [messageList, setMessageList] = useState([]);
+  const [oldMessageList, setOldMessageList] = useState([]);
   const [currentGroup, setCurrentGroup] = useState('');
-
   const { groupChatStore } = useGlobalStore();
   const { id: groupId } = groupChatStore.currentGroupChatInfo;
   const { id } = JSON.parse(localStorage.getItem('currentUser'));
+  const [pagination, setPagenation] = useState(initPagination);
 
   useEffect(() => {
     socket = io('localhost:8000/chat');
@@ -44,36 +52,43 @@ function Content(props) {
     };
   }, []);
 
-  useEffect(() => {
-    socket.emit('leaveRoom', currentGroup, () => {});
-    setCurrentGroup(groupId);
-    socket.emit('joinRoom', groupId, () => {});
-    setMessageList([]);
-    ChatService.fetch_message_by_group_id(groupId)
+  function fetchListMessage() {
+    ChatService.fetch_message_by_group_id(groupId, pagination)
       .then((response) => {
-        console.log(response.msg);
-        setMessageList(response.msg.data);
+        if (oldMessageList.length === 0) clearPagination();
+        setOldMessageList((prevState) => [...prevState, ...response.msg.data]);
       })
       .catch((err) => {
         throw err;
       });
+    setPagenation({ take: 10, pageIndex: pagination.pageIndex + 1 });
+  }
+  const clearPagination = () => {
+    setPagenation({ ...initPagination });
+  };
+
+  useEffect(() => {
+    socket.emit('leaveRoom', currentGroup, () => {});
+    setCurrentGroup(groupId);
+    socket.emit('joinRoom', groupId, () => {});
+    setOldMessageList([]);
+    setMessageList([]);
+    fetchListMessage();
+    clearPagination();
   }, [groupId]);
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollIntoView({ behaviour: 'smooth' });
     }
-  }, [messageList]);
+  }, [oldMessageList, messageList]);
 
   const sendMessage = (event) => {
-    //keep this for testing until stateble
-    // alert(`${groupChatStore.currentGroupChatInfo.id} ${groupChatStore.currentGroupChatInfo.lastMessage}`);
     event.preventDefault();
     const payload = {
       lastMessage: message,
     };
     GroupService.update_group_info(groupChatStore.currentGroupChatInfo?.id, { payload: { lastMessage: message } });
-    // groupChatStore.setCurrentGroupChatInfo({groupChatStore.currentGroupChatInfo, payload});
 
     if (message) {
       socket.emit('chatToServer', { senderId: id, groupId: groupId, content: message });
@@ -83,12 +98,26 @@ function Content(props) {
 
   return useObserver(() => (
     <Box height={'100vh'} display='flex' alignItems='flex-start' justifyContent='flex-start'>
-      <div className={classes.body}>
+      <div id='scrollableDiv' className={classes.body}>
         <ContactUser />
-
-        {messageList.map((msg, index) => (
-          <Message key={index} message={msg.content} isSender={id === msg.senderId} />
-        ))}
+        <InfiniteScroll
+          dataLength={oldMessageList.length}
+          scrollThreshold='100px'
+          next={() => fetchListMessage()}
+          style={{ display: 'flex', flexDirection: 'column-reverse' }} //To put endMessage and loader to the top.
+          hasMore={true}
+          loader={<h3 style={{ color: 'white' }}>Loading...</h3>}
+          scrollableTarget='scrollableDiv'
+        >
+          {oldMessageList
+            .sort((a, b) => Number(new Date(b.createdAt)) - Number(new Date(a.createdAt)))
+            .map((msg, index) => {
+              return <Message key={index} message={msg.content} isSender={id === msg.senderId} />;
+            })}
+        </InfiniteScroll>
+        {messageList.map((msg, index) => {
+          return <Message key={index + 'string'} message={msg.content} isSender={id === msg.senderId} />;
+        })}
         <li ref={scrollRef} />
       </div>
       <AppBar component='div' position='fixed' className={classes.appBar}>
@@ -119,4 +148,4 @@ function Content(props) {
   ));
 }
 
-export default withStyles(styles)(Content);
+export default withStyles(styles)(observer(Content));

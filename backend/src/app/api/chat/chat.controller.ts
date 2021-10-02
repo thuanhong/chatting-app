@@ -41,7 +41,10 @@ export class ChatController {
     try {
       const data = await this.chatService.getMessagesByGroupId(id, query);
       return new MessageChatResponse({
-        data: data,
+        data: data.sort(
+          (a, b) =>
+            Number(new Date(a.createdAt)) - Number(new Date(b.createdAt)),
+        ),
       });
     } catch (error) {
       console.log(error);

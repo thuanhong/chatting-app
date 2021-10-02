@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { GroupChat } from '@src/entities/group-chat.entity';
 import { UserGroup } from '@src/libs/entities/user-group.entity';
 import { DataService } from '@src/libs/services/data.service';
-import { In } from 'typeorm';
+import { In, Not } from 'typeorm';
 import { PagingInfo } from '@src/interface/paging-info.interface';
 import { GroupDto } from '@src/libs/common/dto/group.dto';
 import { Users } from '@src/libs/entities/users.entity';
@@ -14,28 +14,41 @@ export class GroupService {
     userId: string,
     pageInfo: PagingInfo,
   ): Promise<GroupChat[]> {
+    //Get only group id on userId cant get senderId
     const all_group_id = await this.dataService.find(UserGroup, {
-      select: ['groupId', 'userId'],
+      select: ['groupId'],
       where: {
         userId: userId,
       },
     });
 
-    const listNameUser = await this.dataService.find(Users, {
-      select: ['firstName', 'lastName', 'id'],
+    //Get all userGroups format from senderId
+    const all_group_users = await this.dataService.find(UserGroup, {
+      select: ['userId', 'groupId'],
       where: {
-        id: In(all_group_id.map((contact) => contact.userId)),
+        groupId: In(all_group_id.map((contact) => contact.groupId)),
+        id: Not(userId),
       },
     });
 
-    const listDisplayName = all_group_id.map((group) => {
+    //Get firstName and lastName for format display name
+    const listNameUser = await this.dataService.find(Users, {
+      select: ['firstName', 'lastName', 'id'],
+      where: {
+        id: In(all_group_users.map((contact) => contact.userId)),
+      },
+    });
+
+    //Format display Name
+    const listDisplayName = all_group_users.map((group) => {
       let user = listNameUser.find((user) => user.id === group.userId);
       return {
         ...group,
-        displayName: `${user.firstName} ${user.lastName}`,
+        displayName: `${user?.firstName} ${user?.lastName}`,
       };
     });
 
+    //Get all infomation groupChat
     let formatGroupBaseUser = await this.dataService.find(GroupChat, {
       select: ['id', 'groupName', 'lastMessage'],
       where: {
@@ -47,7 +60,7 @@ export class GroupService {
         modifiedAt: 'DESC',
       },
     });
-
+    // matching groupName with displayName format
     return await formatGroupBaseUser.map((listGroup) => {
       let getName = listDisplayName.find(
         (user) => user.groupId === listGroup.id,

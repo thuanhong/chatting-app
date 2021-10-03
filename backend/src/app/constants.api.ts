@@ -9,3 +9,5 @@ export const INVALID_SESSION_IN_REDIS =
 export const INVALID_SOCKET_PROVIDER = 'Not Supported Socket provider';
 export const INVALID_PUSHER_CLIENT =
   'Invalid pusher client, Please send valid socketId for client';
+
+export const ADD_NEW_CONTACT = ' want to contact with you ';

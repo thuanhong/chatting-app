@@ -79,12 +79,7 @@ const LoginScreen = () => {
           <Typography component='h1' variant='h5'>
             Sign in
           </Typography>
-          <Snackbar
-            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-            open={open}
-            autoHideDuration={6000}
-            onClose={handleClose}
-          >
+          <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'center' }} open={open} autoHideDuration={6000} onClose={handleClose}>
             <Alert onClose={handleClose} severity='error'>
               Username or password incorrect
             </Alert>
@@ -112,15 +107,7 @@ const LoginScreen = () => {
               }}
             />
             <FormControlLabel control={<Checkbox value='remember' color='primary' />} label='Remember me' />
-            <Button
-              type='submit'
-              disableElevation
-              disabled={disabled}
-              fullWidth
-              variant='contained'
-              color='primary'
-              className={classes.submit}
-            >
+            <Button type='submit' disableElevation disabled={disabled} fullWidth variant='contained' color='primary' className={classes.submit}>
               {disabled ? <CircularProgress /> : 'Sign In'}
             </Button>
             <Grid container>

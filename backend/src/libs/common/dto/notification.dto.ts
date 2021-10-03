@@ -1,16 +1,20 @@
 import { IsString, IsNotEmpty } from 'class-validator';
 import { BaseDto } from '@src/dto/base.dto';
 
-export class GroupDto extends BaseDto<GroupDto> {
+export class NotificationDto extends BaseDto<NotificationDto> {
   @IsNotEmpty()
   @IsString()
-  id: string;
+  userId: string;
 
   @IsNotEmpty()
   @IsString()
-  groupName: string;
+  notifyType: string;
 
   @IsNotEmpty()
   @IsString()
-  lastMessage: string;
+  notifyDesc: string;
+
+  @IsNotEmpty()
+  @IsString()
+  status: boolean | null;
 }

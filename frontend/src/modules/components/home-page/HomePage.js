@@ -155,12 +155,7 @@ function HomePage(props) {
         <CssBaseline />
         <nav className={classes.drawer}>
           <Hidden smUp implementation='js'>
-            <Navigator
-              PaperProps={{ style: { width: drawerWidth } }}
-              variant='temporary'
-              open={mobileOpen}
-              onClose={handleDrawerToggle}
-            />
+            <Navigator PaperProps={{ style: { width: drawerWidth } }} variant='temporary' open={mobileOpen} onClose={handleDrawerToggle} />
           </Hidden>
           <Hidden xsDown implementation='css'>
             <Navigator PaperProps={{ style: { width: drawerWidth } }} />

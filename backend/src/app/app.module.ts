@@ -13,17 +13,17 @@ import { CheckHealthController } from '@src/api/check-health/check-health.contro
 import { GroupController } from '@src/api/group/group.controller';
 import { SignUpController } from '@src/api/sign-up/sign-up.controller';
 import { UserController } from '@src/api/user/user.controller';
+import { ChatController } from '@src/api/chat/chat.controller';
 
 // Import Services
 import { CheckHealthService } from '@src/api/check-health/check-health.service';
 import { GroupService } from '@src/api/group/group.service';
 import { SignUpService } from '@src/api/sign-up/sign-up.service';
 import { UserService } from '@src/api/user/user.service';
+import { ChatService } from '@src/api/chat/chat.service';
 
 import { AuthMiddleware } from './middleware/auth.middleware';
 import { ChatGateway } from '@src/api/chat/chat.gateway';
-import { ChatService } from './api/chat/chat.service';
-import { ChatController } from './api/chat/chat.controller';
 
 @Module({
   imports: [

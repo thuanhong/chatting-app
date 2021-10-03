@@ -30,12 +30,12 @@ function Navigator(props) {
 
   const listContentFunctionMap = useMemo(() => {
     switch (currentComponent) {
-    case CurrentComponent.CHAT_COMPONENT:
-      return <ListGroupChat />;
-    case CurrentComponent.CONTACT_COMPONENT:
-      return <ListContact />;
-    default:
-      return <div />;
+      case CurrentComponent.CHAT_COMPONENT:
+        return <ListGroupChat />;
+      case CurrentComponent.CONTACT_COMPONENT:
+        return <ListContact />;
+      default:
+        return <div />;
     }
   }, [currentComponent]);
 

@@ -18,6 +18,7 @@ import { UserDto } from '@src/dto/user.dto';
 import { SearchUserWithEmailRequest } from '@src/request/search-user-with-email.request';
 import { AddNewContactRequest } from '@src/request/add-new-contact.request';
 import { AddNewContactResponse } from '@src/response/add-new-contact.response';
+import { CheckContactResponse } from '@src/response/check-contact.response';
 
 @Controller('/api/v1/users')
 export class UserController {
@@ -101,7 +102,7 @@ export class UserController {
   async checkContactExist(
     @Req() req: any,
     @Body() payload: AddNewContactRequest,
-  ): Promise<boolean> {
+  ): Promise<CheckContactResponse[]> {
     const contactExist = await this.userService.checkContactExist(
       req.user.uid,
       payload.contactId,

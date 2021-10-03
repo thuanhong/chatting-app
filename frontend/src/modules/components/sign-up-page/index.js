@@ -1,24 +1,16 @@
 import React, { useState } from 'react';
+import { toast } from 'react-toastify';
 import { Grid, Avatar, TextField, Box, Paper, Link, Button } from '@material-ui/core';
-import Snackbar from '@material-ui/core/Snackbar';
-import MuiAlert from '@material-ui/lab/Alert';
 import { useStyles } from '@src/components/sign-up-page/styles';
-import firebase from '@src/services/Firebase';
 import { AuthService } from '@src/services/AuthService';
 import { Copyright } from '@src/modules/common/copy-right';
 import { CurrentComponentPageLogin } from '@src/modules/pages/login';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 
-function Alert(props) {
-  return <MuiAlert elevation={6} variant='filled' {...props} />;
-}
-
 const SignUpScreen = (props) => {
   const classes = useStyles();
 
-  const [open, setOpen] = useState(false);
   const [disabled, setDisabled] = useState(false);
-  const [notification, setNotification] = useState('');
   const [signUpInfo, setSignUpInfo] = useState({
     email: '',
     password: '',
@@ -38,16 +30,27 @@ const SignUpScreen = (props) => {
     setSignUpInfo({ ...signUpInfo, [prop]: event.target.value.trim() });
   };
 
-  // const confirmPassword = (pwd)=>{
+  const showPopUpSuccess = () =>
+    toast.success('Sign up successfully!', {
+      position: 'top-right',
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
 
-  // }
-  const handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-
-    setOpen(false);
-  };
+  const showPopUpFail = () =>
+    toast.error('This email has been register by another account!', {
+      position: 'top-right',
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
 
   const onSubmit = (event) => {
     event.preventDefault();
@@ -61,13 +64,10 @@ const SignUpScreen = (props) => {
       };
       AuthService.sign_up(signUpData).then((res) => {
         if (res.statusCode === 201) {
-          setNotification({ message: 'Sign up successfully!', type: 'success' });
-          setOpen(true);
-          setTimeout(() => props.setNavigateComponent(!props.clickedSignUp), 1000);
+          showPopUpSuccess();
+          props.setNavigateComponent(CurrentComponentPageLogin.LOGIN_COMPONENT);
         } else {
-          setNotification({ message: 'This email has been register by another account!', type: 'error' });
-          setDisabled(false);
-          setOpen(true);
+          showPopUpFail();
         }
       });
     } else {
@@ -78,12 +78,6 @@ const SignUpScreen = (props) => {
   return (
     <React.Fragment>
       <Grid item xs={12} sm={6} md={5} component={Paper} square>
-        <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'center' }} open={open} autoHideDuration={6000} onClose={handleClose}>
-          <Alert onClose={handleClose} severity={notification.type}>
-            {notification.message}
-          </Alert>
-        </Snackbar>
-
         <div className={classes.paper}>
           <Avatar className={classes.avatar}>
             <LockOutlinedIcon />

@@ -47,7 +47,7 @@ function ContactUser(props) {
     const { id, email, firstName, lastName, isContacted } = contactChatStore.currentUserChattingInfo;
     return (
       <div className='contanct-user'>
-        {firstName && (
+        {firstName && !isContacted && (
           <>
             <Box display='flex' justifyContent='center' m={1} p={1}>
               <Box p={1}>
@@ -58,13 +58,11 @@ function ContactUser(props) {
                 <p>{email}</p>
               </Box>
             </Box>
-            {!isContacted && (
-              <Box display='flex' justifyContent='center' m={1} p={1}>
-                <Button onClick={() => addUserContact(firstName, lastName, id)} variant='contained' color='primary'>
-                  Add Contact
-                </Button>
-              </Box>
-            )}
+            <Box display='flex' justifyContent='center' m={1} p={1}>
+              <Button onClick={() => addUserContact(firstName, lastName, id)} variant='contained' color='primary'>
+                Add Contact
+              </Button>
+            </Box>
           </>
         )}
       </div>

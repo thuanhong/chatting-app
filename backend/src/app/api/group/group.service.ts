@@ -14,32 +14,17 @@ export class GroupService {
     userId: string,
     pageInfo: PagingInfo,
   ): Promise<GroupChat[]> {
-    const all_group_id = await this.dataService.find(UserGroup, {
+    const allGroupId = await this.dataService.find(UserGroup, {
       select: ['groupId', 'userId'],
       where: {
         userId: userId,
       },
     });
 
-    const listNameUser = await this.dataService.find(Users, {
-      select: ['firstName', 'lastName', 'id'],
-      where: {
-        id: In(all_group_id.map((contact) => contact.userId)),
-      },
-    });
-
-    const listDisplayName = all_group_id.map((group) => {
-      let user = listNameUser.find((user) => user.id === group.userId);
-      return {
-        ...group,
-        displayName: `${user.firstName} ${user.lastName}`,
-      };
-    });
-
-    let formatGroupBaseUser = await this.dataService.find(GroupChat, {
+    return await this.dataService.find(GroupChat, {
       select: ['id', 'groupName', 'lastMessage'],
       where: {
-        id: In(all_group_id.map((contact) => contact.groupId)),
+        id: In(allGroupId.map((contact) => contact.groupId)),
       },
       take: pageInfo.take ?? 15,
       skip: pageInfo.pageIndex * pageInfo.take ?? 1,
@@ -47,24 +32,11 @@ export class GroupService {
         modifiedAt: 'DESC',
       },
     });
-
-    return await formatGroupBaseUser.map((listGroup) => {
-      let getName = listDisplayName.find(
-        (user) => user.groupId === listGroup.id,
-      );
-      return {
-        ...listGroup,
-        groupName: getName.displayName,
-      };
-    });
   }
 
   async updateUserGroupChat(id: string, entities: GroupDto): Promise<any> {
-    const modifiedAt = new Date().toISOString().slice(0, 19).replace('T', ' ');
-    const all_group_id = await this.dataService.update(GroupChat, id, {
+    return await this.dataService.update(GroupChat, id, {
       ...entities,
-      modifiedAt,
     });
-    return all_group_id;
   }
 }

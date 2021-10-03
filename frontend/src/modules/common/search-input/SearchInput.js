@@ -12,7 +12,7 @@ function SearchInput(props) {
   const { classes } = props;
   const [userOptionList, setUserOptionList] = useState([]);
   const [errorStatus, setErrorState] = useState(false);
-  const { contactChatStore } = useGlobalStore();
+  const { contactChatStore, groupChatStore } = useGlobalStore();
 
   const fetchUserWithEmailSearch = async (emailString) => {
     const payload = {
@@ -44,6 +44,16 @@ function SearchInput(props) {
     }
   };
 
+  const handleChangeAutoComplete = async (newValue) => {
+    const { msg } = await checkContactExist(newValue.id);
+    if (msg.length === 0) {
+      contactChatStore.setCurrentUserChattingInfo({ ...newValue, isContacted: false });
+    } else {
+      groupChatStore.setCurrentGroupChatInfo({ groupId: msg[0].groupId });
+      contactChatStore.setCurrentUserChattingInfo({ ...newValue, isContacted: true });
+    }
+  };
+
   return (
     <div className='search-input'>
       <Autocomplete
@@ -51,12 +61,17 @@ function SearchInput(props) {
         disableClearable
         options={userOptionList}
         blurOnSelect
-        onChange={async (_, newValue) => {
-          const { msg } = await checkContactExist(newValue.id);
-          contactChatStore.setCurrentUserChattingInfo({ ...newValue, isContacted: msg });
+        onChange={(event, newValue) => {
+          handleChangeAutoComplete(newValue);
         }}
         onInputChange={(_, newInputValue) => {
           handleUserInput(newInputValue);
+        }}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter') {
+            // Prevent's default 'Enter' behavior.
+            event.defaultMuiPrevented = true;
+          }
         }}
         getOptionLabel={(option) => option.email}
         renderInput={(params) => (

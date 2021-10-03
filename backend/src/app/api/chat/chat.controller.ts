@@ -5,8 +5,6 @@ import {
   Body,
   Logger,
   Request,
-  BadRequestException,
-  Req,
   Query,
   Param,
 } from '@nestjs/common';
@@ -35,7 +33,6 @@ export class ChatController {
   @Get(':id')
   async getMessages(
     @Param() id: string,
-    @Request() req: any,
     @Query() query?: PagingInfo,
   ): Promise<MessageChatResponse> {
     try {

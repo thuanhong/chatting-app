@@ -8,14 +8,13 @@ import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import { Paper, TextField, FormControlLabel, Checkbox, Button, Link, CircularProgress } from '@material-ui/core';
 import Router from 'next/router';
-
 import { useStyles } from './styles';
-
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import firebase from '@src/services/Firebase';
 import { CookieHandler } from '@src/utils/Cookies';
 import { Copyright } from '@src/modules/common/copy-right';
 import { CurrentComponentPageLogin } from '@src/modules/pages/login';
+
 const uiConfig = {
   signInFlow: 'popup',
   // Redirect to / after sign in is successful. Alternatively you can provide a callbacks.signInSuccess function.
@@ -63,7 +62,6 @@ const LoginScreen = (props) => {
           CookieHandler.setCookie('access_token', res.user.Aa);
           Router.push('/');
         } else {
-          alert('taitai');
           setOpen(true);
         }
       })

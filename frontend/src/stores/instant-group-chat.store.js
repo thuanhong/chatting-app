@@ -6,7 +6,6 @@ export class GroupChatStore {
 
   @action
   setCurrentGroupChatInfo(instantChatInfo) {
-    console.log(instantChatInfo)
     this.currentGroupChatInfo = instantChatInfo;
   }
 }

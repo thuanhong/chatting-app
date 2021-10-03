@@ -3,7 +3,6 @@ import {
   WebSocketGateway,
   OnGatewayInit,
   WebSocketServer,
-  OnGatewayConnection,
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { Logger } from '@nestjs/common';
@@ -16,7 +15,7 @@ export class ChatGateway implements OnGatewayInit {
 
   private logger: Logger = new Logger('ChatGateway');
 
-  afterInit(server: any) {
+  afterInit() {
     this.logger.log('Initialized!');
   }
 

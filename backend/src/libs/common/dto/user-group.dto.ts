@@ -1,16 +1,15 @@
 import { IsString, IsNotEmpty } from 'class-validator';
 import { BaseDto } from '@src/dto/base.dto';
 
-export class GroupDto extends BaseDto<GroupDto> {
+export class UserGroupDto extends BaseDto<UserGroupDto> {
   @IsNotEmpty()
   @IsString()
-  id: string;
+  userId: string;
 
   @IsNotEmpty()
   @IsString()
-  groupName: string;
+  groupId: string;
 
   @IsNotEmpty()
-  @IsString()
-  lastMessage: string;
+  isActive: boolean;
 }

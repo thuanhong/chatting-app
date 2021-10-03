@@ -39,7 +39,7 @@ function Content(props) {
     });
 
     return () => {
-      // socket.emit('disconnect');
+      socket.emit('leaveRoom', currentGroup, () => {});
       socket.off();
     };
   }, []);
@@ -51,7 +51,6 @@ function Content(props) {
     setMessageList([]);
     ChatService.fetch_message_by_group_id(groupId)
       .then((response) => {
-        console.log(response.msg);
         setMessageList(response.msg.data);
       })
       .catch((err) => {
@@ -72,8 +71,7 @@ function Content(props) {
     const payload = {
       lastMessage: message,
     };
-    GroupService.update_group_info(groupChatStore.currentGroupChatInfo?.id, { payload: { lastMessage: message } });
-    // groupChatStore.setCurrentGroupChatInfo({groupChatStore.currentGroupChatInfo, payload});
+    GroupService.update_group_info(groupChatStore.currentGroupChatInfo?.id, { payload });
 
     if (message) {
       socket.emit('chatToServer', { senderId: id, groupId: groupId, content: message });

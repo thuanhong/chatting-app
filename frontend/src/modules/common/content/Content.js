@@ -35,10 +35,11 @@ function Content(props) {
   const { groupChatStore } = useGlobalStore();
   const { id: groupId } = groupChatStore.currentGroupChatInfo;
   const { id } = JSON.parse(localStorage.getItem('currentUser'));
-  const [pagination, setPagenation] = useState(initPagination);
+  const [pagination, setPagination] = useState(initPagination);
 
   useEffect(() => {
     socket = io('localhost:8000/chat');
+    clearPagination();
 
     socket.on('chatToClient', (msg) => {
       setMessageList((prevstate) => {
@@ -52,30 +53,33 @@ function Content(props) {
     };
   }, []);
 
-  function fetchListMessage() {
-    ChatService.fetch_message_by_group_id(groupId, pagination)
-      .then((response) => {
-        if (oldMessageList.length === 0) clearPagination();
-        setOldMessageList((prevState) => [...prevState, ...response.msg.data]);
-      })
-      .catch((err) => {
-        throw err;
-      });
-    setPagenation({ take: 10, pageIndex: pagination.pageIndex + 1 });
+  async function fetchListMessage() {
+    const response = await ChatService.fetch_message_by_group_id(groupId, pagination);
+
+    // setOldMessageList((prevState) => [...prevState, ...(response.msg.data ?? [])]);
+    setOldMessageList(response.msg.data);
+    console.log();
   }
+
   const clearPagination = () => {
-    setPagenation({ ...initPagination });
+    setOldMessageList([]);
+    setMessageList([]);
+    setPagination({ ...initPagination });
   };
 
   useEffect(() => {
     socket.emit('leaveRoom', currentGroup, () => {});
     setCurrentGroup(groupId);
     socket.emit('joinRoom', groupId, () => {});
-    setOldMessageList([]);
-    setMessageList([]);
-    fetchListMessage();
+
     clearPagination();
+    fetchListMessage();
   }, [groupId]);
+
+  useEffect(() => {
+    console.log('GO GO GO', pagination);
+    fetchListMessage();
+  }, [pagination]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -101,11 +105,11 @@ function Content(props) {
       <div id='scrollableDiv' className={classes.body}>
         <ContactUser />
         <InfiniteScroll
-          dataLength={oldMessageList.length}
-          scrollThreshold='100px'
-          next={() => fetchListMessage()}
-          style={{ display: 'flex', flexDirection: 'column-reverse' }} //To put endMessage and loader to the top.
+          dataLength={50}
+          next={() => setPagination({ take: pagination.take + 5, pageIndex: 0 })}
           hasMore={true}
+          inverse={true}
+          style={{ display: 'flex', flexDirection: 'column-reverse' }} //To put endMessage and loader to the top.
           loader={<h3 style={{ color: 'white' }}>Loading...</h3>}
           scrollableTarget='scrollableDiv'
         >
@@ -116,7 +120,7 @@ function Content(props) {
             })}
         </InfiniteScroll>
         {messageList.map((msg, index) => {
-          return <Message key={index + 'string'} message={msg.content} isSender={id === msg.senderId} />;
+          return <Message key={index} message={msg.content} isSender={id === msg.senderId} />;
         })}
         <li ref={scrollRef} />
       </div>

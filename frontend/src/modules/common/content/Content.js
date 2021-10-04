@@ -37,6 +37,9 @@ function Content(props) {
   const { id } = JSON.parse(localStorage.getItem('currentUser'));
   const [pagination, setPagination] = useState(initPagination);
 
+  const scrollRow = useRef(null);
+  const scrollTop = useRef(null);
+
   useEffect(() => {
     socket = io('localhost:8000/chat');
     clearPagination();
@@ -52,13 +55,19 @@ function Content(props) {
       socket.off();
     };
   }, []);
+  function handleScroll(e) {
+    const currentScrollY = e.target.scrollTop;
+
+    if (scrollRow.current > currentScrollY) {
+      setPagination({ take: pagination.take + 5, pageIndex: 0 });
+    }
+    scrollRow.current = currentScrollY - 40;
+    return;
+  }
 
   async function fetchListMessage() {
     const response = await ChatService.fetch_message_by_group_id(groupId, pagination);
-
-    // setOldMessageList((prevState) => [...prevState, ...(response.msg.data ?? [])]);
     setOldMessageList(response.msg.data);
-    console.log();
   }
 
   const clearPagination = () => {
@@ -74,10 +83,12 @@ function Content(props) {
 
     clearPagination();
     fetchListMessage();
+    setTimeout(() => {
+      return scrollRef.current.scrollIntoView({});
+    }, 200);
   }, [groupId]);
 
   useEffect(() => {
-    console.log('GO GO GO', pagination);
     fetchListMessage();
   }, [pagination]);
 
@@ -85,7 +96,7 @@ function Content(props) {
     if (scrollRef.current) {
       scrollRef.current.scrollIntoView({ behaviour: 'smooth' });
     }
-  }, [oldMessageList, messageList]);
+  }, [messageList]);
 
   const sendMessage = (event) => {
     event.preventDefault();
@@ -102,15 +113,16 @@ function Content(props) {
 
   return useObserver(() => (
     <Box height={'100vh'} display='flex' alignItems='flex-start' justifyContent='flex-start'>
-      <div id='scrollableDiv' className={classes.body}>
+      <div id='scrollableDiv' className={classes.body} onScroll={handleScroll} ref={scrollTop}>
+        {/* <li ref={scrollTop} /> */}
+
         <ContactUser />
         <InfiniteScroll
           dataLength={50}
           next={() => setPagination({ take: pagination.take + 5, pageIndex: 0 })}
           hasMore={true}
           inverse={true}
-          style={{ display: 'flex', flexDirection: 'column-reverse' }} //To put endMessage and loader to the top.
-          loader={<h3 style={{ color: 'white' }}>Loading...</h3>}
+          style={{ display: 'flex', flexDirection: 'column-reverse', paddingTop: '10vh' }} //To put endMessage and loader to the top.
           scrollableTarget='scrollableDiv'
         >
           {oldMessageList

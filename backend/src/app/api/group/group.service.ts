@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { GroupChat } from '@src/entities/group-chat.entity';
 import { UserGroup } from '@src/libs/entities/user-group.entity';
 import { DataService } from '@src/libs/services/data.service';
-import { In } from 'typeorm';
+import { In, Not } from 'typeorm';
 import { PagingInfo } from '@src/interface/paging-info.interface';
 import { GroupDto } from '@src/libs/common/dto/group.dto';
 import { Users } from '@src/libs/entities/users.entity';

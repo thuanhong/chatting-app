@@ -7,7 +7,7 @@ import BadgeAvatar from '@src/common/badge-avatar/BadgeAvatar';
 import { GroupService } from '@src/services/GroupService';
 import { useObserver } from 'mobx-react-lite';
 import { useGlobalStore } from '@src/hooks';
-import { ButtonBase } from '@material-ui/core';
+import { ButtonBase, Button } from '@material-ui/core';
 import { styles } from './styles';
 
 const initPagination = {
@@ -28,17 +28,6 @@ function ListGroupChat(props) {
     const response = await GroupService.get_user_group_chat(pagination);
     setListGroupChatData(response?.msg.groups ?? []);
     setPagenation({ ...pagination, take: pagination.take + 5 });
-  };
-
-  const onSeeMore = () => {
-    GroupService.get_user_group_chat(pagination)
-      .then((response) => {
-        setListGroupChatData((presState) => [...presState, ...(response.msg.groups ?? [])]);
-        setPagenation({ ...pagination, pageIndex: pagination.pageIndex + 1 });
-      })
-      .catch((err) => {
-        throw err;
-      });
   };
 
   useEffect(() => {
@@ -99,9 +88,9 @@ function ListGroupChat(props) {
             </React.Fragment>
           );
         })}
-        {/* <Button style={{ width: '100%', backgroundColor: 'transparent' }} onClick={getGroupData}>
+        <Button style={{ width: '100%', backgroundColor: 'transparent' }} onClick={getGroupData}>
           See more
-        </Button> */}
+        </Button>
       </div>
     );
   });

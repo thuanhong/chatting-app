@@ -7,6 +7,10 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { withStyles } from '@material-ui/core/styles';
 import { styles } from './styles';
+import { CookieHandler } from '@src/utils/Cookies';
+import Router from 'next/router';
+import firebase from '@src/services/Firebase';
+import { AuthService } from '@src/services/AuthService';
 
 function LeftNavHeader(props) {
   const { classes } = props;
@@ -21,6 +25,16 @@ function LeftNavHeader(props) {
     setAnchorEl(null);
   };
 
+  const handleLogout = () => {
+    CookieHandler.removeCookie('access_token');
+    firebase.auth().signOut();
+    // const token = firebase.auth().currentUser.getIdToken;
+    console.log('firebase', firebase.auth().currentUser.getIdToken);
+    // AuthService.check_auth().then((res) => console.log('res', res));
+
+    Router.push('/login');
+  };
+
   return (
     <CardHeader
       avatar={<Avatar aria-label='recipe'>{`${firstName.charAt(0)}${lastName.charAt(0)}`}</Avatar>}
@@ -31,7 +45,7 @@ function LeftNavHeader(props) {
           </IconButton>
           <Menu id='simple-menu' anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
             <MenuItem onClick={handleClose}>Profile</MenuItem>
-            <MenuItem onClick={handleClose}>Logout</MenuItem>
+            <MenuItem onClick={handleLogout}>Logout</MenuItem>
           </Menu>
         </div>
       }

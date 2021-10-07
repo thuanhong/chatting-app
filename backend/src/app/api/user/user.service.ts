@@ -12,6 +12,7 @@ import { In, Like, Not } from 'typeorm';
 import { AddNewContactRequest } from '@src/request/add-new-contact.request';
 import { NotificationService } from '@src/services/notification.service';
 import { CheckContactResponse } from '@src/response/check-contact.response';
+import { PagingInfo } from '@src/libs/interface/paging-info.interface';
 
 @Injectable()
 export class UserService {
@@ -41,9 +42,9 @@ export class UserService {
     return data;
   }
 
-  async getAllContact(userId: string): Promise<Users[]> {
+  async getAllContact(userId: string, pageInfo: PagingInfo): Promise<Users[]> {
     const all_contact_id = await this.dataService.find(Contact, {
-      select: ['contact'],
+      select: ['contactId'],
       where: {
         userId: userId,
       },

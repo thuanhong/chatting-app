@@ -7,6 +7,7 @@ import {
   Request,
   BadRequestException,
   Req,
+  Query,
 } from '@nestjs/common';
 import { MultipleUserResponse } from '@src/response/multiple-user.response';
 import { CreateUserResponse } from '@src/response/create-user.response';
@@ -19,6 +20,7 @@ import { SearchUserWithEmailRequest } from '@src/request/search-user-with-email.
 import { AddNewContactRequest } from '@src/request/add-new-contact.request';
 import { AddNewContactResponse } from '@src/response/add-new-contact.response';
 import { CheckContactResponse } from '@src/response/check-contact.response';
+import { PagingInfo } from '@src/libs/interface/paging-info.interface';
 
 @Controller('/api/v1/users')
 export class UserController {
@@ -76,8 +78,11 @@ export class UserController {
   }
 
   @Get('contact')
-  async getAllContact(@Req() req: any): Promise<MultipleUserResponse> {
-    const users = await this.userService.getAllContact(req.user.uid);
+  async getAllContact(
+    @Req() req: any,
+    @Query() query: PagingInfo,
+  ): Promise<MultipleUserResponse> {
+    const users = await this.userService.getAllContact(req.user.uid, query);
     return new MultipleUserResponse({
       users,
     });

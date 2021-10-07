@@ -19,18 +19,17 @@ const uiConfig = {
   signInFlow: 'popup',
   // Redirect to / after sign in is successful. Alternatively you can provide a callbacks.signInSuccess function.
   signInSuccessUrl: '/',
-  // GitHub as the only included Auth Provider.
   // You could add and configure more here!
   signInOptions: [firebase.auth.GoogleAuthProvider.PROVIDER_ID, firebase.auth.EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD],
-  callbacks: {
-    signInSuccess: (currentUser, credential, redirectUrl) => {
-      const currentUsers = firebase?.app()?.auth()?.currentUser ?? {};
+  // callbacks: {
+  //   signInSuccess: (currentUser, credential, redirectUrl) => {
+  //     // const currentUsers = firebase?.app()?.auth()?.currentUser ?? {};
 
-      CookieHandler.setCookie('access_token', currentUsers.Aa);
-      Router.push('/');
-      return false;
-    },
-  },
+  //     // CookieHandler.setCookie('access_token', currentUsers.Aa);
+  //     Router.push('/');
+  //     return false;
+  //   },
+  // },
 };
 
 function Alert(props) {

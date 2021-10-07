@@ -10,7 +10,10 @@ import { Contact } from '@src/libs/entities/contact.entity';
 @Injectable()
 export class ContactService {
   constructor(private dataService: DataService) {}
-  async getListContactUser(userId: string): Promise<Contact[]> {
+  async getListContactUser(
+    userId: string,
+    pageInfo: PagingInfo,
+  ): Promise<Contact[]> {
     return await this.dataService.find(Contact, {
       select: ['id', 'contactId', 'userId', 'type'],
       where: {

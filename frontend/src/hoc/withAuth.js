@@ -3,6 +3,8 @@ import { LoadingPage } from '@src/common/loading-page/LoadingPage';
 import Router from 'next/router';
 import { AuthService } from '@src/services/AuthService';
 import ErrorBoundary from '@src/hoc/ErrorBoundary';
+import firebase from '@src/services/Firebase';
+import { CookieHandler } from '@src/utils/Cookies';
 
 export const UserContext = createContext({});
 export const withAuth = (PageComponent) => {
@@ -10,6 +12,9 @@ export const withAuth = (PageComponent) => {
     const [loading, setLoading] = useState(true);
     useEffect(() => {
       async function fetchData() {
+        await firebase?.auth()?.onAuthStateChanged((authUser) => {
+          authUser ? CookieHandler.setCookie('access_token', authUser.Aa) : CookieHandler.removeCookie('access_token');
+        });
         await AuthService.check_auth()
           .then((res) => {
             if (res?.statusCode === 200) {

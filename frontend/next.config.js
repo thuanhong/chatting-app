@@ -13,8 +13,10 @@ module.exports = withSass(
           },
           use: ['@svgr/webpack'],
         });
-
-        return config;
+        config.node = {
+          fs: 'empty'
+        }
+        return config
       },
     }),
   ),

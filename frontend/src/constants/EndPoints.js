@@ -21,4 +21,7 @@ export const EndPoints = {
   CHAT: {
     general_chat_endpoint: 'api/v1/message',
   },
+  CONTACT: {
+    general_contact_endpoint: 'api/v1/contact',
+  },
 };

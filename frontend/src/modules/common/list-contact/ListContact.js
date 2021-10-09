@@ -5,14 +5,27 @@ import CardHeader from '@material-ui/core/CardHeader';
 import BadgeAvatar from '@src/common/badge-avatar/BadgeAvatar';
 import { UserService } from '@src/services/UserService';
 import { styles } from './styles';
+import { ContactService } from '@src/services/ContactService';
+
+const initPagination = {
+  take: 5,
+  pageIndex: 0,
+};
 
 function ListContact(props) {
   const { classes } = props;
   const [listContactData, setListContactData] = useState([]);
+  const [pagination, setPagination] = useState(initPagination);
+
+  const fetchListContact = async () => {
+    const listContact = await ContactService.fetch_list_contact(pagination);
+    setListContactData(listContact);
+  };
 
   useEffect(() => {
     UserService.get_user_contact()
       .then((response) => {
+        console.log(response.msg);
         setListContactData(response?.msg.users);
       })
       .catch((err) => {

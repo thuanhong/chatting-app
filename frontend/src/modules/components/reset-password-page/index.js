@@ -4,8 +4,6 @@ import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import { useStyles } from '@src/components/sign-up-page/styles';
 import firebase from '@src/services/Firebase';
-import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
-import { AuthService } from '@src/services/AuthService';
 import { Copyright } from '@src/modules/common/copy-right';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { CurrentComponentPageLogin } from '@src/modules/pages/login';

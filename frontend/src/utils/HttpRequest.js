@@ -1,8 +1,9 @@
 import axios from 'axios';
 import { CookieHandler } from '@src/utils/Cookies';
+require('dotenv').config();
 
 export const createAxios = () => {
-  let baseURLStr = 'http://localhost:8000';
+  let baseURLStr = process.env.BACKEND_URL || 'http://localhost:8000';
   let headerObj = {
     'Content-Type': 'application/json',
   };

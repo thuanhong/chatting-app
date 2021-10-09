@@ -59,8 +59,7 @@ export class AppModule implements NestModule {
   public configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AuthMiddleware)
-      .exclude('/api/v1/group-chat/:id', '/auth/sign-up', '/api/v1/contact')
+      .exclude('/auth/sign-up')
       .forRoutes({ path: '/api/v1', method: RequestMethod.ALL });
-    // consumer.apply(AuthMiddleware).exclude('/api/check-health').forRoutes();
   }
 }

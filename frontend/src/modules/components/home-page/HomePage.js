@@ -5,6 +5,7 @@ import Hidden from '@material-ui/core/Hidden';
 import Navigator from '@src/common/navigator/Navigator';
 import Content from '@src/common/content/Content';
 import Header from '@src/common/header/Header';
+import useVideoCall from '@src/hooks/useVideoCall';
 
 let theme = createTheme({
   palette: {
@@ -140,7 +141,6 @@ const styles = {
     background: 'black',
   },
 };
-
 function HomePage(props) {
   const { classes } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);

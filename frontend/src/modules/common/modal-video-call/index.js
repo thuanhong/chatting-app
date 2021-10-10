@@ -10,10 +10,10 @@ function VideoCallModal(props) {
     <div className={classes.main}>
       <div className={classes.container}>
         <div className={classes.remoteVideo}>
-          <video className={classes.video} ref={remoteVideo}></video>
+          <video className={classes.video} ref={remoteVideo} autoPlay></video>
         </div>
         <div className={classes.localVideo}>
-          <video className={classes.video} ref={localVideo}></video>
+          <video className={classes.video} ref={localVideo} autoPlay muted></video>
         </div>
         <ButtonBase
           onClick={() => {

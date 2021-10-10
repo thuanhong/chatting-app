@@ -4,6 +4,7 @@ import { DataService } from './data.service';
 import { FirebaseAuthService } from './firebase.service';
 import { NotificationGateway } from './notification.gateway';
 import { NotificationService } from './notification.service';
+import { VideoCallGateway } from './video-call.gateway';
 
 @Module({
   providers: [
@@ -11,6 +12,7 @@ import { NotificationService } from './notification.service';
     FirebaseAuthService,
     NotificationService,
     NotificationGateway,
+    VideoCallGateway,
   ],
   exports: [DataService, FirebaseAuthService, NotificationService],
   imports: [ConfigModule],

@@ -1,4 +1,3 @@
-import useInfiniteScroll from '@src/hooks/useInfiniteScroll';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import io from 'socket.io-client';
@@ -8,14 +7,21 @@ import Box from '@material-ui/core/Box';
 import SendIcon from '@material-ui/icons/Send';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
+//import common component
 import Message from '@src/common/message/Message';
 import ContactUser from '@src/common/contact-user/ContactUser';
+import VideoCallModal from '@src/common/modal-video-call';
+//import service
 import { GroupService } from '@src/services/GroupService';
 import { ChatService } from '@src/services/ChatService';
+
 import { useGlobalStore } from '@src/hooks/';
+import useVideoCall from '@src/hooks/useVideoCall';
 import { useObserver, observer } from 'mobx-react-lite';
 import { styles } from './styles';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import AddPhotoAlternate from '@material-ui/icons/AddPhotoAlternate';
+import { Button } from '@material-ui/core';
 
 let socket;
 
@@ -25,18 +31,20 @@ const initPagination = {
 };
 
 function Content(props) {
-  const { classes } = props;
+  const { classes, localVideo, remoteVideo, isOpenCall, setIsOpenCall } = props;
   const scrollRef = useRef(null);
 
   const [message, setMessage] = useState();
   const [messageList, setMessageList] = useState([]);
   const [oldMessageList, setOldMessageList] = useState([]);
   const [currentGroup, setCurrentGroup] = useState('');
+  const [pagination, setPagination] = useState(initPagination);
+
   const { groupChatStore } = useGlobalStore();
   const { id: groupId } = groupChatStore.currentGroupChatInfo;
   const { id } = JSON.parse(localStorage.getItem('currentUser'));
-  const [pagination, setPagination] = useState(initPagination);
 
+  const { makeCall, stopCall } = useVideoCall(localVideo, remoteVideo);
   const scrollRow = useRef(null);
   const scrollTop = useRef(null);
 
@@ -67,7 +75,7 @@ function Content(props) {
 
   async function fetchListMessage() {
     const response = await ChatService.fetch_message_by_group_id(groupId, pagination);
-    setOldMessageList(response.msg.data);
+    setOldMessageList(response?.msg.data ?? []);
   }
 
   const clearPagination = () => {
@@ -112,7 +120,8 @@ function Content(props) {
   };
 
   return useObserver(() => (
-    <Box height={'100vh'} display='flex' alignItems='flex-start' justifyContent='flex-start'>
+    <Box height={';100vh'} display='flex' alignItems='flex-start' justifyContent='flex-start'>
+      {isOpenCall ? <VideoCallModal remoteVideo={remoteVideo} localVideo={localVideo} stopCall={stopCall} setIsOpenCall={setIsOpenCall} /> : null}
       <div id='scrollableDiv' className={classes.body} onScroll={handleScroll} ref={scrollTop}>
         {/* <li ref={scrollTop} /> */}
 
@@ -137,7 +146,13 @@ function Content(props) {
         <li ref={scrollRef} />
       </div>
       <AppBar component='div' position='fixed' className={classes.appBar}>
-        <div>
+        <div className={classes.inputChat}>
+          <div className={classes.uploadBtn}>
+            <input style={{ display: 'none' }} id='raised-button-file' type='file' onChange={() => {}} />
+            <Button htmlFor='raised-button-file' component='label'>
+              <AddPhotoAlternate style={{ color: '#6D9886' }} />
+            </Button>
+          </div>
           <InputBase
             placeholder='Type a message...'
             fullWidth

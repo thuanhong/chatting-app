@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { createTheme, ThemeProvider, withStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Hidden from '@material-ui/core/Hidden';
@@ -144,6 +144,9 @@ const styles = {
 function HomePage(props) {
   const { classes } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [isOpenCall, setIsOpenCall] = React.useState(false);
+  const remoteVideo = useRef();
+  const localVideo = useRef();
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -162,9 +165,9 @@ function HomePage(props) {
           </Hidden>
         </nav>
         <div className={classes.app}>
-          <Header onDrawerToggle={handleDrawerToggle} />
+          <Header onDrawerToggle={handleDrawerToggle} remoteVideo={remoteVideo} localVideo={localVideo} isOpenCall={isOpenCall} setIsOpenCall={setIsOpenCall} />
           <main className={classes.main}>
-            <Content />
+            <Content remoteVideo={remoteVideo} localVideo={localVideo} isOpenCall={isOpenCall} setIsOpenCall={setIsOpenCall} />
           </main>
         </div>
       </div>

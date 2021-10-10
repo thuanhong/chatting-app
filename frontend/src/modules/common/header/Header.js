@@ -12,10 +12,13 @@ import { withStyles } from '@material-ui/core/styles';
 import { useObserver } from 'mobx-react-lite';
 import { useGlobalStore } from '@src/hooks';
 import { styles } from './styles';
+import { ButtonBase } from '@material-ui/core';
+import useVideoCall from '@src/hooks/useVideoCall';
 
 function Header(props) {
-  const { classes } = props;
+  const { classes, localVideo, remoteVideo, isOpenCall, setIsOpenCall } = props;
   const { contactChatStore } = useGlobalStore();
+  const { makeCall, stopCall } = useVideoCall(localVideo, remoteVideo);
 
   return useObserver(() => {
     const { firstName, lastName } = contactChatStore.currentUserChattingInfo;
@@ -30,11 +33,18 @@ function Header(props) {
                 </Typography>
               </Grid>
               <Grid item>
-                <Tooltip title='Video call'>
-                  <IconButton color='inherit'>
-                    <VideocamIcon />
-                  </IconButton>
-                </Tooltip>
+                <ButtonBase
+                  onClick={() => {
+                    makeCall();
+                    setIsOpenCall(true);
+                  }}
+                >
+                  <Tooltip title='Video call'>
+                    <IconButton color='inherit'>
+                      <VideocamIcon />
+                    </IconButton>
+                  </Tooltip>
+                </ButtonBase>
               </Grid>
               <Grid item>
                 <Tooltip title='Call'>

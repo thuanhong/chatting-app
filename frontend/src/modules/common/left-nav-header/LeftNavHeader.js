@@ -10,7 +10,6 @@ import { styles } from './styles';
 import { CookieHandler } from '@src/utils/Cookies';
 import Router from 'next/router';
 import firebase from '@src/services/Firebase';
-import { AuthService } from '@src/services/AuthService';
 
 function LeftNavHeader(props) {
   const { classes } = props;
@@ -28,11 +27,11 @@ function LeftNavHeader(props) {
   const handleLogout = () => {
     CookieHandler.removeCookie('access_token');
     firebase.auth().signOut();
-    // const token = firebase.auth().currentUser.getIdToken;
-    console.log('firebase', firebase.auth().currentUser.getIdToken);
-    // AuthService.check_auth().then((res) => console.log('res', res));
-
     Router.push('/login');
+  };
+
+  const handleNavigateToProfilePage = () => {
+    Router.push('/profile');
   };
 
   return (
@@ -44,7 +43,7 @@ function LeftNavHeader(props) {
             <MoreVertIcon className={classes.colorTextWhite} />
           </IconButton>
           <Menu id='simple-menu' anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
-            <MenuItem onClick={handleClose}>Profile</MenuItem>
+            <MenuItem onClick={handleNavigateToProfilePage}>Profile</MenuItem>
             <MenuItem onClick={handleLogout}>Logout</MenuItem>
           </Menu>
         </div>

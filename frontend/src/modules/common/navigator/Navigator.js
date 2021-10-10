@@ -4,18 +4,15 @@ import { withStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
-import IconButton from '@material-ui/core/IconButton';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
-import ChatIcon from '@material-ui/icons/Chat';
-import NotificationsIcon from '@material-ui/icons/Notifications';
-import PermContactCalendarIcon from '@material-ui/icons/PermContactCalendar';
-import Grid from '@material-ui/core/Grid';
 import ListContact from '@src/common/list-contact/ListContact';
 import ListGroupChat from '@src/common/list-group-chat/ListGroupChat';
 import SearchInput from '@src/common/search-input/SearchInput';
 import LeftNavHeader from '@src/common/left-nav-header/LeftNavHeader';
+import NavigatorAction from '@src/common/navigator-action/NavigatorAction';
+import ListNotification from '@src/common/list-notification/ListNotification';
 import { styles } from './styles';
 
 const CurrentComponent = {
@@ -30,16 +27,16 @@ function Navigator(props) {
 
   const listContentFunctionMap = useMemo(() => {
     switch (currentComponent) {
-      case CurrentComponent.CHAT_COMPONENT:
-        return <ListGroupChat />;
-      case CurrentComponent.CONTACT_COMPONENT:
-        return <ListContact />;
-      default:
-        return <div />;
+    case CurrentComponent.CHAT_COMPONENT:
+      return <ListGroupChat />;
+    case CurrentComponent.CONTACT_COMPONENT:
+      return <ListContact />;
+    case CurrentComponent.NOTIFICATION_COMPONENT:
+      return <ListNotification />;
+    default:
+      return <div />;
     }
   }, [currentComponent]);
-
-  const handleClickEvent = (currentComponent) => setCurrentComponent(currentComponent);
 
   return (
     <Drawer variant='permanent' {...other}>
@@ -49,23 +46,7 @@ function Navigator(props) {
           <SearchInput />
         </CardContent>
         <CardActions disableSpacing>
-          <Grid container justifyContent='space-between' spacing={4}>
-            <Grid container justifyContent='center' item xs={4}>
-              <IconButton onClick={() => handleClickEvent(CurrentComponent.CHAT_COMPONENT)} aria-label='chat'>
-                <ChatIcon className={classes.colorTextWhite} />
-              </IconButton>
-            </Grid>
-            <Grid container justifyContent='center' item xs={4}>
-              <IconButton onClick={() => handleClickEvent(CurrentComponent.CONTACT_COMPONENT)} aria-label='contact'>
-                <PermContactCalendarIcon className={classes.colorTextWhite} />
-              </IconButton>
-            </Grid>
-            <Grid container justifyContent='center' item xs={4}>
-              <IconButton onClick={() => handleClickEvent('')} aria-label='notification'>
-                <NotificationsIcon className={classes.colorTextWhite} />
-              </IconButton>
-            </Grid>
-          </Grid>
+          <NavigatorAction CurrentComponent={CurrentComponent} setCurrentComponent={setCurrentComponent} />
         </CardActions>
         <Divider variant='middle' />
       </Card>

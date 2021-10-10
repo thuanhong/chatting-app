@@ -17,6 +17,7 @@ export const EndPoints = {
   },
   GROUP: {
     general_group_chat_endpoint: '/api/v1/group-chat',
+    get_user_notification: '/api/v1/group-chat/notification',
   },
   CHAT: {
     general_chat_endpoint: 'api/v1/message',

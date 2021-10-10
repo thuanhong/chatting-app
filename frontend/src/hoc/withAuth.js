@@ -12,7 +12,7 @@ export const withAuth = (PageComponent) => {
     const [loading, setLoading] = useState(true);
     useEffect(() => {
       async function fetchData() {
-        await firebase?.auth()?.onAuthStateChanged((authUser) => {
+        firebase?.auth()?.onAuthStateChanged((authUser) => {
           authUser ? CookieHandler.setCookie('access_token', authUser.Aa) : CookieHandler.removeCookie('access_token');
         });
         await AuthService.check_auth()

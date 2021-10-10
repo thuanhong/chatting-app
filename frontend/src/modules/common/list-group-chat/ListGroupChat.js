@@ -21,7 +21,7 @@ function ListGroupChat(props) {
   const { classes } = props;
   const [listGroupChatData, setListGroupChatData] = useState([]);
   const [pagination, setPagenation] = useState(initPagination);
-  const { groupChatStore, contactChatStore } = useGlobalStore();
+  const { groupChatStore, contactChatStore, notificationStore } = useGlobalStore();
   const { id: currentUserId } = JSON.parse(localStorage.getItem('currentUser'));
 
   const getGroupData = async () => {
@@ -35,6 +35,9 @@ function ListGroupChat(props) {
     socketGroupChat = io('localhost:8000/notification');
     socketGroupChat.emit('joinRoom', currentUserId, () => {});
     socketGroupChat.on('chatToClient', (msg) => {
+      if (currentUserId === msg.userId) {
+        notificationStore.updateNewNotificationList(msg);
+      }
       getGroupData();
     });
 

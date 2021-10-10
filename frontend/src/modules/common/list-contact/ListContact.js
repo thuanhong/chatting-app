@@ -25,7 +25,6 @@ function ListContact(props) {
   useEffect(() => {
     UserService.get_user_contact()
       .then((response) => {
-        console.log(response.msg);
         setListContactData(response?.msg.users);
       })
       .catch((err) => {

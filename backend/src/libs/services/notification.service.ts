@@ -20,8 +20,18 @@ export class NotificationService {
       notifyDesc,
       status: true,
     };
-    await this.dataService.save(Notification, newNotification);
+    const result = await this.dataService.save(Notification, newNotification);
+    this.socket.to(userId).to(contactId).emit('chatToClient', result);
+  }
 
-    this.socket.to(userId).to(contactId).emit('chatToClient', '');
+  async getUserNotification(userId: string): Promise<Notification[]> {
+    return await this.dataService.find(Notification, {
+      where: {
+        userId,
+      },
+      order: {
+        createdAt: 'DESC',
+      },
+    });
   }
 }

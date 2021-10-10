@@ -1,13 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DataService } from '@src/libs/services/data.service';
-import { Users } from '@src/entities/users.entity';
-import { Contact } from '@src/entities/contact.entity';
-import { GroupChat } from '@src/entities/group-chat.entity';
-import { UserGroup } from '@src/entities/user-group.entity';
 import { Message } from '@src/libs/entities/message.entity';
-import { In, InsertResult, Like, Not } from 'typeorm';
-import { AddNewContactRequest } from '@src/request/add-new-contact.request';
-import { take } from 'rxjs';
+import { InsertResult } from 'typeorm';
 import { PagingInfo } from '@src/libs/interface/paging-info.interface';
 
 @Injectable()

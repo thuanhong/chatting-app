@@ -1,5 +1,4 @@
-import useInfiniteScroll from '@src/hooks/useInfiniteScroll';
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import io from 'socket.io-client';
 import InputBase from '@material-ui/core/InputBase';
@@ -42,7 +41,6 @@ function Content(props) {
 
   useEffect(() => {
     socket = io('localhost:8000/chat');
-    clearPagination();
 
     socket.on('chatToClient', (msg) => {
       setMessageList((prevstate) => {
@@ -103,7 +101,7 @@ function Content(props) {
     const payload = {
       lastMessage: message,
     };
-    GroupService.update_group_info(groupChatStore.currentGroupChatInfo?.id, { payload: { lastMessage: message } });
+    GroupService.update_group_info(groupChatStore.currentGroupChatInfo?.id, { payload });
 
     if (message) {
       socket.emit('chatToServer', { senderId: id, groupId: groupId, content: message });

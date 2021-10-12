@@ -31,7 +31,7 @@ const initPagination = {
 };
 
 function Content(props) {
-  const { classes, localVideo, remoteVideo, isOpenCall, setIsOpenCall } = props;
+  const { classes, localVideo, remoteVideo, isOpenCall, setIsOpenCall, callingVideo, setConnectedUsers } = props;
   const scrollRef = useRef(null);
 
   const [message, setMessage] = useState();
@@ -39,27 +39,24 @@ function Content(props) {
   const [oldMessageList, setOldMessageList] = useState([]);
   const [currentGroup, setCurrentGroup] = useState('');
   const [pagination, setPagination] = useState(initPagination);
-  const [connectedUsers, setConnectedUsers] = useState([]);
 
   const { groupChatStore } = useGlobalStore();
   const { id: groupId } = groupChatStore.currentGroupChatInfo;
   const { id } = JSON.parse(localStorage.getItem('currentUser'));
 
-  const { onCallMade, callUser, joinRoom, onUpdateUserList, onRemoveUser, stopCall, onAnswerMade, onCallRejected, onTrack } = useVideoCall(localVideo, remoteVideo);
   const scrollRow = useRef(null);
   const scrollTop = useRef(null);
 
   useEffect(() => {
     socket = io('localhost:8000/chat');
     clearPagination();
-    onCallMade();
-    joinRoom(groupId);
-    onRemoveUser((socketId) => setConnectedUsers((users) => users.filter((user) => user !== socketId)));
-    onUpdateUserList((users) => setConnectedUsers(users));
-    onAnswerMade((socket) => callUser(socket));
-    onCallRejected((data) => alert(`User: "Socket: ${data.socket}" rejected your call.`));
-    onTrack((stream) => (remoteVideo.current.srcObject = stream));
-
+    callingVideo.joinRoom('call');
+    callingVideo.onCallMade();
+    callingVideo.onRemoveUser((socketId) => setConnectedUsers((users) => users.filter((user) => user !== socketId)));
+    callingVideo.onUpdateUserList((users) => setConnectedUsers(users));
+    callingVideo.onAnswerMade((sockets) => callingVideo.callUser(sockets));
+    callingVideo.onCallRejected((data) => alert(`User: "Socket: ${data.socket}" rejected your call.`));
+    callingVideo.onTrack((stream) => (remoteVideo.current.srcObject = stream));
     // peerVideoConnection.onConnected(() => {
     //   setStartTimer(true);
     // });
@@ -108,7 +105,7 @@ function Content(props) {
     clearPagination();
     fetchListMessage();
     setTimeout(() => {
-      return scrollRef.current.scrollIntoView({});
+      return scrollRef?.current?.scrollIntoView({});
     }, 200);
   }, [groupId]);
 
@@ -137,7 +134,7 @@ function Content(props) {
 
   return useObserver(() => (
     <Box height={';100vh'} display='flex' alignItems='flex-start' justifyContent='flex-start'>
-      <VideoCallModal remoteVideo={remoteVideo} localVideo={localVideo} stopCall={stopCall} setIsOpenCall={setIsOpenCall} />
+      <VideoCallModal remoteVideo={remoteVideo} localVideo={localVideo} stopCall={callingVideo.stopCall} setIsOpenCall={setIsOpenCall} />
       {/* {isOpenCall ? <VideoCallModal remoteVideo={remoteVideo} localVideo={localVideo} stopCall={stopCall} setIsOpenCall={setIsOpenCall} /> : null} */}
       <div id='scrollableDiv' className={classes.body} onScroll={handleScroll} ref={scrollTop}>
         {/* <li ref={scrollTop} /> */}

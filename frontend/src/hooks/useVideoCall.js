@@ -1,13 +1,12 @@
 import React, { useCallback, useRef, ForwardedRef, useEffect } from 'react';
 import io from 'socket.io-client';
 
-const socket = io('localhost:8000/call');
-const senders = [];
 let room = null;
 export default function useVideoCall(localVideo, remoteVideo) {
-  const [userMediaStream, setUserMediaStream] = React.useState(null);
   const onConnected = null;
   const onDisconnected = null;
+  const socket = io('localhost:8000/call');
+  const senders = [];
   const peerConnection = new window.RTCPeerConnection({
     iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
   });
@@ -16,15 +15,18 @@ export default function useVideoCall(localVideo, remoteVideo) {
 
   peerConnection.addEventListener('connectionstatechange', (event) => {
     console.log(peerConnection.connectionState);
-    const fn = this['_on' + capitalizeFirstLetter(peerConnection.connectionState)];
+    // const fn = this['_on' + capitalizeFirstLetter(peerConnection.connectionState)];
+    const fn = ['_on' + capitalizeFirstLetter(peerConnection.connectionState)];
+
     fn && fn(event);
   });
 
+  function joinRoom(rooms) {
+    room = rooms;
+    socket.emit('joinRoom', rooms);
+  }
   function onCallMade() {
-    console.log('call-made');
-
     socket.on('call-made', async (data) => {
-      console.log('call-made 1', data);
       if (getCalled) {
         const confirmed = window.confirm(`User "Socket: ${data.socket}" wants to call you. Do accept this call?`);
 
@@ -37,9 +39,9 @@ export default function useVideoCall(localVideo, remoteVideo) {
         }
       }
 
-      await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
+      await peerConnection.setRemoteDescription(data.offer);
       const answer = await peerConnection.createAnswer();
-      await peerConnection.setLocalDescription(new RTCSessionDescription(answer));
+      await peerConnection.setLocalDescription(answer);
 
       socket.emit('make-answer', {
         answer,
@@ -48,17 +50,29 @@ export default function useVideoCall(localVideo, remoteVideo) {
       getCalled = true;
     });
   }
-  function joinRoom(rooms) {
-    room = rooms;
-    socket.emit('joinRoom', rooms);
+
+  function onRemoveUser(callback) {
+    socket.on(`${room}-remove-user`, ({ socketId }) => {
+      callback(socketId);
+    });
+  }
+
+  function onUpdateUserList(callback) {
+    socket.on(`${room}-update-user-list`, ({ users }) => {
+      callback(users);
+    });
   }
 
   // Start a RTCPeerConnection to each client
   function onAnswerMade(callback) {
-    socket.on('answer-made', async (data) => {
-      await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+    console.log('isAlreadyCalling', isAlreadyCalling);
 
+    socket.on('answer-made', async (data) => {
+      await peerConnection.setRemoteDescription(data.answer);
+      alert(isAlreadyCalling);
       if (!isAlreadyCalling) {
+        await createMediaStream();
+        console.log('JOIN CALL BACK');
         callback(data.socket);
         isAlreadyCalling = true;
       }
@@ -77,15 +91,10 @@ export default function useVideoCall(localVideo, remoteVideo) {
     };
   }
 
-  useEffect(() => {
-    console.log('video', localVideo.current);
-  }, []);
-
   const createMediaStream = async () => {
     console.log(localVideo);
     const stream = await navigator.mediaDevices.getUserMedia({
       video: true,
-      audio: true,
     });
 
     if (localVideo) {
@@ -96,32 +105,18 @@ export default function useVideoCall(localVideo, remoteVideo) {
     stream.getTracks().forEach((track) => {
       senders.push(peerConnection.addTrack(track, stream));
     });
-
-    setUserMediaStream(stream);
   };
   async function callUser(to) {
     const offer = await peerConnection.createOffer();
-    await peerConnection.setLocalDescription(new RTCSessionDescription(offer));
-
+    await peerConnection.setLocalDescription(offer);
+    console.log('call back to another user');
     socket.emit('call-user', { offer, to });
   }
 
-  function onRemoveUser(callback) {
-    socket.on(`${room}-remove-user`, ({ socketId }) => {
-      callback(socketId);
-    });
-  }
-
-  function onUpdateUserList(callback) {
-    socket.on(`${room}-update-user-list`, ({ users }) => {
-      callback(users);
-    });
-  }
-
-  function stopCall() {
+  async function stopCall() {
     console.log('stop Call', localVideo);
-    const stream = localVideo.current.srcObject;
-    const streamRemote = remoteVideo.current.srcObject;
+    const stream = await localVideo.current?.srcObject;
+    const streamRemote = await remoteVideo.current?.srcObject;
     const tracks = stream?.getTracks();
     if (!tracks) {
       return;
@@ -139,10 +134,10 @@ export default function useVideoCall(localVideo, remoteVideo) {
     tracksRemote.forEach(function(track) {
       track.stop();
     });
-    setUserMediaStream(null);
     // localVideo.current.srcObject = null;
   }
 
+  onCallMade();
   return {
     onCallMade,
     onRemoveUser,
@@ -153,8 +148,6 @@ export default function useVideoCall(localVideo, remoteVideo) {
     onCallRejected,
     onTrack,
     joinRoom,
-    userMediaStream,
-    setUserMediaStream,
     peerConnection,
     createMediaStream,
   };

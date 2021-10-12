@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useCallback, useEffect, useState } from 'react';
 import { createTheme, ThemeProvider, withStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Hidden from '@material-ui/core/Hidden';
@@ -147,6 +147,17 @@ function HomePage(props) {
   const [isOpenCall, setIsOpenCall] = React.useState(false);
   const remoteVideo = useRef();
   const localVideo = useRef();
+  const { onCallMade, callUser, joinRoom, onUpdateUserList, onRemoveUser, stopCall, onAnswerMade, onCallRejected, onTrack, createMediaStream } = useVideoCall(
+    localVideo,
+    remoteVideo,
+  );
+  const callingVideo = Object.assign(
+    { onCallMade, callUser, joinRoom, onUpdateUserList, onRemoveUser, stopCall, onAnswerMade, onCallRejected, onTrack, createMediaStream },
+    callingVideo,
+  );
+  const [connectedUsers, setConnectedUsers] = useState([]);
+
+  useEffect(() => {}, [localVideo, remoteVideo]);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -165,9 +176,17 @@ function HomePage(props) {
           </Hidden>
         </nav>
         <div className={classes.app}>
-          <Header onDrawerToggle={handleDrawerToggle} remoteVideo={remoteVideo} localVideo={localVideo} isOpenCall={isOpenCall} setIsOpenCall={setIsOpenCall} />
+          <Header connectedUsers={connectedUsers} onDrawerToggle={handleDrawerToggle} callingVideo={callingVideo} isOpenCall={isOpenCall} setIsOpenCall={setIsOpenCall} />
           <main className={classes.main}>
-            <Content remoteVideo={remoteVideo} localVideo={localVideo} isOpenCall={isOpenCall} setIsOpenCall={setIsOpenCall} />
+            <Content
+              connectedUsers={connectedUsers}
+              setConnectedUsers={setConnectedUsers}
+              callingVideo={callingVideo}
+              localVideo={localVideo}
+              remoteVideo={remoteVideo}
+              isOpenCall={isOpenCall}
+              setIsOpenCall={setIsOpenCall}
+            />
           </main>
         </div>
       </div>

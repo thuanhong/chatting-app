@@ -5,27 +5,22 @@ import {
   WebSocketServer,
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
-import { Socket, Server } from 'socket.io';
+import { Socket } from 'socket.io';
+import { Server } from 'ws';
 import { Logger } from '@nestjs/common';
 
 @WebSocketGateway({ namespace: '/call', cors: true })
-export class VideoCallGateway implements OnGatewayInit {
+export class VideoCallGateway implements OnGatewayInit, OnGatewayDisconnect {
   @WebSocketServer() wss: Server;
 
   private logger: Logger = new Logger('VideoCallGateway');
-
-  afterInit() {
-    this.logger.log('Initialized!');
-  }
 
   private activeSockets: { room: string; id: string }[] = [];
 
   @SubscribeMessage('joinRoom')
   public joinRoom(client: Socket, room: string): void {
-    /*
     client.join(room);
     client.emit('joinedRoom', room);
-    */
 
     const existingSocket = this.activeSockets?.find(
       (socket) => socket.room === room && socket.id === client.id,
@@ -54,6 +49,7 @@ export class VideoCallGateway implements OnGatewayInit {
       offer: data.offer,
       socket: client.id,
     });
+    this.logger.log(`Client make -answer: ${client.id + data.offer + data.to}`);
   }
 
   @SubscribeMessage('make-answer')
@@ -72,6 +68,9 @@ export class VideoCallGateway implements OnGatewayInit {
     client.to(data.from).emit('call-rejected', {
       socket: client.id,
     });
+  }
+  public afterInit(server: Server): void {
+    this.logger.log('Init');
   }
   public handleDisconnect(client: Socket): void {
     const existingSocket = this.activeSockets.find(

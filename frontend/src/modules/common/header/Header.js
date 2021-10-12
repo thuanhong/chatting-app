@@ -16,9 +16,9 @@ import { ButtonBase } from '@material-ui/core';
 import useVideoCall from '@src/hooks/useVideoCall';
 
 function Header(props) {
-  const { classes, localVideo, remoteVideo, createMediaStream, setIsOpenCall } = props;
+  const { classes, localVideo, remoteVideo, setIsOpenCall, callingVideo, connectedUsers } = props;
   const { contactChatStore, groupChatStore } = useGlobalStore();
-  const { joinRoom } = useVideoCall(localVideo, remoteVideo);
+
   const { id: groupId } = groupChatStore.currentGroupChatInfo;
 
   return useObserver(() => {
@@ -36,8 +36,10 @@ function Header(props) {
               <Grid item>
                 <ButtonBase
                   onClick={() => {
-                    createMediaStream();
-                    joinRoom(groupId);
+                    console.log(connectedUsers);
+                    callingVideo.createMediaStream();
+                    callingVideo.callUser(connectedUsers[0]);
+
                     setIsOpenCall(true);
                   }}
                 >

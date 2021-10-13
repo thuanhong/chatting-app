@@ -1,15 +1,26 @@
-import React, { useCallback, useRef, ForwardedRef, useEffect } from 'react';
+import { CallReceived } from '@material-ui/icons';
+import React, { useCallback, useRef, useState, useEffect } from 'react';
 import io from 'socket.io-client';
 
 let room = null;
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+const socket = io('localhost:8000/call');
+let peerConnection = null;
+if (typeof window !== 'undefined') {
+  // browser code
+  peerConnection = new window.RTCPeerConnection();
+}
+
 export default function useVideoCall(localVideo, remoteVideo) {
   const onConnected = null;
   const onDisconnected = null;
-  const socket = io('localhost:8000/call');
   const senders = [];
-  const peerConnection = new window.RTCPeerConnection({
-    iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
-  });
+  // const peerConnection = new window.RTCPeerConnection({
+  // iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+  // });
   let isAlreadyCalling = false;
   let getCalled = false;
 
@@ -25,7 +36,7 @@ export default function useVideoCall(localVideo, remoteVideo) {
     room = rooms;
     socket.emit('joinRoom', rooms);
   }
-  function onCallMade() {
+  function onCallMade(callback) {
     socket.on('call-made', async (data) => {
       if (getCalled) {
         const confirmed = window.confirm(`User "Socket: ${data.socket}" wants to call you. Do accept this call?`);
@@ -37,17 +48,23 @@ export default function useVideoCall(localVideo, remoteVideo) {
 
           return;
         }
+        await callback();
+        await createMediaStream();
       }
-
-      await peerConnection.setRemoteDescription(data.offer);
+      await peerConnection.setRemoteDescription(new window.RTCSessionDescription(data.offer));
+      await peerConnection.addIceCandidate(data.candidate);
       const answer = await peerConnection.createAnswer();
-      await peerConnection.setLocalDescription(answer);
+      await peerConnection.setLocalDescription(new window.RTCSessionDescription(answer));
 
       socket.emit('make-answer', {
         answer,
         to: data.socket,
       });
       getCalled = true;
+      return;
+    });
+    socket.on('stop-call', async (data) => {
+      stopCall(data);
     });
   }
 
@@ -65,15 +82,12 @@ export default function useVideoCall(localVideo, remoteVideo) {
 
   // Start a RTCPeerConnection to each client
   function onAnswerMade(callback) {
-    console.log('isAlreadyCalling', isAlreadyCalling);
-
     socket.on('answer-made', async (data) => {
-      await peerConnection.setRemoteDescription(data.answer);
-      alert(isAlreadyCalling);
+      await peerConnection.setRemoteDescription(new window.RTCSessionDescription(data.answer));
+
       if (!isAlreadyCalling) {
-        await createMediaStream();
         console.log('JOIN CALL BACK');
-        callback(data.socket);
+        await callback(data.socket);
         isAlreadyCalling = true;
       }
     });
@@ -86,15 +100,28 @@ export default function useVideoCall(localVideo, remoteVideo) {
   }
 
   function onTrack(callback) {
-    peerConnection.ontrack = function({ streams: [stream] }) {
-      callback(stream);
-    };
+    setTimeout(
+      () =>
+        (peerConnection.ontrack = function({ streams: [stream] }) {
+          callback(stream);
+        }),
+      1000,
+    );
+  }
+
+  async function callUser(to) {
+    const offer = await peerConnection.createOffer();
+    await peerConnection.setLocalDescription(new window.RTCSessionDescription(offer));
+    const candidate = peerConnection.onicecandidate;
+
+    console.log('call back to another user', peerConnection.onicecandidate);
+    socket.emit('call-user', { offer, to, candidate });
   }
 
   const createMediaStream = async () => {
-    console.log(localVideo);
     const stream = await navigator.mediaDevices.getUserMedia({
       video: true,
+      audio: true,
     });
 
     if (localVideo) {
@@ -106,14 +133,8 @@ export default function useVideoCall(localVideo, remoteVideo) {
       senders.push(peerConnection.addTrack(track, stream));
     });
   };
-  async function callUser(to) {
-    const offer = await peerConnection.createOffer();
-    await peerConnection.setLocalDescription(offer);
-    console.log('call back to another user');
-    socket.emit('call-user', { offer, to });
-  }
 
-  async function stopCall() {
+  async function stopCall(to) {
     console.log('stop Call', localVideo);
     const stream = await localVideo.current?.srcObject;
     const streamRemote = await remoteVideo.current?.srcObject;
@@ -134,10 +155,11 @@ export default function useVideoCall(localVideo, remoteVideo) {
     tracksRemote.forEach(function(track) {
       track.stop();
     });
-    // localVideo.current.srcObject = null;
+    localVideo.current.srcObject = null;
+    remoteVideo.current.srcObject = null;
+    socket.emit('make-stop-call', to);
   }
 
-  onCallMade();
   return {
     onCallMade,
     onRemoveUser,
@@ -148,7 +170,6 @@ export default function useVideoCall(localVideo, remoteVideo) {
     onCallRejected,
     onTrack,
     joinRoom,
-    peerConnection,
     createMediaStream,
   };
 }

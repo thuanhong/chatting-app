@@ -157,8 +157,6 @@ function HomePage(props) {
   );
   const [connectedUsers, setConnectedUsers] = useState([]);
 
-  useEffect(() => {}, [localVideo, remoteVideo]);
-
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };

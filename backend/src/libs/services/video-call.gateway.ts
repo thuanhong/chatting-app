@@ -48,6 +48,7 @@ export class VideoCallGateway implements OnGatewayInit, OnGatewayDisconnect {
     client.to(data.to).emit('call-made', {
       offer: data.offer,
       socket: client.id,
+      candidate: data.candidate,
     });
     this.logger.log(`Client make -answer: ${client.id + data.offer + data.to}`);
   }
@@ -61,6 +62,11 @@ export class VideoCallGateway implements OnGatewayInit, OnGatewayDisconnect {
       answer: data.answer,
     });
     this.logger.log(`Client make -answer: ${client.id + data.to}`);
+  }
+
+  @SubscribeMessage('make-stop-call')
+  public makeStopCall(client: Socket, to: string): void {
+    client.to(to).emit('stop-call', 'stop');
   }
 
   @SubscribeMessage('reject-call')

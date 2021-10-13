@@ -16,7 +16,7 @@ import { ButtonBase } from '@material-ui/core';
 import useVideoCall from '@src/hooks/useVideoCall';
 
 function Header(props) {
-  const { classes, localVideo, remoteVideo, setIsOpenCall, callingVideo, connectedUsers } = props;
+  const { classes, setIsOpenCall, callingVideo, connectedUsers } = props;
   const { contactChatStore, groupChatStore } = useGlobalStore();
 
   const { id: groupId } = groupChatStore.currentGroupChatInfo;
@@ -35,12 +35,10 @@ function Header(props) {
               </Grid>
               <Grid item>
                 <ButtonBase
-                  onClick={() => {
-                    console.log(connectedUsers);
-                    callingVideo.createMediaStream();
-                    callingVideo.callUser(connectedUsers[0]);
-
-                    setIsOpenCall(true);
+                  onClick={async () => {
+                    await setIsOpenCall(true);
+                    await callingVideo.createMediaStream();
+                    await callingVideo.callUser(connectedUsers[0]);
                   }}
                 >
                   <Tooltip title='Video call'>

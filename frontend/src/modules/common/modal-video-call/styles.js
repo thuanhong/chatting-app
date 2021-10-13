@@ -9,7 +9,7 @@ export const useStyles = makeStyles((theme) => ({
     marginTop: '15vh',
     padding: '10px',
     overflowX: 'hidden',
-    backgroundColor: 'red',
+
     position: 'absolute',
     zIndex: 1,
   },

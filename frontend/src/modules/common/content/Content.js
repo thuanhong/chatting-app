@@ -31,7 +31,7 @@ const initPagination = {
 };
 
 function Content(props) {
-  const { classes, localVideo, remoteVideo, isOpenCall, setIsOpenCall, callingVideo, setConnectedUsers } = props;
+  const { classes, localVideo, remoteVideo, isOpenCall, setIsOpenCall, callingVideo, setConnectedUsers, connectedUsers } = props;
   const scrollRef = useRef(null);
 
   const [message, setMessage] = useState();
@@ -42,7 +42,7 @@ function Content(props) {
 
   const { groupChatStore } = useGlobalStore();
   const { id: groupId } = groupChatStore.currentGroupChatInfo;
-  const { id } = JSON.parse(localStorage.getItem('currentUser'));
+  const { id, firstName, lastName } = JSON.parse(localStorage.getItem('currentUser'));
 
   const scrollRow = useRef(null);
   const scrollTop = useRef(null);
@@ -51,12 +51,14 @@ function Content(props) {
     socket = io('localhost:8000/chat');
     clearPagination();
     callingVideo.joinRoom('call');
-    callingVideo.onCallMade();
+    callingVideo.onCallMade(() => setIsOpenCall(true));
     callingVideo.onRemoveUser((socketId) => setConnectedUsers((users) => users.filter((user) => user !== socketId)));
     callingVideo.onUpdateUserList((users) => setConnectedUsers(users));
     callingVideo.onAnswerMade((sockets) => callingVideo.callUser(sockets));
     callingVideo.onCallRejected((data) => alert(`User: "Socket: ${data.socket}" rejected your call.`));
-    callingVideo.onTrack((stream) => (remoteVideo.current.srcObject = stream));
+    callingVideo.onTrack((stream) => {
+      remoteVideo.current.srcObject = stream;
+    });
     // peerVideoConnection.onConnected(() => {
     //   setStartTimer(true);
     // });
@@ -132,10 +134,18 @@ function Content(props) {
     }
   };
 
+  useEffect(() => {}, [remoteVideo, localVideo]);
   return useObserver(() => (
     <Box height={';100vh'} display='flex' alignItems='flex-start' justifyContent='flex-start'>
-      <VideoCallModal remoteVideo={remoteVideo} localVideo={localVideo} stopCall={callingVideo.stopCall} setIsOpenCall={setIsOpenCall} />
-      {/* {isOpenCall ? <VideoCallModal remoteVideo={remoteVideo} localVideo={localVideo} stopCall={stopCall} setIsOpenCall={setIsOpenCall} /> : null} */}
+      <VideoCallModal
+        connectedUsers={connectedUsers}
+        remoteVideo={remoteVideo}
+        localVideo={localVideo}
+        stopCall={callingVideo.stopCall}
+        isOpenCall={isOpenCall}
+        setIsOpenCall={setIsOpenCall}
+      />
+      {/* {isOpenCall ?? <VideoCallModal remoteVideo={remoteVideo} localVideo={localVideo} stopCall={callingVideo.stopCall} setIsOpenCall={setIsOpenCall} />} */}
       <div id='scrollableDiv' className={classes.body} onScroll={handleScroll} ref={scrollTop}>
         {/* <li ref={scrollTop} /> */}
 

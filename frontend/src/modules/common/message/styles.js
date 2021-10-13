@@ -1,6 +1,16 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) => ({
+  msgUpperTextAdmin: {
+    color: 'white',
+    paddingRight: '5px',
+    textAlign: 'right',
+  },
+  msgUpperTextLeft: {
+    color: 'white',
+    paddingLeft: '5px',
+    textAlign: 'left',
+  },
   msgLeft: {
     display: 'flex',
     justifyContent: 'flex-start',

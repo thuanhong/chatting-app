@@ -40,8 +40,9 @@ function Content(props) {
   const [currentGroup, setCurrentGroup] = useState('');
   const [pagination, setPagination] = useState(initPagination);
 
-  const { groupChatStore } = useGlobalStore();
+  const { groupChatStore, contactChatStore } = useGlobalStore();
   const { id: groupId } = groupChatStore.currentGroupChatInfo;
+  const { lastName: nameSender } = contactChatStore.currentUserChattingInfo;
   const { id, firstName, lastName } = JSON.parse(localStorage.getItem('currentUser'));
 
   const scrollRow = useRef(null);
@@ -161,11 +162,11 @@ function Content(props) {
           {oldMessageList
             .sort((a, b) => Number(new Date(b.createdAt)) - Number(new Date(a.createdAt)))
             .map((msg, index) => {
-              return <Message key={index} message={msg.content} isSender={id === msg.senderId} />;
+              return <Message key={index} message={msg.content} isSender={id === msg.senderId} user={`${firstName} ${lastName}`} sender={nameSender} />;
             })}
         </InfiniteScroll>
         {messageList.map((msg, index) => {
-          return <Message key={index} message={msg.content} isSender={id === msg.senderId} />;
+          return <Message key={index} message={msg.content} isSender={id === msg.senderId} user={`${firstName} ${lastName}`} sender={nameSender} />;
         })}
         <li ref={scrollRef} />
       </div>

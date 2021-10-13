@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useRef, useCallback, useEffect, useState } from 'react';
 import { createTheme, ThemeProvider, withStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Hidden from '@material-ui/core/Hidden';
 import Navigator from '@src/common/navigator/Navigator';
 import Content from '@src/common/content/Content';
 import Header from '@src/common/header/Header';
+import useVideoCall from '@src/hooks/useVideoCall';
 
 let theme = createTheme({
   palette: {
@@ -140,10 +141,21 @@ const styles = {
     background: 'black',
   },
 };
-
 function HomePage(props) {
   const { classes } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [isOpenCall, setIsOpenCall] = React.useState(false);
+  const remoteVideo = useRef();
+  const localVideo = useRef();
+  const { onCallMade, callUser, joinRoom, onUpdateUserList, onRemoveUser, stopCall, onAnswerMade, onCallRejected, onTrack, createMediaStream } = useVideoCall(
+    localVideo,
+    remoteVideo,
+  );
+  const callingVideo = Object.assign(
+    { onCallMade, callUser, joinRoom, onUpdateUserList, onRemoveUser, stopCall, onAnswerMade, onCallRejected, onTrack, createMediaStream },
+    callingVideo,
+  );
+  const [connectedUsers, setConnectedUsers] = useState([]);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -162,9 +174,17 @@ function HomePage(props) {
           </Hidden>
         </nav>
         <div className={classes.app}>
-          <Header onDrawerToggle={handleDrawerToggle} />
+          <Header connectedUsers={connectedUsers} onDrawerToggle={handleDrawerToggle} callingVideo={callingVideo} isOpenCall={isOpenCall} setIsOpenCall={setIsOpenCall} />
           <main className={classes.main}>
-            <Content />
+            <Content
+              connectedUsers={connectedUsers}
+              setConnectedUsers={setConnectedUsers}
+              callingVideo={callingVideo}
+              localVideo={localVideo}
+              remoteVideo={remoteVideo}
+              isOpenCall={isOpenCall}
+              setIsOpenCall={setIsOpenCall}
+            />
           </main>
         </div>
       </div>

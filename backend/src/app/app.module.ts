@@ -59,7 +59,7 @@ export class AppModule implements NestModule {
   public configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AuthMiddleware)
-      .exclude('/auth/sign-up')
-      .forRoutes({ path: '/api/v1', method: RequestMethod.ALL });
+      .exclude('/auth/sign-up', '/api/check-health', '/api/check-health/health')
+      .forRoutes('*');
   }
 }

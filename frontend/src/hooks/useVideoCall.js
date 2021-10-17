@@ -1,5 +1,3 @@
-import { CallReceived } from '@material-ui/icons';
-import React, { useCallback, useRef, useState, useEffect } from 'react';
 import io from 'socket.io-client';
 
 let room = null;
@@ -7,7 +5,7 @@ function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-const socket = io('localhost:8000/call');
+const socket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}/call`);
 let peerConnection = null;
 if (typeof window !== 'undefined') {
   // browser code
@@ -15,20 +13,12 @@ if (typeof window !== 'undefined') {
 }
 
 export default function useVideoCall(localVideo, remoteVideo) {
-  const onConnected = null;
-  const onDisconnected = null;
   const senders = [];
-  // const peerConnection = new window.RTCPeerConnection({
-  // iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
-  // });
   let isAlreadyCalling = false;
   let getCalled = false;
 
   peerConnection.addEventListener('connectionstatechange', (event) => {
-    console.log(peerConnection.connectionState);
-    // const fn = this['_on' + capitalizeFirstLetter(peerConnection.connectionState)];
     const fn = ['_on' + capitalizeFirstLetter(peerConnection.connectionState)];
-
     fn && fn(event);
   });
 
@@ -172,4 +162,4 @@ export default function useVideoCall(localVideo, remoteVideo) {
     joinRoom,
     createMediaStream,
   };
-}
+};

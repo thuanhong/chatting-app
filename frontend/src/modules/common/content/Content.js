@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import io from 'socket.io-client';
 import InputBase from '@material-ui/core/InputBase';
@@ -16,7 +16,6 @@ import { GroupService } from '@src/services/GroupService';
 import { ChatService } from '@src/services/ChatService';
 
 import { useGlobalStore } from '@src/hooks/';
-import useVideoCall from '@src/hooks/useVideoCall';
 import { useObserver, observer } from 'mobx-react-lite';
 import { styles } from './styles';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -49,8 +48,7 @@ function Content(props) {
   const scrollTop = useRef(null);
 
   useEffect(() => {
-    socket = io('localhost:8000/chat');
-    clearPagination();
+    socket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}/chat`);
     callingVideo.joinRoom('call');
     callingVideo.onCallMade(() => setIsOpenCall(true));
     callingVideo.onRemoveUser((socketId) => setConnectedUsers((users) => users.filter((user) => user !== socketId)));
@@ -60,13 +58,6 @@ function Content(props) {
     callingVideo.onTrack((stream) => {
       remoteVideo.current.srcObject = stream;
     });
-    // peerVideoConnection.onConnected(() => {
-    //   setStartTimer(true);
-    // });
-    // peerVideoConnection.onDisconnected(() => {
-    //   setStartTimer(false);
-    //   remoteVideo.current.srcObject = null;
-    // });
 
     socket.on('chatToClient', (msg) => {
       setMessageList((prevstate) => {
@@ -146,10 +137,7 @@ function Content(props) {
         isOpenCall={isOpenCall}
         setIsOpenCall={setIsOpenCall}
       />
-      {/* {isOpenCall ?? <VideoCallModal remoteVideo={remoteVideo} localVideo={localVideo} stopCall={callingVideo.stopCall} setIsOpenCall={setIsOpenCall} />} */}
       <div id='scrollableDiv' className={classes.body} onScroll={handleScroll} ref={scrollTop}>
-        {/* <li ref={scrollTop} /> */}
-
         <ContactUser />
         <InfiniteScroll
           dataLength={50}

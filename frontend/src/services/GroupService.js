@@ -12,7 +12,7 @@ const update_group_info = async (id, payload) => {
 
 const get_user_notification = async () => {
   return await httpRequest.get(EndPoints.GROUP.get_user_notification);
-}
+};
 
 export const GroupService = {
   get_user_group_chat,

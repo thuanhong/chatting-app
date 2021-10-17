@@ -1,6 +1,11 @@
 module.exports = {
   extends: ['eslint:recommended', 'plugin:import/errors', 'plugin:react/recommended', 'plugin:jsx-a11y/recommended', 'plugin:prettier/recommended', 'prettier/react'],
   parser: 'babel-eslint',
+  settings: {
+    react: {
+      version: 'latest',
+    },
+  },
   env: {
     browser: false,
     node: true,
@@ -24,6 +29,7 @@ module.exports = {
         },
       },
     ],
+    "template-curly-spacing" : "off",
     'require-jsdoc': 0,
     'no-var': 1,
     'padded-blocks': 0,

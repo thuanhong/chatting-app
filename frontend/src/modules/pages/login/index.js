@@ -4,7 +4,7 @@ import Grid from '@material-ui/core/Grid';
 
 import { useStyles } from './styles';
 
-import { SquareAnimation } from '@src/common/SquareAnimation';
+import { SquareAnimation } from '@src/modules/common/square-animation';
 import { withAuth } from '@src/hoc/withAuth';
 import SignUpScreen from '@src/modules/components/sign-up-page';
 import LoginScreen from '@src/modules/components/login-page';

@@ -1,7 +1,6 @@
 export const styles = (theme) => ({
   root: {
     width: '100%',
-    // backgroundColor: theme.palette.background.paper,
   },
   paper: {
     margin: theme.spacing(8, 4),

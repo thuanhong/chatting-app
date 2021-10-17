@@ -32,7 +32,7 @@ function ListGroupChat(props) {
 
   useEffect(() => {
     getGroupData();
-    socketGroupChat = io('localhost:8000/notification');
+    socketGroupChat = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}/notification`);
     socketGroupChat.emit('joinRoom', currentUserId, () => {});
     socketGroupChat.on('chatToClient', (msg) => {
       if (currentUserId === msg.userId) {

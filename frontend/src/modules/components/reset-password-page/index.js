@@ -28,9 +28,6 @@ const ResetPasswordScreen = (props) => {
     return true;
   };
 
-  // const confirmPassword = (pwd)=>{
-
-  // }
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;

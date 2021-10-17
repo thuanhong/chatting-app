@@ -13,13 +13,10 @@ import { useObserver } from 'mobx-react-lite';
 import { useGlobalStore } from '@src/hooks';
 import { styles } from './styles';
 import { ButtonBase } from '@material-ui/core';
-import useVideoCall from '@src/hooks/useVideoCall';
 
 function Header(props) {
   const { classes, setIsOpenCall, callingVideo, connectedUsers } = props;
-  const { contactChatStore, groupChatStore } = useGlobalStore();
-
-  const { id: groupId } = groupChatStore.currentGroupChatInfo;
+  const { contactChatStore } = useGlobalStore();
 
   return useObserver(() => {
     const { firstName, lastName } = contactChatStore.currentUserChattingInfo;

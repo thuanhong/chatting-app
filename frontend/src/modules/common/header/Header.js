@@ -31,19 +31,18 @@ function Header(props) {
                 </Typography>
               </Grid>
               <Grid item>
-                <ButtonBase
-                  onClick={async () => {
-                    await setIsOpenCall(true);
-                    await callingVideo.createMediaStream();
-                    await callingVideo.callUser(connectedUsers[0]);
-                  }}
-                >
-                  <Tooltip title='Video call'>
-                    <IconButton color='inherit'>
-                      <VideocamIcon />
-                    </IconButton>
-                  </Tooltip>
-                </ButtonBase>
+                <Tooltip title='Video call'>
+                  <IconButton
+                    color='inherit'
+                    onClick={async () => {
+                      await setIsOpenCall(true);
+                      await callingVideo.createMediaStream();
+                      await callingVideo.callUser(connectedUsers[0]);
+                    }}
+                  >
+                    <VideocamIcon />
+                  </IconButton>
+                </Tooltip>
               </Grid>
               <Grid item>
                 <Tooltip title='Call'>

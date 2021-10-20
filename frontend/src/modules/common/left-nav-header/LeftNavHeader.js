@@ -11,9 +11,17 @@ import { CookieHandler } from '@src/utils/Cookies';
 import Router from 'next/router';
 import firebase from '@src/services/Firebase';
 
+function resizePictureGoogle(picture) {
+  let indexPicture = picture.indexOf('=');
+  let realImage = picture.slice(0, indexPicture) + '=s1600';
+  return realImage;
+}
+
 function LeftNavHeader(props) {
   const { classes } = props;
-  const { firstName, lastName } = JSON.parse(localStorage.getItem('currentUser'));
+  const { firstName, lastName, picture } = JSON.parse(localStorage.getItem('currentUser'));
+  let indexPicture = picture.indexOf('=');
+  let realImage = picture.slice(0, indexPicture) + '=s1600';
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleClick = (event) => {
@@ -36,7 +44,7 @@ function LeftNavHeader(props) {
 
   return (
     <CardHeader
-      avatar={<Avatar aria-label='recipe'>{`${firstName.charAt(0)}${lastName.charAt(0)}`}</Avatar>}
+      avatar={<Avatar aria-label='recipe' src={realImage}>{`${firstName.charAt(0)}${lastName.charAt(0)}`}</Avatar>}
       action={
         <div>
           <IconButton aria-label='More' aria-controls='simple-menu' aria-haspopup='true' onClick={handleClick}>

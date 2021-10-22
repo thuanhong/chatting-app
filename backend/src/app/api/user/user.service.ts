@@ -8,7 +8,7 @@ import { UserDto } from '@src/dto/user.dto';
 import { ContactDto } from '@src/dto/contact.dto';
 import { GroupDto } from '@src/dto/group.dto';
 import { UserGroupDto } from '@src/dto/user-group.dto';
-import { In, Like, Not } from 'typeorm';
+import { In, Like, Not, UpdateResult } from 'typeorm';
 import { AddNewContactRequest } from '@src/request/add-new-contact.request';
 import { NotificationService } from '@src/services/notification.service';
 import { CheckContactResponse } from '@src/response/check-contact.response';
@@ -39,6 +39,11 @@ export class UserService {
 
   async saveUser(...entities: UserDto[]): Promise<UserDto[]> {
     const data = await this.dataService.save(Users, ...entities);
+    return data;
+  }
+
+  async updateUser(id: string, entities: any): Promise<any> {
+    const data = await this.dataService.update(Users, id, { ...entities });
     return data;
   }
 

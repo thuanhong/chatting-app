@@ -21,6 +21,7 @@ import { AddNewContactRequest } from '@src/request/add-new-contact.request';
 import { AddNewContactResponse } from '@src/response/add-new-contact.response';
 import { CheckContactResponse } from '@src/response/check-contact.response';
 import { PagingInfo } from '@src/libs/interface/paging-info.interface';
+import { Users } from '@src/libs/entities/users.entity';
 
 @Controller('/api/v1/users')
 export class UserController {
@@ -57,7 +58,7 @@ export class UserController {
         email: req.user.email,
         firstName: firstName,
         lastName: lastName,
-        middleName: '',
+        picture: req.user.picture,
         isOnline: false,
       };
 
@@ -71,9 +72,15 @@ export class UserController {
         });
       }
     }
+    if (!data.picture) {
+      const User = {
+        picture: req.user.picture,
+      };
+      await this.userService.updateUser(req.user.uid, User);
+    }
 
     return new UserEmailReponse({
-      user: data,
+      user: { ...data, picture: req.user.picture },
     });
   }
 

@@ -4,23 +4,23 @@ import { BaseDto } from '@src/dto/base.dto';
 export class UserDto extends BaseDto<UserDto> {
   @IsString()
   @IsOptional()
-  id: string;
+  id?: string;
 
   @IsOptional()
   @IsEmail()
-  email: string;
+  email?: string;
 
   @IsNotEmpty()
   @IsString()
-  firstName: string;
+  firstName?: string;
 
   @IsNotEmpty()
   @IsString()
-  lastName: string;
+  lastName?: string;
 
   @IsString()
   @IsOptional()
-  middleName = 'kal';
+  picture?: string;
 
-  isOnline = true;
+  isOnline? = true;
 }

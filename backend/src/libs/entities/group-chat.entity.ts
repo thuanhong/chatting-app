@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany } from 'typeorm';
+import { Column, Entity, OneToMany, ViewColumn } from 'typeorm';
 import { Message } from './message.entity';
 import { UserGroup } from './user-group.entity';
 
@@ -28,6 +28,6 @@ export class GroupChat {
   @OneToMany(() => Message, (message) => message.group)
   messages: Message[];
 
-  @OneToMany(() => UserGroup, (userGroup) => userGroup.group)
+  @OneToMany(() => UserGroup, (userGroup) => userGroup.group, { cascade: true })
   userGroups: UserGroup[];
 }

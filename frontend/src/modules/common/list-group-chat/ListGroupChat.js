@@ -40,7 +40,7 @@ function ListGroupChat(props) {
       }
       getGroupData();
     });
-
+    console.log('listGroup', listGroupChatData);
     return () => {
       socketGroupChat.emit('leaveRoom', currentUserId, () => {});
       socketGroupChat.off();
@@ -59,13 +59,15 @@ function ListGroupChat(props) {
             <React.Fragment key={index}>
               <ButtonBase
                 onClick={() => {
+                  console.log('listGroup', listGroupChatData);
+
                   contactChatStore.setCurrentUserChattingInfo({ lastName: currentUserId === id ? firstGroupName : secondGroupName, isContacted: true });
                   return groupChatStore.setCurrentGroupChatInfo({ ...data });
                 }}
               >
                 <Card elevation={0} className={classes.cardStyle}>
                   <CardHeader
-                    avatar={<BadgeAvatar isActive={false} linkAvatar={data.image} />}
+                    avatar={<BadgeAvatar isActive={false} linkAvatar={data.infoUser.users_picture} />}
                     title={currentUserId === id ? firstGroupName : secondGroupName}
                     className={classes.colorTextWhite}
                     subheader={data.lastMessage}

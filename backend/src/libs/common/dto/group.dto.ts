@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsArray } from 'class-validator';
 import { BaseDto } from '@src/dto/base.dto';
 
 export class GroupDto extends BaseDto<GroupDto> {
@@ -13,4 +13,12 @@ export class GroupDto extends BaseDto<GroupDto> {
   @IsNotEmpty()
   @IsString()
   lastMessage: string;
+
+  @IsOptional()
+  @IsString()
+  readonly picture?: string;
+
+  @IsOptional()
+  @IsArray()
+  readonly usersId?: [];
 }

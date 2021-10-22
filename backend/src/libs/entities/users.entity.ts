@@ -18,8 +18,8 @@ export class Users {
   @Column('varchar', { name: 'last_name', length: 255 })
   lastName: string;
 
-  @Column('varchar', { name: 'middle_name', length: 255 })
-  middleName: string;
+  @Column('varchar', { name: 'picture', length: 255 })
+  picture: string;
 
   @Column('varchar', { name: 'is_online', length: 255 })
   isOnline: string;
@@ -45,6 +45,8 @@ export class Users {
   @OneToMany(() => Notification, (notification) => notification.user)
   notifications: Notification[];
 
-  @OneToMany(() => UserGroup, (userGroup) => userGroup.user)
+  @OneToMany(() => UserGroup, (userGroup) => userGroup.user, {
+    eager: true,
+  })
   userGroups: UserGroup[];
 }

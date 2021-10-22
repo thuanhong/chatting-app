@@ -3,7 +3,7 @@ CREATE TABLE `users` (
   `email` varchar(255) NOT NULL,
   `first_name` varchar(255) NOT NULL,
   `last_name` varchar(255) NOT NULL,
-  `middle_name` varchar(255) NOT NULL,
+  `picture` varchar(255) NOT NULL,
   `is_online` boolean,
   `created_at` timestamp DEFAULT now(),
   `modified_at` timestamp DEFAULT now() ON UPDATE CURRENT_TIMESTAMP

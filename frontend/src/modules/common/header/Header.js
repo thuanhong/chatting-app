@@ -16,10 +16,11 @@ import { ButtonBase } from '@material-ui/core';
 
 function Header(props) {
   const { classes, setIsOpenCall, callingVideo, connectedUsers } = props;
-  const { contactChatStore } = useGlobalStore();
+  const { contactChatStore, groupChatStore } = useGlobalStore();
 
   return useObserver(() => {
     const { firstName, lastName } = contactChatStore.currentUserChattingInfo;
+    const { infoUser } = groupChatStore.currentGroupChatInfo;
     return (
       <div className={classnames({ [classes.hideHeader]: !lastName })}>
         <AppBar component='div' className={classes.appBar} color='primary' position='fixed' elevation={0}>
@@ -37,7 +38,7 @@ function Header(props) {
                     onClick={async () => {
                       await setIsOpenCall(true);
                       await callingVideo.createMediaStream();
-                      await callingVideo.callUser(connectedUsers[0]);
+                      await callingVideo.callUser(infoUser.userGroups_user_id);
                     }}
                   >
                     <VideocamIcon />

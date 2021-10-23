@@ -40,7 +40,7 @@ function Content(props) {
   const [pagination, setPagination] = useState(initPagination);
 
   const { groupChatStore, contactChatStore } = useGlobalStore();
-  const { id: groupId } = groupChatStore.currentGroupChatInfo;
+  const { id: groupId, infoUser } = groupChatStore.currentGroupChatInfo;
   const { lastName: nameSender } = contactChatStore.currentUserChattingInfo;
   const { id, firstName, lastName } = JSON.parse(localStorage.getItem('currentUser'));
 
@@ -49,7 +49,7 @@ function Content(props) {
 
   useEffect(() => {
     socket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}/chat`);
-    callingVideo.joinRoom('call');
+    callingVideo.joinRoom('call', id);
     callingVideo.onCallMade(() => setIsOpenCall(true));
     callingVideo.onRemoveUser((socketId) => setConnectedUsers((users) => users.filter((user) => user !== socketId)));
     callingVideo.onUpdateUserList((users) => setConnectedUsers(users));
@@ -130,7 +130,7 @@ function Content(props) {
   return useObserver(() => (
     <Box height={';100vh'} display='flex' alignItems='flex-start' justifyContent='flex-start'>
       <VideoCallModal
-        connectedUsers={connectedUsers}
+        senderId={infoUser}
         remoteVideo={remoteVideo}
         localVideo={localVideo}
         stopCall={callingVideo.stopCall}

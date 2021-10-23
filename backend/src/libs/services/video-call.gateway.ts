@@ -15,50 +15,73 @@ export class VideoCallGateway implements OnGatewayInit, OnGatewayDisconnect {
 
   private logger: Logger = new Logger('VideoCallGateway');
 
-  private activeSockets: { room: string; id: string }[] = [];
+  private activeSockets: { room: string; id: string; userId: string }[] = [];
 
   @SubscribeMessage('joinRoom')
-  public joinRoom(client: Socket, room: string): void {
-    client.join(room);
-    client.emit('joinedRoom', room);
+  public joinRoom(
+    client: Socket,
+    data: { rooms: string; userId: string },
+  ): void {
+    client.join(data.rooms);
+    client.emit('joinedRoom', data.rooms);
 
     const existingSocket = this.activeSockets?.find(
-      (socket) => socket.room === room && socket.id === client.id,
+      (socket) => socket.room === data.rooms && socket.id === client.id,
     );
 
     if (!existingSocket) {
-      this.activeSockets = [...this.activeSockets, { id: client.id, room }];
-      client.emit(`${room}-update-user-list`, {
+      this.activeSockets = [
+        ...this.activeSockets,
+        { id: client.id, room: data.rooms, userId: data.userId },
+      ];
+      client.emit(`${data.rooms}-update-user-list`, {
         users: this.activeSockets
-          .filter((socket) => socket.room === room && socket.id !== client.id)
+          .filter(
+            (socket) =>
+              socket.room === data.rooms &&
+              socket.id !== client.id &&
+              data.userId !== socket.userId,
+          )
           .map((existingSocket) => existingSocket.id),
       });
 
-      client.broadcast.emit(`${room}-update-user-list`, {
+      client.broadcast.emit(`${data.rooms}-update-user-list`, {
         users: [client.id],
       });
     }
 
-    return this.logger.log(`Client ${client.id} joined video call ${room}`);
+    return this.logger.log(
+      `Client ${client.id} joined video call ${data.rooms}`,
+    );
   }
 
   @SubscribeMessage('call-user')
   public callUser(client: Socket, data: any): void {
-    console.log('call-user', data);
-    client.to(data.to).emit('call-made', {
+    // console.log('call-user', data);
+    const socketSender = this.activeSockets.find(
+      (x) => x.userId == data.userId,
+    );
+    const socketAnswer = this.activeSockets.find((x) => x.id == client.id);
+    console.log('activeSocket', this.activeSockets);
+    console.log('data.userId', data.userId);
+    console.log('socketSender', socketSender);
+    client.to(socketSender.id).emit('call-made', {
       offer: data.offer,
       socket: client.id,
       candidate: data.candidate,
     });
-    this.logger.log(`Client make -answer: ${client.id + data.offer + data.to}`);
+    this.logger.log(
+      `Client make -answer: ${client.id + data.offer + socketSender.id}`,
+    );
   }
 
   @SubscribeMessage('make-answer')
   public makeAnswer(client: Socket, data: any): void {
     console.log('make-answer', data);
-
+    const socketAnswer = this.activeSockets.find((x) => x.id == client.id);
+    console.log('socketAnswer', socketAnswer);
     client.to(data.to).emit('answer-made', {
-      socket: client.id,
+      userId: socketAnswer.userId,
       answer: data.answer,
     });
     this.logger.log(`Client make -answer: ${client.id + data.to}`);
@@ -66,7 +89,8 @@ export class VideoCallGateway implements OnGatewayInit, OnGatewayDisconnect {
 
   @SubscribeMessage('make-stop-call')
   public makeStopCall(client: Socket, to: string): void {
-    client.to(to).emit('stop-call', 'stop');
+    const socketAnswer = this.activeSockets.find((x) => x.userId === to);
+    client.to(socketAnswer.id).emit('stop-call', 'stop');
   }
 
   @SubscribeMessage('reject-call')

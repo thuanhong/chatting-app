@@ -9,7 +9,9 @@ const socket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}/call`);
 let peerConnection = null;
 if (typeof window !== 'undefined') {
   // browser code
-  peerConnection = new window.RTCPeerConnection();
+  peerConnection = new window.RTCPeerConnection({
+    iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+  });
 }
 
 export default function useVideoCall(localVideo, remoteVideo) {
@@ -18,13 +20,14 @@ export default function useVideoCall(localVideo, remoteVideo) {
   let getCalled = false;
 
   peerConnection.addEventListener('connectionstatechange', (event) => {
+    console.log(peerConnection.connectionState);
     const fn = ['_on' + capitalizeFirstLetter(peerConnection.connectionState)];
-    fn && fn(event);
+    // fn && fn(event);
   });
 
-  function joinRoom(rooms) {
+  function joinRoom(rooms, userId) {
     room = rooms;
-    socket.emit('joinRoom', rooms);
+    socket.emit('joinRoom', { rooms, userId });
   }
   function onCallMade(callback) {
     socket.on('call-made', async (data) => {
@@ -77,7 +80,7 @@ export default function useVideoCall(localVideo, remoteVideo) {
 
       if (!isAlreadyCalling) {
         console.log('JOIN CALL BACK');
-        await callback(data.socket);
+        await callback(data.userId);
         isAlreadyCalling = true;
       }
     });
@@ -99,13 +102,13 @@ export default function useVideoCall(localVideo, remoteVideo) {
     );
   }
 
-  async function callUser(to) {
+  async function callUser(userId) {
     const offer = await peerConnection.createOffer();
     await peerConnection.setLocalDescription(new window.RTCSessionDescription(offer));
     const candidate = peerConnection.onicecandidate;
 
     console.log('call back to another user', peerConnection.onicecandidate);
-    socket.emit('call-user', { offer, to, candidate });
+    socket.emit('call-user', { offer, userId, candidate });
   }
 
   const createMediaStream = async () => {
@@ -162,4 +165,4 @@ export default function useVideoCall(localVideo, remoteVideo) {
     joinRoom,
     createMediaStream,
   };
-};
+}

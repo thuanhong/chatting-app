@@ -129,16 +129,16 @@ function Content(props) {
   useEffect(() => {}, [remoteVideo, localVideo]);
   return useObserver(() => (
     <Box height={';100vh'} display='flex' alignItems='flex-start' justifyContent='flex-start'>
-      <VideoCallModal
-        senderId={infoUser}
-        remoteVideo={remoteVideo}
-        localVideo={localVideo}
-        stopCall={callingVideo.stopCall}
-        isOpenCall={isOpenCall}
-        setIsOpenCall={setIsOpenCall}
-      />
       <div id='scrollableDiv' className={classes.body} onScroll={handleScroll} ref={scrollTop}>
         <ContactUser />
+        <VideoCallModal
+          senderId={infoUser}
+          remoteVideo={remoteVideo}
+          localVideo={localVideo}
+          stopCall={callingVideo.stopCall}
+          isOpenCall={isOpenCall}
+          setIsOpenCall={setIsOpenCall}
+        />
         <InfiniteScroll
           dataLength={50}
           next={() => setPagination({ take: pagination.take + 5, pageIndex: 0 })}

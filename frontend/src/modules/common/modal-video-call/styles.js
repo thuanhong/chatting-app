@@ -34,6 +34,6 @@ export const useStyles = makeStyles((theme) => ({
   video: {
     width: '100%',
     height: '100%',
-    zIndex: 99,
+    zIndex: 5,
   },
 }));

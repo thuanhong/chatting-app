@@ -46,7 +46,7 @@ function ContactUser(props) {
   return useObserver(() => {
     const { id, email, firstName, lastName, isContacted } = contactChatStore.currentUserChattingInfo;
     return (
-      <div className='contanct-user'>
+      <div className='contanct-user' style={{ zIndex: '10' }}>
         {firstName && !isContacted && (
           <>
             <Box display='flex' justifyContent='center' m={1} p={1}>

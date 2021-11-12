@@ -5,7 +5,7 @@ import { CallEnd } from '@material-ui/icons';
 
 function VideoCallModal(props) {
   const classes = useStyles();
-  const { localVideo, stopCall, setIsOpenCall, remoteVideo, isOpenCall, senderId } = props;
+  const { localVideo, stopCall, setIsOpenCall, remoteVideo, isOpenCall, senderId, isCalling, setIsCalling } = props;
   return (
     <div className={classes.main}>
       <div className={classes.container}>
@@ -15,17 +15,18 @@ function VideoCallModal(props) {
         <div className={classes.localVideo}>
           <video className={classes.video} ref={localVideo} autoPlay muted></video>
         </div>
-        {isOpenCall && (
-          <ButtonBase
-            onClick={() => {
-              console.log('senderId', senderId);
-              stopCall(senderId.userGroups_user_id);
-              setIsOpenCall(false);
-            }}
-          >
-            <CallEnd style={{ width: '40', height: '40', color: 'red' }} />
-          </ButtonBase>
-        )}
+      </div>
+      <div>
+        <ButtonBase
+          onClick={() => {
+            console.log('senderId', senderId);
+            stopCall(senderId.userGroups_user_id);
+            setIsOpenCall(false);
+            setIsCalling(!isCalling);
+          }}
+        >
+          <CallEnd style={{ width: '40', height: '40', color: 'red' }} />
+        </ButtonBase>
       </div>
     </div>
   );

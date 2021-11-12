@@ -30,7 +30,7 @@ const initPagination = {
 };
 
 function Content(props) {
-  const { classes, localVideo, remoteVideo, isOpenCall, setIsOpenCall, callingVideo, setConnectedUsers, connectedUsers } = props;
+  const { classes, localVideo, remoteVideo, isOpenCall, setIsOpenCall } = props;
   const scrollRef = useRef(null);
 
   const [message, setMessage] = useState();
@@ -49,15 +49,6 @@ function Content(props) {
 
   useEffect(() => {
     socket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}/chat`);
-    callingVideo.joinRoom('call', id);
-    callingVideo.onCallMade(() => setIsOpenCall(true));
-    callingVideo.onRemoveUser((socketId) => setConnectedUsers((users) => users.filter((user) => user !== socketId)));
-    callingVideo.onUpdateUserList((users) => setConnectedUsers(users));
-    callingVideo.onAnswerMade((sockets) => callingVideo.callUser(sockets));
-    callingVideo.onCallRejected((data) => alert(`User: "Socket: ${data.socket}" rejected your call.`));
-    callingVideo.onTrack((stream) => {
-      remoteVideo.current.srcObject = stream;
-    });
 
     socket.on('chatToClient', (msg) => {
       setMessageList((prevstate) => {
@@ -131,14 +122,6 @@ function Content(props) {
     <Box height={';100vh'} display='flex' alignItems='flex-start' justifyContent='flex-start'>
       <div id='scrollableDiv' className={classes.body} onScroll={handleScroll} ref={scrollTop}>
         <ContactUser />
-        <VideoCallModal
-          senderId={infoUser}
-          remoteVideo={remoteVideo}
-          localVideo={localVideo}
-          stopCall={callingVideo.stopCall}
-          isOpenCall={isOpenCall}
-          setIsOpenCall={setIsOpenCall}
-        />
         <InfiniteScroll
           dataLength={50}
           next={() => setPagination({ take: pagination.take + 5, pageIndex: 0 })}

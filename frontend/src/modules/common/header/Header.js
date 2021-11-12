@@ -15,7 +15,7 @@ import { styles } from './styles';
 import { ButtonBase } from '@material-ui/core';
 
 function Header(props) {
-  const { classes, setIsOpenCall, callingVideo, connectedUsers } = props;
+  const { classes, setIsOpenCall, callingVideo, connectedUsers, isCalling, setIsCalling } = props;
   const { contactChatStore, groupChatStore } = useGlobalStore();
 
   return useObserver(() => {
@@ -35,10 +35,12 @@ function Header(props) {
                 <Tooltip title='Video call'>
                   <IconButton
                     color='inherit'
-                    onClick={async () => {
-                      await setIsOpenCall(true);
-                      await callingVideo.createMediaStream();
-                      await callingVideo.callUser(infoUser.userGroups_user_id);
+                    onClick={() => {
+                      setIsOpenCall(true);
+                      callingVideo.createMediaStream();
+                      console.log('infoUSER', infoUser.userGroups_user_id);
+                      callingVideo.callUser(infoUser.userGroups_user_id);
+                      setIsCalling(!isCalling);
                     }}
                   >
                     <VideocamIcon />

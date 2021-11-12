@@ -1,0 +1,26 @@
+version: '3.7'
+
+services:
+  main:
+    container_name: chatting-app-backends
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    ports:
+      - 8000:8000
+    command: npm run start:prod
+    env_file:
+      - .env
+    depends_on:
+      - database
+    environment:
+      DB_HOST: database
+      DATABASE_URL: mysql://admin:postgres@database:3306/chatting
+    links:
+      - database:database
+  database:
+    build:
+      context: .
+      dockerfile: Dockerfile.db
+    ports:
+      - '3307:3306'

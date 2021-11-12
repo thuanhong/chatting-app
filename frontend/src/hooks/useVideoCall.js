@@ -10,7 +10,7 @@ let peerConnection = null;
 if (typeof window !== 'undefined') {
   // browser code
   peerConnection = new window.RTCPeerConnection({
-    iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+    iceServers: [{ urls: 'stun:stun.services.mozilla.com' }, { urls: 'stun:stun.l.google.com:19302' }],
   });
 }
 
@@ -105,7 +105,7 @@ export default function useVideoCall(localVideo, remoteVideo) {
   async function callUser(userId) {
     const offer = await peerConnection.createOffer();
     await peerConnection.setLocalDescription(new window.RTCSessionDescription(offer));
-    const candidate = peerConnection.onicecandidate;
+    const candidate = (peerConnection.onicecandidate = (event) => event.candidate);
 
     console.log('call back to another user', peerConnection.onicecandidate);
     socket.emit('call-user', { offer, userId, candidate });
@@ -164,5 +164,7 @@ export default function useVideoCall(localVideo, remoteVideo) {
     onTrack,
     joinRoom,
     createMediaStream,
+    isAlreadyCalling,
+    getCalled,
   };
 }

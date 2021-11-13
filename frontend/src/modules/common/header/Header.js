@@ -15,7 +15,7 @@ import { styles } from './styles';
 import { ButtonBase } from '@material-ui/core';
 
 function Header(props) {
-  const { classes, setIsOpenCall, callingVideo, connectedUsers, isCalling, setIsCalling } = props;
+  const { classes, setIsOpenCall, callingVideo, connectedUsers, isCalling, setIsCalling, setGetCalled } = props;
   const { contactChatStore, groupChatStore } = useGlobalStore();
 
   return useObserver(() => {
@@ -37,10 +37,10 @@ function Header(props) {
                     color='inherit'
                     onClick={() => {
                       setIsOpenCall(true);
-                      callingVideo.createMediaStream();
                       console.log('infoUSER', infoUser.userGroups_user_id);
                       callingVideo.callUser(infoUser.userGroups_user_id);
                       setIsCalling(!isCalling);
+                      // setGetCalled(true);
                     }}
                   >
                     <VideocamIcon />

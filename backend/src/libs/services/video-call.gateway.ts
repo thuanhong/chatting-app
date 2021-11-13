@@ -65,6 +65,7 @@ export class VideoCallGateway implements OnGatewayInit, OnGatewayDisconnect {
     console.log('activeSocket', this.activeSockets);
     console.log('data.userId', data.userId);
     console.log('socketSender', socketSender);
+    console.log('offer', data.offer);
     client.to(socketSender.id).emit('call-made', {
       offer: data.offer,
       socket: client.id,

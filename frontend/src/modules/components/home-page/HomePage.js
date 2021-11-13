@@ -139,6 +139,7 @@ const styles = {
     flexDirection: 'column',
   },
   caller: {
+    width: '100%',
     backgroundColor: 'black',
     // backgroundImage: 'url(https://jspizziri.com/images/test-screen.png)',
     backgroundPosistion: 'center',
@@ -150,6 +151,7 @@ const styles = {
     background: 'black',
   },
 };
+const senders = [];
 function HomePage(props) {
   const { classes } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -166,16 +168,28 @@ function HomePage(props) {
     joinRoom,
     onUpdateUserList,
     onRemoveUser,
-    stopCall,
     onAnswerMade,
     onCallRejected,
     onTrack,
-    createMediaStream,
-    isAlreadyCalling,
-    getCalled,
-  } = useVideoCall(localVideo, remoteVideo);
+
+    // isAlreadyCalling,
+    // getCalled,
+    setGetCalled,
+    peerConnection,
+  } = useVideoCall();
   const callingVideo = Object.assign(
-    { onCallMade, callUser, joinRoom, onUpdateUserList, onRemoveUser, stopCall, onAnswerMade, onCallRejected, onTrack, createMediaStream, isAlreadyCalling, getCalled },
+    {
+      onCallMade,
+      callUser,
+      joinRoom,
+      onUpdateUserList,
+      onRemoveUser,
+      onAnswerMade,
+      onCallRejected,
+      onTrack,
+      //  isAlreadyCalling, getCalled,
+      peerConnection,
+    },
     callingVideo,
   );
   const [connectedUsers, setConnectedUsers] = useState([]);
@@ -186,11 +200,11 @@ function HomePage(props) {
   };
   useEffect(() => {
     callingVideo.joinRoom('call', id);
-    callingVideo.onCallMade(() => setIsOpenCall(true));
+    callingVideo.onCallMade(() => setIsCalling(true));
     callingVideo.onRemoveUser((socketId) => setConnectedUsers((users) => users.filter((user) => user !== socketId)));
     callingVideo.onUpdateUserList((users) => setConnectedUsers(users));
-    callingVideo.onAnswerMade((sockets) => callingVideo.callUser(sockets));
     callingVideo.onCallRejected((data) => alert(`User: "Socket: ${data.socket}" rejected your call.`));
+    callingVideo.onAnswerMade((sockets) => callingVideo.callUser(sockets));
     callingVideo.onTrack((stream) => {
       remoteVideo.current.srcObject = stream;
     });
@@ -214,11 +228,12 @@ function HomePage(props) {
               senderId={infoUser}
               remoteVideo={remoteVideo}
               localVideo={localVideo}
-              stopCall={callingVideo.stopCall}
-              isOpenCall={isOpenCall}
+              callingVideo={callingVideo}
+              // isOpenCall={isOpenCall}
               setIsOpenCall={setIsOpenCall}
               isCalling={isCalling}
               setIsCalling={setIsCalling}
+              peerConnection={peerConnection}
             />
           </div>
         ) : (
@@ -231,17 +246,10 @@ function HomePage(props) {
               setIsOpenCall={setIsOpenCall}
               isCalling={isCalling}
               setIsCalling={setIsCalling}
+              setGetCalled={setGetCalled}
             />
             <main className={classes.main}>
-              <Content
-                connectedUsers={connectedUsers}
-                setConnectedUsers={setConnectedUsers}
-                callingVideo={callingVideo}
-                localVideo={localVideo}
-                remoteVideo={remoteVideo}
-                isOpenCall={isOpenCall}
-                setIsOpenCall={setIsOpenCall}
-              />
+              <Content connectedUsers={connectedUsers} setConnectedUsers={setConnectedUsers} callingVideo={callingVideo} isOpenCall={isOpenCall} setIsOpenCall={setIsOpenCall} />
             </main>
           </div>
         )}

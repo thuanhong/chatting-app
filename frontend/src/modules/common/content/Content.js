@@ -10,7 +10,7 @@ import IconButton from '@material-ui/core/IconButton';
 //import common component
 import Message from '@src/common/message/Message';
 import ContactUser from '@src/common/contact-user/ContactUser';
-import VideoCallModal from '@src/common/modal-video-call';
+
 //import service
 import { GroupService } from '@src/services/GroupService';
 import { ChatService } from '@src/services/ChatService';
@@ -30,7 +30,7 @@ const initPagination = {
 };
 
 function Content(props) {
-  const { classes, localVideo, remoteVideo, isOpenCall, setIsOpenCall } = props;
+  const { classes, isOpenCall, setIsOpenCall } = props;
   const scrollRef = useRef(null);
 
   const [message, setMessage] = useState();
@@ -117,7 +117,6 @@ function Content(props) {
     }
   };
 
-  useEffect(() => {}, [remoteVideo, localVideo]);
   return useObserver(() => (
     <Box height={';100vh'} display='flex' alignItems='flex-start' justifyContent='flex-start'>
       <div id='scrollableDiv' className={classes.body} onScroll={handleScroll} ref={scrollTop}>

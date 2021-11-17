@@ -6,7 +6,6 @@ import ErrorBoundary from '@src/hoc/ErrorBoundary';
 import firebase from '@src/services/Firebase';
 import { CookieHandler } from '@src/utils/Cookies';
 
-export const UserContext = createContext({});
 export const withAuth = (PageComponent) => {
   const WithAuth = () => {
     const [loading, setLoading] = useState(true);

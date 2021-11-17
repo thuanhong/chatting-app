@@ -11,7 +11,7 @@ function VideoCallModal(props) {
   const [userMediaStream, setUserMediaStream] = useState(null);
   // const [displayMediaStream, setDisplayMediaStream] = useState(null);
   // const [startTimer, setStartTimer] = useState(false);
-  const { senderId, isCalling, setIsCalling, peerConnection, remoteVideo, localVideo } = props;
+  const { senderId, isCalling, setIsCalling, callingVideo, remoteVideo, localVideo } = props;
 
   async function stopCall() {
     console.log('stop Call', localVideo);
@@ -36,7 +36,6 @@ function VideoCallModal(props) {
     });
     localVideo.current.srcObject = null;
     remoteVideo.current.srcObject = null;
-    socket.emit('make-stop-call', to);
   }
 
   useEffect(() => {
@@ -56,7 +55,8 @@ function VideoCallModal(props) {
         }
 
         stream.getTracks().forEach((track) => {
-          senders.push(peerConnection.addTrack(track, stream));
+          // senders.push(callingVideo.peerConnection.addTrack(track, stream));
+          callingVideo.peerConnection.addTrack(track, stream);
         });
 
         setUserMediaStream(stream);

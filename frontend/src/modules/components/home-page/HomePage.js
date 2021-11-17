@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { createTheme, ThemeProvider, withStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Hidden from '@material-ui/core/Hidden';
 import Navigator from '@src/common/navigator/Navigator';
 import Content from '@src/common/content/Content';
 import Header from '@src/common/header/Header';
-import useVideoCall from '@src/hooks/useVideoCall';
+import { createPeerConnectionContext } from '@src/hooks/useVideoCall';
 import VideoCallModal from '@src/modules/common/modal-video-call';
 import { useGlobalStore } from '@src/hooks';
 
@@ -152,6 +152,7 @@ const styles = {
   },
 };
 const senders = [];
+const callingVideo = createPeerConnectionContext();
 function HomePage(props) {
   const { classes } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -162,36 +163,36 @@ function HomePage(props) {
   const { id: groupId, infoUser } = groupChatStore.currentGroupChatInfo;
   const { id, firstName, lastName } = JSON.parse(localStorage.getItem('currentUser'));
 
-  const {
-    onCallMade,
-    callUser,
-    joinRoom,
-    onUpdateUserList,
-    onRemoveUser,
-    onAnswerMade,
-    onCallRejected,
-    onTrack,
+  // const {
+  //   onCallMade,
+  //   callUser,
+  //   joinRoom,
+  //   onUpdateUserList,
+  //   onRemoveUser,
+  //   onAnswerMade,
+  //   onCallRejected,
+  //   onTrack,
 
-    // isAlreadyCalling,
-    // getCalled,
-    setGetCalled,
-    peerConnection,
-  } = useVideoCall();
-  const callingVideo = Object.assign(
-    {
-      onCallMade,
-      callUser,
-      joinRoom,
-      onUpdateUserList,
-      onRemoveUser,
-      onAnswerMade,
-      onCallRejected,
-      onTrack,
-      //  isAlreadyCalling, getCalled,
-      peerConnection,
-    },
-    callingVideo,
-  );
+  //   // isAlreadyCalling,
+  //   // getCalled,
+  //   setGetCalled,
+  //   peerConnection,
+  // } = useVideoCall();
+  // const callingVideo = Object.assign(
+  //   {
+  //     onCallMade,
+  //     callUser,
+  //     joinRoom,
+  //     onUpdateUserList,
+  //     onRemoveUser,
+  //     onAnswerMade,
+  //     onCallRejected,
+  //     onTrack,
+  //     //  isAlreadyCalling, getCalled,
+  //     peerConnection,
+  //   },
+  //   callingVideo,
+  // );
   const [connectedUsers, setConnectedUsers] = useState([]);
   const [isCalling, setIsCalling] = useState(false);
 
@@ -200,13 +201,20 @@ function HomePage(props) {
   };
   useEffect(() => {
     callingVideo.joinRoom('call', id);
-    callingVideo.onCallMade(() => setIsCalling(true));
+    callingVideo.onCallMade(() => {
+      setIsCalling(true);
+    });
     callingVideo.onRemoveUser((socketId) => setConnectedUsers((users) => users.filter((user) => user !== socketId)));
     callingVideo.onUpdateUserList((users) => setConnectedUsers(users));
     callingVideo.onCallRejected((data) => alert(`User: "Socket: ${data.socket}" rejected your call.`));
     callingVideo.onAnswerMade((sockets) => callingVideo.callUser(sockets));
     callingVideo.onTrack((stream) => {
       remoteVideo.current.srcObject = stream;
+    });
+
+    callingVideo.onDisconnected(() => {
+      // setStartTimer(false);
+      remoteVideo.current.srcObject = null;
     });
   }, []);
 
@@ -222,37 +230,34 @@ function HomePage(props) {
             <Navigator PaperProps={{ style: { width: drawerWidth } }} />
           </Hidden>
         </nav>
-        {isCalling ? (
-          <div className={classes.caller}>
+
+        <div className={classes.app}>
+          <Header
+            connectedUsers={connectedUsers}
+            onDrawerToggle={handleDrawerToggle}
+            callingVideo={callingVideo}
+            isOpenCall={isOpenCall}
+            setIsOpenCall={setIsOpenCall}
+            setIsCalling={setIsCalling}
+            isCalling={isCalling}
+          />
+          {isCalling ? (
             <VideoCallModal
               senderId={infoUser}
               remoteVideo={remoteVideo}
               localVideo={localVideo}
-              callingVideo={callingVideo}
               // isOpenCall={isOpenCall}
               setIsOpenCall={setIsOpenCall}
               isCalling={isCalling}
               setIsCalling={setIsCalling}
-              peerConnection={peerConnection}
-            />
-          </div>
-        ) : (
-          <div className={classes.app}>
-            <Header
-              connectedUsers={connectedUsers}
-              onDrawerToggle={handleDrawerToggle}
               callingVideo={callingVideo}
-              isOpenCall={isOpenCall}
-              setIsOpenCall={setIsOpenCall}
-              isCalling={isCalling}
-              setIsCalling={setIsCalling}
-              setGetCalled={setGetCalled}
             />
+          ) : (
             <main className={classes.main}>
               <Content connectedUsers={connectedUsers} setConnectedUsers={setConnectedUsers} callingVideo={callingVideo} isOpenCall={isOpenCall} setIsOpenCall={setIsOpenCall} />
             </main>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </ThemeProvider>
   );

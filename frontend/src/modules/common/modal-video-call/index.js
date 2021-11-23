@@ -1,17 +1,24 @@
+'use strict';
 import React, { useState, useRef, useEffect } from 'react';
 import { Box, ButtonBase } from '@material-ui/core';
 import { useStyles } from './styles';
 import { CallEnd } from '@material-ui/icons';
+import { useGlobalStore } from '@src/hooks';
 
 const senders = [];
+
 function VideoCallModal(props) {
   const classes = useStyles();
+  const { groupChatStore } = useGlobalStore();
+
+  const { infoUser } = groupChatStore.currentGroupChatInfo;
   // const localVideo = useRef();
   // const remoteVideo = useRef();
+  const [connectedUsers, setConnectedUsers] = useState([]);
   const [userMediaStream, setUserMediaStream] = useState(null);
   // const [displayMediaStream, setDisplayMediaStream] = useState(null);
   // const [startTimer, setStartTimer] = useState(false);
-  const { senderId, isCalling, setIsCalling, callingVideo, remoteVideo, localVideo } = props;
+  const { senderId, isCalling, setIsCalling, socket, remoteVideo, localVideo, setIsCalled, isCalled } = props;
 
   async function stopCall() {
     console.log('stop Call', localVideo);
@@ -38,26 +45,105 @@ function VideoCallModal(props) {
     remoteVideo.current.srcObject = null;
   }
 
+  const initConnection = (stream, socket, remoteVideo, localVideo) => {
+    let localConnection;
+    let remoteConnection;
+    let configRTC = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+    let conn;
+    console.log('INIT');
+
+    // Start a RTCPeerConnection to each client
+    socket.on('other-users', (socketId) => {
+      console.log('other user');
+      // Ignore when not exists other users connected
+
+      // Ininit peer connection
+      localConnection = new RTCPeerConnection();
+      conn = localConnection;
+      // Add all tracks from stream to peer connection
+      stream.getTracks().forEach((track) => localConnection.addTrack(track, stream));
+
+      // Send Candidtates to establish a channel communication to send stream and data
+      localConnection.onicecandidate = ({ candidate }) => {
+        candidate && socket.emit('candidate', { socketId, candidate });
+      };
+
+      // Receive stream from remote client and add to remote video area
+      localConnection.ontrack = ({ streams: [stream] }) => {
+        remoteVideo.current.srcObject = stream;
+      };
+      localConnection
+        .createOffer()
+        .then((offer) => localConnection.setLocalDescription(offer))
+        .then(() => {
+          socket.emit('offer', { socketId, description: localConnection.localDescription });
+        });
+    });
+
+    socket.on('offer', (data) => {
+      // Ininit peer connection
+      console.log('offer', data.socketId);
+      console.log('des', data.description);
+      remoteConnection = new RTCPeerConnection();
+      conn = remoteConnection;
+      // Add all tracks from stream to peer connection
+      stream.getTracks().forEach((track) => remoteConnection.addTrack(track, stream));
+
+      // Send Candidtates to establish a channel communication to send stream and data
+      remoteConnection.onicecandidate = ({ candidate }) => {
+        candidate && socket.emit('candidate', { socketId: data.socketId, candidate });
+      };
+
+      // Receive stream from remote client and add to remote video area
+      remoteConnection.ontrack = ({ streams: [stream] }) => {
+        remoteVideo.current.srcObject = stream;
+      };
+      remoteConnection
+        .setRemoteDescription(new window.RTCSessionDescription(data.description))
+        .then(async () => await remoteConnection.createAnswer())
+        .then(async (answer) => await remoteConnection.setLocalDescription(answer))
+        .then(() => {
+          console.log('answer', data.socketId);
+          console.log('answerDes', remoteConnection.localDescription);
+
+          socket.emit('answer', { socketId: data.socketId, description: remoteConnection.localDescription });
+        });
+      console.log('after answer');
+    });
+
+    socket.on('answer', (data) => {
+      console.log('get Answer');
+
+      // if (!data) {
+      //   console.log('get Answer', data.description);
+
+      localConnection.setRemoteDescription(new window.RTCSessionDescription(data.description));
+      // }
+    });
+
+    // Receive candidates and add to peer connection
+    socket.on('candidate', (candidate) => {
+      // GET Local or Remote Connection
+      const connection = localConnection || remoteConnection;
+      connection.addIceCandidate(new RTCIceCandidate(candidate));
+    });
+    return;
+  };
+
   useEffect(() => {
     const createMediaStream = async () => {
       if (!userMediaStream) {
-        const stream = await navigator.mediaDevices.getUserMedia({
+        const configVideo = {
           video: {
             width: { min: 640, ideal: 1920 },
             height: { min: 400, ideal: 1080 },
             aspectRatio: { ideal: 1.7777777778 },
           },
           audio: true,
-        });
-
-        if (localVideo) {
-          localVideo.current.srcObject = stream;
-        }
-
-        stream.getTracks().forEach((track) => {
-          // senders.push(callingVideo.peerConnection.addTrack(track, stream));
-          callingVideo.peerConnection.addTrack(track, stream);
-        });
+        };
+        const stream = await navigator.mediaDevices.getUserMedia(configVideo);
+        localVideo.current.srcObject = stream;
+        initConnection(stream, socket, remoteVideo, localVideo);
 
         setUserMediaStream(stream);
       }
@@ -81,7 +167,7 @@ function VideoCallModal(props) {
           onClick={() => {
             console.log('senderId', senderId);
             stopCall();
-            setIsCalling(!isCalling);
+            setIsCalling(false);
           }}
         >
           <CallEnd style={{ width: '40', height: '40', color: 'red' }} />

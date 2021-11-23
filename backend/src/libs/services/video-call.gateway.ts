@@ -8,31 +8,44 @@ import {
 import { Socket } from 'socket.io';
 import { Server } from 'ws';
 import { Logger } from '@nestjs/common';
+import { UserService } from '@src/app/api/user/user.service';
 
 @WebSocketGateway({ namespace: '/call', cors: true })
 export class VideoCallGateway implements OnGatewayInit, OnGatewayDisconnect {
   @WebSocketServer() wss: Server;
 
   private logger: Logger = new Logger('VideoCallGateway');
-
-  private activeSockets: { room: string; id: string; userId: string }[] = [];
-
+  constructor(private userService: UserService) {}
+  private activeSockets: {
+    room: string;
+    id: string;
+    userId: string;
+    userName: string;
+  }[] = [];
   @SubscribeMessage('joinRoom')
-  public joinRoom(
+  public async joinRoom(
     client: Socket,
     data: { rooms: string; userId: string },
-  ): void {
-    client.join(data.rooms);
-    client.emit('joinedRoom', data.rooms);
+  ): Promise<void> {
+    // client.join(data.userId);
+    // client.emit('joinedRoom', data.rooms);
 
     const existingSocket = this.activeSockets?.find(
       (socket) => socket.room === data.rooms && socket.id === client.id,
     );
 
     if (!existingSocket) {
+      const userName = await this.userService
+        .getUserById(data.userId)
+        .then((e) => `${e.firstName} ${e.lastName}`);
       this.activeSockets = [
         ...this.activeSockets,
-        { id: client.id, room: data.rooms, userId: data.userId },
+        {
+          id: client.id,
+          room: data.rooms,
+          userId: data.userId,
+          userName: userName,
+        },
       ];
       client.emit(`${data.rooms}-update-user-list`, {
         users: this.activeSockets
@@ -55,6 +68,51 @@ export class VideoCallGateway implements OnGatewayInit, OnGatewayDisconnect {
     );
   }
 
+  @SubscribeMessage('call')
+  public sendCall(client: Socket, data: any): void {
+    console.log('activeSocket', this.activeSockets);
+    const socketSender = this.activeSockets.find(
+      (x) => x.userId == data.userId,
+    );
+    const socketAnswer = this.activeSockets.find((x) => x.id == client.id);
+    this.logger.log(`Client pick-up: ${socketAnswer.userName}`);
+    console.log('socketAnswer', socketAnswer);
+    client.to(socketSender.id).emit('pick-up', {
+      socketId: client.id,
+      userId: socketAnswer.userId,
+      userName: socketAnswer.userName,
+    });
+  }
+
+  @SubscribeMessage('offer')
+  public offerRequest(client: Socket, data: any): void {
+    this.logger.log(`OFFER socketId ${data.socketId}`);
+
+    client
+      .to(data.socketId)
+      .emit('offer', { socketId: client.id, description: data.description });
+  }
+
+  @SubscribeMessage('answer')
+  public answer(client: Socket, data: any): void {
+    this.logger.log('ANSWER');
+    console.log('answer', data);
+    client.to(data.socketId).emit('answer', { description: data.description });
+  }
+
+  @SubscribeMessage('candidate')
+  public setCandidate(client: Socket, data: any): void {
+    this.logger.log(`CANDIATE ${data.socketId}`);
+
+    client.to(data.socketId).emit('candidate', data.candidate);
+  }
+
+  @SubscribeMessage('other-users')
+  public callOther(client: Socket, socketId: string): void {
+    this.logger.log('otherUser', socketId, ' TAI ', client.id);
+    client.to(socketId).emit('other-users', client.id);
+  }
+
   @SubscribeMessage('call-user')
   public callUser(client: Socket, data: any): void {
     // console.log('call-user', data);
@@ -62,14 +120,12 @@ export class VideoCallGateway implements OnGatewayInit, OnGatewayDisconnect {
       (x) => x.userId == data.userId,
     );
     const socketAnswer = this.activeSockets.find((x) => x.id == client.id);
-    console.log('activeSocket', this.activeSockets);
-    console.log('data.userId', data.userId);
-    console.log('socketSender', socketSender);
-    console.log('offer', data.offer);
+
     client.to(socketSender.id).emit('call-made', {
       offer: data.offer,
       socket: client.id,
-      candidate: data.candidate,
+      userId: socketAnswer.userId,
+      userName: socketAnswer.userName,
     });
     this.logger.log(
       `Client make -answer: ${client.id + data.offer + socketSender.id}`,
@@ -96,8 +152,11 @@ export class VideoCallGateway implements OnGatewayInit, OnGatewayDisconnect {
 
   @SubscribeMessage('reject-call')
   public rejectCall(client: Socket, data: any): void {
+    const socketAnswer = this.activeSockets.find((x) => x.id === client.id);
+    this.logger.log(`REJCT ${data}`);
+    console.log('REJCT', data);
     client.to(data.from).emit('call-rejected', {
-      socket: client.id,
+      userName: socketAnswer.userName || 'Your friend',
     });
   }
   public afterInit(server: Server): void {

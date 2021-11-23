@@ -1,5 +1,5 @@
-import io from 'socket.io-client';
-import React, { useState, useCallback } from 'react';
+// import io from 'socket.io-client';
+// import React, { useState, useCallback } from 'react';
 
 function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -36,33 +36,33 @@ class PeerConnectionSession {
   }
   onCallMade(callback) {
     this.socket.on('call-made', async (data) => {
-      if (this.getCalled) {
-        const confirmed = window.confirm(`User "Socket: ${data.socket}" wants to call you. Do accept this call?`);
-        console.log('beforeConfirm', confirmed);
-        if (!confirmed) {
-          console.log('inConfirm');
+      // if (this.getCalled) {
+      //   const confirmed = window.confirm(`User "Socket: ${data.socket}" wants to call you. Do accept this call?`);
+      //   console.log('beforeConfirm', confirmed);
+      //   if (!confirmed) {
+      //     console.log('inConfirm');
 
-          this.socket.emit('reject-call', {
-            from: data.socket,
-          });
-          return;
-        }
-        callback();
-        console.log('afterConfirm');
-      }
-      setTimeout(async () => {
-        await this.peerConnection.setRemoteDescription(new window.RTCSessionDescription(data.offer));
-        // await this.peerConnection.addIceCandidate(data.candidate);
-        const answer = await this.peerConnection.createAnswer();
-        await this.peerConnection.setLocalDescription(new window.RTCSessionDescription(answer));
-        console.log('offer', data.offer);
-        console.log('answer', answer);
-        this.socket.emit('make-answer', {
-          answer,
-          to: data.socket,
-        });
-        this.getCalled = true;
-      }, 2000);
+      //     this.socket.emit('reject-call', {
+      //       from: data.socket,
+      //     });
+      //     return;
+      //   }
+      //   callback();
+      //   console.log('afterConfirm');
+      // }
+      // setTimeout(async () => {
+      await this.peerConnection.setRemoteDescription(new window.RTCSessionDescription(data.offer));
+      // await this.peerConnection.addIceCandidate(data.candidate);
+      const answer = await this.peerConnection.createAnswer();
+      await this.peerConnection.setLocalDescription(new window.RTCSessionDescription(answer));
+      console.log('offer', data.offer);
+      console.log('answer', answer);
+      this.socket.emit('make-answer', {
+        answer,
+        to: data.socket,
+      });
+      this.getCalled = true;
+      // }, 2000);
     });
     // this.socket.on('stop-call', async (data) => {
     //   stopCall(data);
@@ -131,13 +131,13 @@ class PeerConnectionSession {
   }
 }
 
-export const createPeerConnectionContext = () => {
+export const createPeerConnectionContext = (socket) => {
   if (typeof window !== 'undefined') {
     const peerConnection = new window.RTCPeerConnection({
       iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
     });
     console.log('Socket URL', `${process.env.NEXT_PUBLIC_BACKEND_URL}/call`);
-    const socket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}/call`);
+    // const socket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}/call`);
 
     return new PeerConnectionSession(socket, peerConnection);
   }

@@ -30,7 +30,7 @@ const initPagination = {
 };
 
 function Content(props) {
-  const { classes, isOpenCall, setIsOpenCall } = props;
+  const { classes } = props;
   const scrollRef = useRef(null);
 
   const [message, setMessage] = useState();

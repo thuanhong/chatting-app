@@ -15,7 +15,7 @@ import { styles } from './styles';
 import { ButtonBase } from '@material-ui/core';
 
 function Header(props) {
-  const { classes, setIsOpenCall, callingVideo, isCalling, setIsCalling, setGetCalled } = props;
+  const { classes, setIsOpenCall, makeCall, isCalling, setIsCalling, setGetCalled } = props;
   const { contactChatStore, groupChatStore } = useGlobalStore();
 
   return useObserver(() => {
@@ -37,8 +37,8 @@ function Header(props) {
                     color='inherit'
                     onClick={() => {
                       console.log('infoUSER', infoUser.userGroups_user_id);
+                      makeCall(infoUser.userGroups_user_id);
                       setIsCalling(true);
-                      callingVideo.callUser(infoUser.userGroups_user_id);
                       // setGetCalled(true);
                     }}
                   >

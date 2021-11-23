@@ -6,7 +6,9 @@ import { CallEnd } from '@material-ui/icons';
 import { useGlobalStore } from '@src/hooks';
 
 const senders = [];
-
+//# TODO
+let listLocalConnection = [];
+let listRemoteConnection = [];
 function VideoCallModal(props) {
   const classes = useStyles();
   const { groupChatStore } = useGlobalStore();
@@ -49,7 +51,7 @@ function VideoCallModal(props) {
     let localConnection;
     let remoteConnection;
     let configRTC = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
-    let conn;
+    // let conn;
     console.log('INIT');
 
     // Start a RTCPeerConnection to each client
@@ -58,8 +60,8 @@ function VideoCallModal(props) {
       // Ignore when not exists other users connected
 
       // Ininit peer connection
-      localConnection = new RTCPeerConnection();
-      conn = localConnection;
+      localConnection = new RTCPeerConnection(configRTC);
+      // conn = localConnection;
       // Add all tracks from stream to peer connection
       stream.getTracks().forEach((track) => localConnection.addTrack(track, stream));
 
@@ -84,8 +86,8 @@ function VideoCallModal(props) {
       // Ininit peer connection
       console.log('offer', data.socketId);
       console.log('des', data.description);
-      remoteConnection = new RTCPeerConnection();
-      conn = remoteConnection;
+      remoteConnection = new RTCPeerConnection(configRTC);
+      // conn = remoteConnection;
       // Add all tracks from stream to peer connection
       stream.getTracks().forEach((track) => remoteConnection.addTrack(track, stream));
 
@@ -99,7 +101,7 @@ function VideoCallModal(props) {
         remoteVideo.current.srcObject = stream;
       };
       remoteConnection
-        .setRemoteDescription(new window.RTCSessionDescription(data.description))
+        .setRemoteDescription(new RTCSessionDescription(data.description))
         .then(async () => await remoteConnection.createAnswer())
         .then(async (answer) => await remoteConnection.setLocalDescription(answer))
         .then(() => {
@@ -117,7 +119,7 @@ function VideoCallModal(props) {
       // if (!data) {
       //   console.log('get Answer', data.description);
 
-      localConnection.setRemoteDescription(new window.RTCSessionDescription(data.description));
+      localConnection.setRemoteDescription(new RTCSessionDescription(data.description));
       // }
     });
 
@@ -125,6 +127,7 @@ function VideoCallModal(props) {
     socket.on('candidate', (candidate) => {
       // GET Local or Remote Connection
       const connection = localConnection || remoteConnection;
+      candidate.usernameFragment = null;
       connection.addIceCandidate(new RTCIceCandidate(candidate));
     });
     return;
@@ -150,7 +153,7 @@ function VideoCallModal(props) {
     };
 
     createMediaStream();
-  }, [MediaStream]);
+  }, [userMediaStream]);
 
   return (
     <div className={classes.main}>
@@ -162,7 +165,7 @@ function VideoCallModal(props) {
           <video className={classes.video} ref={localVideo} autoPlay muted></video>
         </div>
       </div>
-      <div>
+      <div style={{ display: 'flex', paddingLeft: '47%', paddingTop: '7px' }}>
         <ButtonBase
           onClick={() => {
             console.log('senderId', senderId);
@@ -170,7 +173,7 @@ function VideoCallModal(props) {
             setIsCalling(false);
           }}
         >
-          <CallEnd style={{ width: '40', height: '40', color: 'red' }} />
+          <CallEnd style={{ width: '50', height: '50', color: 'red' }} />
         </ButtonBase>
       </div>
     </div>

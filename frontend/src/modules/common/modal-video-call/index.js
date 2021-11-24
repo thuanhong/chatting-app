@@ -4,6 +4,9 @@ import { Box, ButtonBase } from '@material-ui/core';
 import { useStyles } from './styles';
 import { CallEnd } from '@material-ui/icons';
 import { useGlobalStore } from '@src/hooks';
+function filterTrickle(sdp) {
+  return sdp.replace(/a=ice-options:trickle\s\n/g, '');
+}
 
 const senders = [];
 //# TODO
@@ -61,6 +64,7 @@ function VideoCallModal(props) {
 
       // Ininit peer connection
       localConnection = new RTCPeerConnection(configRTC);
+      localConnection.restartIce();
       // conn = localConnection;
       // Add all tracks from stream to peer connection
       stream.getTracks().forEach((track) => localConnection.addTrack(track, stream));
@@ -72,14 +76,17 @@ function VideoCallModal(props) {
 
       // Receive stream from remote client and add to remote video area
       localConnection.ontrack = ({ streams: [stream] }) => {
+        if (!remoteVideo.current) return;
         remoteVideo.current.srcObject = stream;
       };
+
       localConnection
-        .createOffer()
+        .createOffer({ offerToReceiveAudio: 1, offerToReceiveVideo: 1, iceRestart: true })
         .then((offer) => localConnection.setLocalDescription(offer))
         .then(() => {
           socket.emit('offer', { socketId, description: localConnection.localDescription });
         });
+      console.log('localTRICKLE', localConnection.canTrickleIceCandidates);
     });
 
     socket.on('offer', (data) => {
@@ -88,6 +95,9 @@ function VideoCallModal(props) {
       console.log('des', data.description);
       remoteConnection = new RTCPeerConnection(configRTC);
       // conn = remoteConnection;
+      remoteConnection.restartIce();
+      // remoteConnection.setConfiguration({ iceRestart: true });
+
       // Add all tracks from stream to peer connection
       stream.getTracks().forEach((track) => remoteConnection.addTrack(track, stream));
 
@@ -100,6 +110,7 @@ function VideoCallModal(props) {
       remoteConnection.ontrack = ({ streams: [stream] }) => {
         remoteVideo.current.srcObject = stream;
       };
+
       remoteConnection
         .setRemoteDescription(new RTCSessionDescription(data.description))
         .then(async () => await remoteConnection.createAnswer())
@@ -111,6 +122,7 @@ function VideoCallModal(props) {
           socket.emit('answer', { socketId: data.socketId, description: remoteConnection.localDescription });
         });
       console.log('after answer');
+      console.log('remoteTRICKLE', remoteConnection.canTrickleIceCandidates);
     });
 
     socket.on('answer', (data) => {
@@ -127,7 +139,8 @@ function VideoCallModal(props) {
     socket.on('candidate', (candidate) => {
       // GET Local or Remote Connection
       const connection = localConnection || remoteConnection;
-      candidate.usernameFragment = null;
+      // candidate.usernameFragment = null;
+      if (!connection) return;
       connection.addIceCandidate(new RTCIceCandidate(candidate));
     });
     return;

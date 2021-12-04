@@ -36,7 +36,6 @@ function Header(props) {
                   <IconButton
                     color='inherit'
                     onClick={() => {
-                      console.log('infoUSER', infoUser.userGroups_user_id);
                       makeCall(infoUser.userGroups_user_id);
                       setIsCalling(true);
                       // setGetCalled(true);

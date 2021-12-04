@@ -8,10 +8,24 @@ function filterTrickle(sdp) {
   return sdp.replace(/a=ice-options:trickle\s\n/g, '');
 }
 
-const senders = [];
+const sender = [];
 //# TODO
 let listLocalConnection = [];
 let listRemoteConnection = [];
+// let localConnection;
+// let remoteConnection;
+
+// if (typeof window !== 'undefined') {
+//   // browser code
+//   localConnection = new window.RTCPeerConnection({
+//     iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+//   });
+
+//   remoteConnection = new window.RTCPeerConnection({
+//     iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+//   });
+// }
+
 function VideoCallModal(props) {
   const classes = useStyles();
   const { groupChatStore } = useGlobalStore();
@@ -23,10 +37,9 @@ function VideoCallModal(props) {
   const [userMediaStream, setUserMediaStream] = useState(null);
   // const [displayMediaStream, setDisplayMediaStream] = useState(null);
   // const [startTimer, setStartTimer] = useState(false);
-  const { senderId, isCalling, setIsCalling, socket, remoteVideo, localVideo, setIsCalled, isCalled } = props;
+  const { senderId, isCalling, setIsCalling, socket, remoteVideo, localVideo, setIsCalled, isCalled, localConnection, remoteConnection } = props;
 
   async function stopCall() {
-    console.log('stop Call', localVideo);
     const stream = await localVideo.current?.srcObject;
     const streamRemote = await remoteVideo.current?.srcObject;
     const tracks = stream?.getTracks();
@@ -50,24 +63,17 @@ function VideoCallModal(props) {
     remoteVideo.current.srcObject = null;
   }
 
-  const initConnection = (stream, socket, remoteVideo, localVideo) => {
-    let localConnection;
-    let remoteConnection;
+  const initConnection = (stream, socket, remoteVideo, localVideo, localConnection, remoteConnection) => {
+    // let localConnection;
+    // let remoteConnection;
     let configRTC = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
     // let conn;
-    console.log('INIT');
-
     // Start a RTCPeerConnection to each client
     socket.on('other-users', (socketId) => {
-      console.log('other user');
       // Ignore when not exists other users connected
 
-      // Ininit peer connection
-      localConnection = new RTCPeerConnection(configRTC);
-      localConnection.restartIce();
-      // conn = localConnection;
       // Add all tracks from stream to peer connection
-      stream.getTracks().forEach((track) => localConnection.addTrack(track, stream));
+      sender.push(stream.getTracks().forEach((track) => localConnection.addTrack(track, stream)));
 
       // Send Candidtates to establish a channel communication to send stream and data
       localConnection.onicecandidate = ({ candidate }) => {
@@ -81,25 +87,18 @@ function VideoCallModal(props) {
       };
 
       localConnection
-        .createOffer({ offerToReceiveAudio: 1, offerToReceiveVideo: 1, iceRestart: true })
-        .then((offer) => localConnection.setLocalDescription(offer))
+        .createOffer()
+        .then((offer) => localConnection.setLocalDescription(new window.RTCSessionDescription(offer)))
         .then(() => {
           socket.emit('offer', { socketId, description: localConnection.localDescription });
         });
-      console.log('localTRICKLE', localConnection.canTrickleIceCandidates);
     });
 
     socket.on('offer', (data) => {
       // Ininit peer connection
-      console.log('offer', data.socketId);
-      console.log('des', data.description);
-      remoteConnection = new RTCPeerConnection(configRTC);
-      // conn = remoteConnection;
-      remoteConnection.restartIce();
-      // remoteConnection.setConfiguration({ iceRestart: true });
 
       // Add all tracks from stream to peer connection
-      stream.getTracks().forEach((track) => remoteConnection.addTrack(track, stream));
+      sender.push(stream.getTracks().forEach((track) => remoteConnection.addTrack(track, stream)));
 
       // Send Candidtates to establish a channel communication to send stream and data
       remoteConnection.onicecandidate = ({ candidate }) => {
@@ -114,25 +113,12 @@ function VideoCallModal(props) {
       remoteConnection
         .setRemoteDescription(new RTCSessionDescription(data.description))
         .then(async () => await remoteConnection.createAnswer())
-        .then(async (answer) => await remoteConnection.setLocalDescription(answer))
-        .then(() => {
-          console.log('answer', data.socketId);
-          console.log('answerDes', remoteConnection.localDescription);
-
-          socket.emit('answer', { socketId: data.socketId, description: remoteConnection.localDescription });
-        });
-      console.log('after answer');
-      console.log('remoteTRICKLE', remoteConnection.canTrickleIceCandidates);
+        .then(async (answer) => await remoteConnection.setLocalDescription(new window.RTCSessionDescription(answer)))
+        .then(() => socket.emit('answer', { socketId: data.socketId, description: remoteConnection.localDescription }));
     });
 
     socket.on('answer', (data) => {
-      console.log('get Answer');
-
-      // if (!data) {
-      //   console.log('get Answer', data.description);
-
       localConnection.setRemoteDescription(new RTCSessionDescription(data.description));
-      // }
     });
 
     // Receive candidates and add to peer connection
@@ -141,7 +127,7 @@ function VideoCallModal(props) {
       const connection = localConnection || remoteConnection;
       // candidate.usernameFragment = null;
       if (!connection) return;
-      connection.addIceCandidate(new RTCIceCandidate(candidate));
+      connection.addIceCandidate(new RTCIceCandidate(candidate)).catch((e) => console.log());
     });
     return;
   };
@@ -159,14 +145,40 @@ function VideoCallModal(props) {
         };
         const stream = await navigator.mediaDevices.getUserMedia(configVideo);
         localVideo.current.srcObject = stream;
-        initConnection(stream, socket, remoteVideo, localVideo);
+        initConnection(stream, socket, remoteVideo, localVideo, localConnection, remoteConnection);
 
         setUserMediaStream(stream);
       }
     };
-
     createMediaStream();
-  }, [userMediaStream]);
+    return async () => {
+      socket.off('candidate');
+      socket.off('offer');
+      socket.off('other-users');
+      socket.off('answer');
+      const stream = await localVideo.current?.srcObject;
+      const streamRemote = await remoteVideo.current?.srcObject;
+      const tracks = stream?.getTracks();
+      if (!tracks) {
+        return;
+      }
+
+      tracks.forEach(function(track) {
+        track.stop();
+      });
+
+      const tracksRemote = streamRemote?.getTracks();
+      if (!tracksRemote) {
+        return;
+      }
+
+      tracksRemote.forEach(function(track) {
+        track.stop();
+      });
+      localVideo.current.srcObject = null;
+      remoteVideo.current.srcObject = null;
+    };
+  }, []);
 
   return (
     <div className={classes.main}>
@@ -181,7 +193,6 @@ function VideoCallModal(props) {
       <div style={{ display: 'flex', paddingLeft: '47%', paddingTop: '7px' }}>
         <ButtonBase
           onClick={() => {
-            console.log('senderId', senderId);
             stopCall();
             setIsCalling(false);
           }}

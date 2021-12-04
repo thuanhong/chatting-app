@@ -40,7 +40,6 @@ function ListGroupChat(props) {
       }
       getGroupData();
     });
-    console.log('listGroup', listGroupChatData);
     return () => {
       socketGroupChat.emit('leaveRoom', currentUserId, () => {});
       socketGroupChat.off();

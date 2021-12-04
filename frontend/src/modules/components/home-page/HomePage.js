@@ -176,7 +176,6 @@ const ConfirmDialog = ({ socket, isOpenCall, setIsOpenCall, data, setIsCalling }
           onClick={() => {
             setIsOpenCall(false);
             setIsCalling(true);
-            console.log('socketID', data.socketId);
             setTimeout(() => {
               socket.emit('other-users', data.socketId);
             }, 2000);
@@ -222,6 +221,20 @@ const RejectedDialog = ({ data, isRejected, setIsRejected }) => {
 const senders = [];
 let socket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}/call`);
 const callingVideo = createPeerConnectionContext(socket);
+
+let localConnection;
+let remoteConnection;
+
+if (typeof window !== 'undefined') {
+  // browser code
+  localConnection = new window.RTCPeerConnection({
+    iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+  });
+
+  remoteConnection = new window.RTCPeerConnection({
+    iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+  });
+}
 function HomePage(props) {
   const { classes } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -253,23 +266,8 @@ function HomePage(props) {
     });
 
     socket.on('pick-up', async (data) => {
-      // const confirmed = confirm(`User "Socket: ${data.userName || data.socketId}" wants to call you. Do accept this call?`);
-      // console.log('beforeConfirm', confirmed);
-      // if (!confirmed) {
-      //   console.log('inConfirm');
-
-      //   socket.emit('reject-call', {
-      //     from: data.socketId,
-      //   });
-      //   return;
-      // }
       setIsCalled(data);
       setIsOpenCall(true);
-      // setIsCalling(true);
-      // console.log('socketID', data.socketId);
-      // setTimeout(() => {
-      //   socket.emit('other-users', data.socketId);
-      // }, 2000);
     });
   }, []);
   function makeCall(userId) {
@@ -298,13 +296,13 @@ function HomePage(props) {
               remoteVideo={remoteVideo}
               localVideo={localVideo}
               isCalled={isCalled}
+              localConnection={localConnection}
+              remoteConnection={remoteConnection}
               setIsCalled={setIsCalled}
-              // isOpenCall={isOpenCall}
               setIsOpenCall={setIsOpenCall}
               isCalling={isCalling}
               setIsCalling={setIsCalling}
               socket={socket}
-              // callingVideo={callingVideo}
             />
           ) : (
             <main className={classes.main}>

@@ -76,3 +76,5 @@ selfsigned.crt
 selfsigned.key
 
 out/
+
+firebaseServiceAccount.json
